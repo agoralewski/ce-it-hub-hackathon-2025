@@ -42,6 +42,10 @@ urlpatterns = [
     path('api/autocomplete/items/', views.autocomplete_items, name='autocomplete_items'),
     path('api/autocomplete/manufacturers/', views.autocomplete_manufacturers, name='autocomplete_manufacturers'),
     
+    # AJAX endpoints for dynamic filtering
+    path('api/racks/', views.get_racks, name='get_racks'),
+    path('api/shelves/', views.get_shelves, name='get_shelves'),
+    
     # User profile and password management
     path('profile/', views.profile, name='profile'),
     path('profile/change-password/', views.change_password, name='change_password'),

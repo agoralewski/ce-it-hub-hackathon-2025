@@ -110,6 +110,24 @@ class ExportForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    category = forms.ModelChoiceField(
+        label="Kategoria",
+        queryset=Category.objects.all(),
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    include_expired = forms.BooleanField(
+        label="Uwzględnij przedmioty przeterminowane",
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    include_removed = forms.BooleanField(
+        label="Uwzględnij przedmioty usunięte",
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

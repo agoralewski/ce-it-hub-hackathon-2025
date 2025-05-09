@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from .env import get_env_variable, get_bool_env_variable
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3y#+jc!+bci9pa5f5z67dqw+p9q#8(#yu-0+ceiq_k8p2jwd#h'
+SECRET_KEY = get_env_variable('SECRET_KEY', 'django-insecure-3y#+jc!+bci9pa5f5z67dqw+p9q#8(#yu-0+ceiq_k8p2jwd#h')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_bool_env_variable('DEBUG', True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -76,12 +77,27 @@ WSGI_APPLICATION = 'ksp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Default SQLite database
+DB_ENGINE = get_env_variable('DB_ENGINE', 'django.db.backends.sqlite3')
+if DB_ENGINE == 'django.db.backends.sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # PostgreSQL, MySQL, etc.
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': get_env_variable('DB_NAME'),
+            'USER': get_env_variable('DB_USER'),
+            'PASSWORD': get_env_variable('DB_PASSWORD'),
+            'HOST': get_env_variable('DB_HOST'),
+            'PORT': get_env_variable('DB_PORT'),
+        }
+    }
 
 
 # Password validation
@@ -138,9 +154,14 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_URL = '/accounts/login/'
 
 # Email settings for password reset
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'fundacja@kwrinka.pl'
-EMAIL_HOST_PASSWORD = ''  # This should be set using environment variables in production
+if DEBUG:
+    # Development email backend
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # Production email backend
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = get_env_variable('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(get_env_variable('EMAIL_PORT', '587'))
+    EMAIL_USE_TLS = get_bool_env_variable('EMAIL_USE_TLS', True)
+    EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER', 'fundacja@kwrinka.pl')
+    EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', '')
