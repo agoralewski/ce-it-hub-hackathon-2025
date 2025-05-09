@@ -40,7 +40,7 @@
 }
 
 .nav-link.active {
-    color: var(--primary) !important;
+    color: var(--light) !important;
     font-weight: bold;
 }
 
