@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Dodaj przedmiot na półkę - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Dodaj przedmiot na półkę {{ shelf.full_location }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.item_name.id_for_label }}" class="form-label">{{ form.item_name.label }}</label>
+                                {{ form.item_name }}
+                                {% if form.item_name.help_text %}
+                                <div class="form-text">{{ form.item_name.help_text }}</div>
+                                {% endif %}
+                                {% if form.item_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.item_name.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                                {{ form.category }}
+                                {% if form.category.help_text %}
+                                <div class="form-text">{{ form.category.help_text }}</div>
+                                {% endif %}
+                                {% if form.category.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.category.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.quantity.label }}</label>
+                                {{ form.quantity }}
+                                {% if form.quantity.help_text %}
+                                <div class="form-text">{{ form.quantity.help_text }}</div>
+                                {% endif %}
+                                {% if form.quantity.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.quantity.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }}</label>
+                                {{ form.manufacturer }}
+                                {% if form.manufacturer.help_text %}
+                                <div class="form-text">{{ form.manufacturer.help_text }}</div>
+                                {% endif %}
+                                {% if form.manufacturer.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.manufacturer.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.expiration_date.id_for_label }}" class="form-label">{{ form.expiration_date.label }}</label>
+                        {{ form.expiration_date }}
+                        {% if form.expiration_date.help_text %}
+                        <div class="form-text">{{ form.expiration_date.help_text }}</div>
+                        {% endif %}
+                        {% if form.expiration_date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.expiration_date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                        {{ form.notes }}
+                        {% if form.notes.help_text %}
+                        <div class="form-text">{{ form.notes.help_text }}</div>
+                        {% endif %}
+                        {% if form.notes.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.notes.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Dodaj przedmiot
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize Select2
+        $('.category-select').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Wybierz kategorię'
+        });
+        
+        $('.item-autocomplete').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Wpisz nazwę przedmiotu',
+            tags: true,
+            createTag: function(params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                };
+            }
+        });
+        
+        $('.manufacturer-autocomplete').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Wpisz producenta',
+            tags: true,
+            createTag: function(params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                };
+            }
+        });
+    });
+</script>
+{% endblock %}

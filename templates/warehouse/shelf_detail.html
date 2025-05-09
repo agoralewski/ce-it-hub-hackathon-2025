@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Szczegóły półki - KSP{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Półka {{ shelf.full_location }}</h5>
+        <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}" class="btn btn-light">
+            <i class="fas fa-plus"></i> Dodaj przedmiot
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Informacje o lokalizacji</h5>
+                        <p><strong>Pokój:</strong> {{ shelf.rack.room.name }}</p>
+                        <p><strong>Regał:</strong> {{ shelf.rack.name }}</p>
+                        <p><strong>Numer półki:</strong> {{ shelf.number }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Kod QR</h5>
+                        <div class="text-center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.build_absolute_uri }}" alt="QR Code for this shelf" class="img-fluid">
+                        </div>
+                        <div class="text-center mt-2">
+                            <p class="text-muted">Zeskanuj kod QR, aby szybko przejść do tej półki.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h5>Przedmioty na półce</h5>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Kategoria</th>
+                        <th>Producent</th>
+                        <th>Data ważności</th>
+                        <th>Dodano przez</th>
+                        <th>Data dodania</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ assignment.item.name }}</td>
+                        <td>{{ assignment.item.category.name }}</td>
+                        <td>{{ assignment.item.manufacturer|default:"-" }}</td>
+                        <td>
+                            {% if assignment.item.expiration_date %}
+                                {% if assignment.item.expiration_date|date:"Y-m-d" <= today_date|date:"Y-m-d" %}
+                                    <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
+                                {% elif assignment.item.expiration_date|date:"Y-m-d" <= thirty_days_from_now|date:"Y-m-d" %}
+                                    <span class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ assignment.added_by.username }}</td>
+                        <td>{{ assignment.add_date }}</td>
+                        <td>
+                            <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-minus"></i> Pobierz
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Brak przedmiotów na tej półce.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

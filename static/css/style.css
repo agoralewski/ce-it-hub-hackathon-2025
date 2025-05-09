@@ -1,0 +1,97 @@
+/* Main CSS file for KSP (Krwinkowy System Prezentowy) */
+
+:root {
+    --primary: #0d6efd;
+    --secondary: #6c757d;
+    --success: #198754;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #0dcaf0;
+    --light: #f8f9fa;
+    --dark: #212529;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Custom styling for cards */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: none;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Responsive tables */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Select2 customizations */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: calc(1.5em + 0.75rem + 2px);
+}
+
+/* QR code container */
+.qr-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.25rem;
+}
+
+/* Badges for expiration dates */
+.badge.bg-danger, .badge.bg-warning, .badge.bg-success {
+    font-size: 0.875em;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+}
+
+/* Custom admin buttons */
+.admin-button {
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+.admin-button:hover {
+    transform: translateY(-5px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.25rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+
+/* Print styles for QR codes */
+@media print {
+    .no-print {
+        display: none;
+    }
+    
+    .qr-code-print {
+        page-break-inside: avoid;
+        margin-bottom: 2cm;
+    }
+}

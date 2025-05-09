@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Usuń przedmiot z półki - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Usuń przedmiot z półki</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Czy na pewno chcesz usunąć przedmiot "{{ assignment.item.name }}" z półki {{ assignment.shelf.full_location }}?</h5>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Nazwa:</strong> {{ assignment.item.name }}</p>
+                                <p><strong>Kategoria:</strong> {{ assignment.item.category.name }}</p>
+                                <p><strong>Lokalizacja:</strong> {{ assignment.shelf.full_location }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Data dodania:</strong> {{ assignment.add_date }}</p>
+                                <p><strong>Dodane przez:</strong> {{ assignment.added_by.username }}</p>
+                                {% if assignment.item.expiration_date %}
+                                <p><strong>Data ważności:</strong> {{ assignment.item.expiration_date }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'warehouse:shelf_detail' assignment.shelf.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Anuluj
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Usuń przedmiot
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

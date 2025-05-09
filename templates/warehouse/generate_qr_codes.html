@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Generowanie kodów QR - KSP{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Generowanie kodów QR dla półek</h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać linki do stron z detalami półek.
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                    <label class="form-check-label" for="selectAll">Zaznacz wszystkie</label>
+                                </div>
+                            </th>
+                            <th>Lokalizacja</th>
+                            <th>Numer półki</th>
+                            <th>Pokój</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shelf in shelves %}
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input shelf-check" type="checkbox" name="shelves" id="shelf{{ shelf.id }}" value="{{ shelf.id }}">
+                                    <label class="form-check-label" for="shelf{{ shelf.id }}"></label>
+                                </div>
+                            </td>
+                            <td>{{ shelf.full_location }}</td>
+                            <td>{{ shelf.number }}</td>
+                            <td>{{ shelf.rack.room.name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-qrcode"></i> Generuj kody QR
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Select/deselect all checkboxes
+        $('#selectAll').on('change', function() {
+            $('.shelf-check').prop('checked', $(this).is(':checked'));
+        });
+        
+        // Update "Select All" checkbox based on individual selections
+        $('.shelf-check').on('change', function() {
+            const totalCheckboxes = $('.shelf-check').length;
+            const checkedCheckboxes = $('.shelf-check:checked').length;
+            
+            $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+            $('#selectAll').prop('indeterminate', checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes);
+        });
+    });
+</script>
+{% endblock %}
