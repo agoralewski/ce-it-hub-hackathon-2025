@@ -11,11 +11,10 @@
     --dark: #212529;
 }
 
-/* Use white as main color with red accents (updated) */
+/* Use white as main color with red accents */
 .bg-primary {
     background-color: white !important;
     border-bottom: 3px solid var(--primary) !important;
-    box-shadow: 0 4px 12px rgba(208, 36, 44, 0.15) !important;
 }
 
 .navbar-dark .navbar-nav .nav-link,
@@ -58,6 +57,7 @@
 .nav-link.active {
     color: var(--primary) !important;
     font-weight: bold;
+    border-bottom: 2px solid var(--primary);
 }
 
 /* Navbar logo styling */
