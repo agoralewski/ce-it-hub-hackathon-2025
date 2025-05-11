@@ -49,4 +49,5 @@ urlpatterns = [
     # User profile and password management
     path('profile/', views.profile, name='profile'),
     path('profile/change-password/', views.change_password, name='change_password'),
+    path('logout/', views.custom_logout, name='custom_logout'),
 ]

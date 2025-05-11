@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
@@ -413,16 +413,31 @@ def add_item_to_shelf(request, shelf_id):
         form = ItemShelfAssignmentForm(request.POST)
         
         if form.is_valid():
-            # Create or get the item
-            item_data = {
-                'name': form.cleaned_data['item_name'],
-                'category': form.cleaned_data['category'],
-                'manufacturer': form.cleaned_data['manufacturer'],
-                'expiration_date': form.cleaned_data['expiration_date'],
-                'note': form.cleaned_data['notes'],
-            }
+            # Create or get the item - check if it exists first
+            item_name = form.cleaned_data['item_name'].strip()
+            category = form.cleaned_data['category']
+            manufacturer = form.cleaned_data['manufacturer'].strip() if form.cleaned_data['manufacturer'] else None
             
-            item = Item.objects.create(**item_data)
+            # Try to find an existing item with the same name and category
+            try:
+                item = Item.objects.get(
+                    name__iexact=item_name,
+                    category=category
+                )
+                # Update manufacturer if provided
+                if manufacturer and not item.manufacturer:
+                    item.manufacturer = manufacturer
+                    item.save()
+            except Item.DoesNotExist:
+                # Create new item
+                item_data = {
+                    'name': item_name,
+                    'category': category,
+                    'manufacturer': manufacturer,
+                    'expiration_date': form.cleaned_data['expiration_date'],
+                    'note': form.cleaned_data['notes'],
+                }
+                item = Item.objects.create(**item_data)
             
             # Create assignment
             ItemShelfAssignment.objects.create(
@@ -436,10 +451,21 @@ def add_item_to_shelf(request, shelf_id):
     else:
         form = ItemShelfAssignmentForm()
     
-    return render(request, 'warehouse/add_item.html', {
+    # Prepare context data for the form fields
+    context = {
         'form': form,
-        'shelf': shelf
-    })
+        'shelf': shelf,
+        'input_data': {}
+    }
+    
+    # If this is a POST request, pass input values for Select2 fields
+    if request.method == 'POST' and not form.is_valid():
+        context['input_data'] = {
+            'item_name': request.POST.get('item_name', ''),
+            'manufacturer': request.POST.get('manufacturer', '')
+        }
+    
+    return render(request, 'warehouse/add_item.html', context)
 
 
 @login_required
@@ -930,8 +956,20 @@ def get_shelves(request):
 def autocomplete_items(request):
     """AJAX view for item name autocomplete"""
     query = request.GET.get('term', '')
-    items = Item.objects.filter(name__icontains=query).distinct()[:10]
-    results = [{'id': i.id, 'text': i.name} for i in items]
+    # If the query is empty, return all distinct items 
+    # Otherwise filter based on the query
+    if query:
+        items = Item.objects.filter(name__icontains=query).distinct()
+    else:
+        items = Item.objects.values('name').distinct()
+        
+    # Don't limit the results when returning all items for client-side filtering
+    if not query:
+        results = [{'id': i['name'], 'text': i['name']} for i in items]
+    else:
+        # For specific searches, still limit results
+        results = [{'id': i.id, 'text': i.name} for i in items[:10]]
+    
     return JsonResponse({'results': results})
 
 
@@ -939,20 +977,29 @@ def autocomplete_items(request):
 def autocomplete_manufacturers(request):
     """AJAX view for manufacturer autocomplete"""
     query = request.GET.get('term', '')
-    manufacturers = Item.objects.filter(
-        manufacturer__isnull=False,
-        manufacturer__icontains=query
-    ).values_list('manufacturer', flat=True).distinct()[:10]
+    
+    # Base query - exclude null manufacturers
+    base_query = Item.objects.filter(manufacturer__isnull=False)
+    
+    # If the query is empty, return all distinct manufacturers
+    # Otherwise filter based on the query
+    if query:
+        manufacturers = base_query.filter(
+            manufacturer__icontains=query
+        ).values_list('manufacturer', flat=True).distinct()[:10]
+    else:
+        # For an empty query, get all distinct manufacturers
+        manufacturers = base_query.values_list('manufacturer', flat=True).distinct()
+    
     results = [{'id': m, 'text': m} for m in manufacturers]
     return JsonResponse({'results': results})
 
 
-# User profile and password management
+# User account views
 @login_required
 def profile(request):
     """User profile view"""
     return render(request, 'warehouse/profile.html')
-
 
 @login_required
 def change_password(request):
@@ -961,12 +1008,20 @@ def change_password(request):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  # Keep user logged in
-            messages.success(request, 'Your password was successfully updated!')
+            update_session_auth_hash(request, user)  # Important to keep the user logged in
+            messages.success(request, 'Twoje hasło zostało pomyślnie zmienione!')
             return redirect('warehouse:profile')
+        else:
+            messages.error(request, 'Proszę poprawić błędy w formularzu.')
     else:
         form = PasswordChangeForm(request.user)
     
     return render(request, 'warehouse/change_password.html', {
         'form': form
     })
+
+def custom_logout(request):
+    """Custom logout view to ensure proper redirection"""
+    logout(request)
+    messages.success(request, 'Zostałeś pomyślnie wylogowany.')
+    return redirect('login')

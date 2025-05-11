@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Initialize item name autocomplete
-    $('.item-autocomplete').select2({
+    // Initialize item name autocomplete with free text entry
+    const itemAutocomplete = $('.item-autocomplete').select2({
         theme: 'bootstrap-5',
         placeholder: 'Wpisz nazwę przedmiotu',
-        minimumInputLength: 2,
+        minimumInputLength: 1,
         tags: true,
         createTag: function(params) {
             return {
@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 newOption: true
             };
         },
+        selectOnClose: true,
+        allowClear: true,
         ajax: {
             url: '/warehouse/api/autocomplete/items/',
             dataType: 'json',
@@ -58,11 +60,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Initialize manufacturer autocomplete
+    // Get initial value from the data attribute
+    const itemField = $('.item-autocomplete');
+    const initialItemName = itemField.data('initial-value');
+    if (initialItemName) {
+        // Create the option and append it
+        const newOption = new Option(initialItemName, initialItemName, true, true);
+        itemField.append(newOption).trigger('change');
+    }
+    
+    // Initialize manufacturer autocomplete with free text entry
     $('.manufacturer-autocomplete').select2({
         theme: 'bootstrap-5',
         placeholder: 'Wpisz producenta',
-        minimumInputLength: 2,
+        minimumInputLength: 1,
         tags: true,
         createTag: function(params) {
             return {
@@ -71,6 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 newOption: true
             };
         },
+        selectOnClose: true,
+        allowClear: true,
         ajax: {
             url: '/warehouse/api/autocomplete/manufacturers/',
             dataType: 'json',
@@ -88,6 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
             cache: true
         }
     });
+    
+    // Get initial value from the data attribute
+    const manufacturerField = $('.manufacturer-autocomplete');
+    const initialManufacturer = manufacturerField.data('initial-value');
+    if (initialManufacturer) {
+        // Create the option and append it
+        const newOption = new Option(initialManufacturer, initialManufacturer, true, true);
+        manufacturerField.append(newOption).trigger('change');
+    }
     
     // Handle dynamic updates to room/rack/shelf filters
     const roomSelect = document.querySelector('select[name="room"]');
@@ -108,6 +130,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, 5000);
+
+    // Handle dropdown hover states
+    const dropdowns = document.querySelectorAll('.dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        // Ensure dropdown toggle arrow remains visible on hover
+        const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('mouseenter', function() {
+                this.style.setProperty('content', '""', 'important');
+            });
+        }
+    });
 });
 
 // Function to update racks dropdown based on selected room

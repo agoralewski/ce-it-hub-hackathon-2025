@@ -28,66 +28,75 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Initialize item name autocomplete
-    $('.item-autocomplete').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Wpisz nazwę przedmiotu',
-        minimumInputLength: 2,
-        tags: true,
-        createTag: function(params) {
-            return {
-                id: params.term,
-                text: params.term,
-                newOption: true
-            };
+    $('.item-autocomplete').autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: '/warehouse/api/autocomplete/items/',
+                dataType: 'json',
+                data: { term: request.term },
+                success: function(data) {
+                    // Map the results to the format jQuery UI autocomplete expects
+                    response($.map(data.results, function(item) {
+                        return {
+                            label: item.text,
+                            value: item.text
+                        };
+                    }));
+                }
+            });
         },
-        ajax: {
-            url: '/warehouse/api/autocomplete/items/',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    term: params.term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.results
-                };
-            },
-            cache: true
+        minLength: 1,
+        delay: 250,
+        autoFocus: true,
+        classes: {
+            "ui-autocomplete": "dropdown-menu"
         }
-    });
+    }).autocomplete("instance")._renderItem = function(ul, item) {
+        // Custom rendering for Bootstrap styling
+        return $("<li>")
+            .append("<div class='dropdown-item'>" + item.label + "</div>")
+            .appendTo(ul);
+    };
     
     // Initialize manufacturer autocomplete
-    $('.manufacturer-autocomplete').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Wpisz producenta',
-        minimumInputLength: 2,
-        tags: true,
-        createTag: function(params) {
-            return {
-                id: params.term,
-                text: params.term,
-                newOption: true
-            };
+    $('.manufacturer-autocomplete').autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: '/warehouse/api/autocomplete/manufacturers/',
+                dataType: 'json',
+                data: { term: request.term },
+                success: function(data) {
+                    // Map the results to the format jQuery UI autocomplete expects
+                    response($.map(data.results, function(item) {
+                        return {
+                            label: item.text,
+                            value: item.text
+                        };
+                    }));
+                }
+            });
         },
-        ajax: {
-            url: '/warehouse/api/autocomplete/manufacturers/',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    term: params.term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.results
-                };
-            },
-            cache: true
+        minLength: 1,
+        delay: 250,
+        autoFocus: true,
+        classes: {
+            "ui-autocomplete": "dropdown-menu"
         }
-    });
+    }).autocomplete("instance")._renderItem = function(ul, item) {
+        // Custom rendering for Bootstrap styling
+        return $("<li>")
+            .append("<div class='dropdown-item'>" + item.label + "</div>")
+            .appendTo(ul);
+    };
+    
+    // Get initial value from the data attribute
+    const manufacturerField = $('.manufacturer-autocomplete');
+    const initialManufacturer = manufacturerField.data('initial-value');
+    if (initialManufacturer) {
+        // Create the option and append it
+        const newOption = new Option(initialManufacturer, initialManufacturer, true, true);
+        manufacturerField.append(newOption).trigger('change');
+    }
     
     // Handle dynamic updates to room/rack/shelf filters
     const roomSelect = document.querySelector('select[name="room"]');
@@ -108,6 +117,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, 5000);
+
+    // Handle dropdown hover states
+    const dropdowns = document.querySelectorAll('.dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        // Ensure dropdown toggle arrow remains visible on hover
+        const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('mouseenter', function() {
+                this.style.setProperty('content', '""', 'important');
+            });
+        }
+    });
 });
 
 // Function to update racks dropdown based on selected room

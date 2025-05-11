@@ -11,10 +11,11 @@
     --dark: #212529;
 }
 
-/* Use white as main color with red accents */
+/* Use white as main color with red accents (updated) */
 .bg-primary {
     background-color: white !important;
     border-bottom: 3px solid var(--primary) !important;
+    box-shadow: 0 4px 12px rgba(208, 36, 44, 0.15) !important;
 }
 
 .navbar-dark .navbar-nav .nav-link,
@@ -57,7 +58,6 @@
 .nav-link.active {
     color: var(--primary) !important;
     font-weight: bold;
-    border-bottom: 2px solid var(--primary);
 }
 
 /* Navbar logo styling */
@@ -66,26 +66,54 @@
     width: auto;
 }
 
-/* Red accent styles - updated */
+/* Simple navbar styling with 90% border width */
 .navbar-nav .nav-item .nav-link {
+    color: var(--dark) !important;
     position: relative;
-    padding-bottom: 2px;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
 }
 
-.navbar-nav .nav-item .nav-link:hover {
-    color: var(--primary) !important;
+/* Disable pseudo-element styling for dropdown-toggle links */
+.navbar-nav .dropdown .dropdown-toggle::before {
+    display: none !important;
 }
 
-.navbar-nav .nav-item .nav-link:hover::after,
-.navbar-nav .nav-item.active .nav-link::after,
-.navbar-nav .nav-link.active::after {
+/* Fixing the hover transition with a different approach - using ::before for underline */
+.navbar-nav .nav-item .nav-link::before {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 10%;
-    width: 80%;
-    height: 2px;
+    left: 5%;
+    width: 90%;
+    height: 1px;
+    background-color: transparent;
+    transition: background-color 0.2s;
+}
+
+.navbar-nav .nav-item .nav-link:hover::before,
+.navbar-nav .nav-item .nav-link.active::before {
     background-color: var(--primary);
+}
+
+.navbar-nav .nav-item .nav-link:hover,
+.navbar-nav .nav-item .nav-link.active {
+    color: var(--primary) !important;
+}
+
+/* Properly styled dropdown arrow - completely separate from the underline */
+.dropdown-toggle::after {
+    display: inline-block !important;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-left: 0.3em solid transparent;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    background-color: transparent !important;
 }
 
 .navbar-nav .nav-item.active .nav-link, 
@@ -94,9 +122,38 @@
     font-weight: bold;
 }
 
+/* Dropdown styling with ultra-thin border */
+.dropdown-menu {
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-width: 0.5px !important;
+    border-color: rgba(208, 36, 44, 0.05) !important;
+    padding: 0.25rem;
+}
+
 .dropdown-item:active, .dropdown-item:hover {
-    background-color: rgba(208, 36, 44, 0.1) !important;
+    background-color: rgba(208, 36, 44, 0.05) !important;
     color: var(--primary) !important;
+}
+
+/* Fix for dropdown items */
+.dropdown-item {
+    border: none !important;
+}
+
+/* Override Bootstrap's dropdown arrow styling */
+.navbar-nav .dropdown .nav-link.dropdown-toggle::after {
+    display: inline-block !important;
+    margin-left: 0.255em !important;
+    vertical-align: 0.255em !important;
+    content: "" !important;
+    border-top: 0.3em solid !important;
+    border-right: 0.3em solid transparent !important;
+    border-bottom: 0 !important;
+    border-left: 0.3em solid transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: none !important;
 }
 
 body {
@@ -131,6 +188,23 @@ body {
 /* Select2 customizations */
 .select2-container--bootstrap-5 .select2-selection {
     min-height: calc(1.5em + 0.75rem + 2px);
+}
+
+/* Free text select2 input styling */
+.select2-container--bootstrap-5 .select2-search--inline .select2-search__field {
+    height: calc(1.5em + 0.5rem);
+    padding: 0.25rem 0.5rem;
+    margin-top: 0;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single {
+    padding: 0.375rem 0.75rem;
+}
+
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 0.25rem;
 }
 
 /* QR code container */

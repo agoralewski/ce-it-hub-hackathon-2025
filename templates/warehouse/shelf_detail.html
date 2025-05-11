@@ -11,32 +11,6 @@
         </a>
     </div>
     <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Informacje o lokalizacji</h5>
-                        <p><strong>Pokój:</strong> {{ shelf.rack.room.name }}</p>
-                        <p><strong>Regał:</strong> {{ shelf.rack.name }}</p>
-                        <p><strong>Numer półki:</strong> {{ shelf.number }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Kod QR</h5>
-                        <div class="text-center">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.build_absolute_uri }}" alt="QR Code for this shelf" class="img-fluid">
-                        </div>
-                        <div class="text-center mt-2">
-                            <p class="text-muted">Zeskanuj kod QR, aby szybko przejść do tej półki.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <h5>Przedmioty na półce</h5>
         <div class="table-responsive">
             <table class="table table-striped">
@@ -74,7 +48,7 @@
                         <td>{{ assignment.add_date }}</td>
                         <td>
                             <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-danger">
-                                <i class="fas fa-minus"></i> Pobierz
+                                <i class="fas fa-minus"></i> Weź z półki
                             </a>
                         </td>
                     </tr>
@@ -85,6 +59,33 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        </br>
+        <h5>Właściwości</h5>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Informacje o lokalizacji</h5>
+                        <p><strong>Pokój:</strong> {{ shelf.rack.room.name }}</p>
+                        <p><strong>Regał:</strong> {{ shelf.rack.name }}</p>
+                        <p><strong>Numer półki:</strong> {{ shelf.number }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Kod QR</h5>
+                        <div class="text-center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.build_absolute_uri }}" alt="QR Code for this shelf" class="img-fluid">
+                        </div>
+                        <div class="text-center mt-2">
+                            <p class="text-muted">Zeskanuj kod QR, aby szybko przejść do tej półki.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

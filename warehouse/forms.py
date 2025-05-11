@@ -59,7 +59,11 @@ class ItemShelfAssignmentForm(forms.Form):
     item_name = forms.CharField(
         label="Nazwa przedmiotu",
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control item-autocomplete'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control item-autocomplete',
+            'placeholder': 'Wpisz nazwę przedmiotu',
+            'autocomplete': 'off'
+        })
     )
     category = forms.ModelChoiceField(
         label="Kategoria",
@@ -76,7 +80,11 @@ class ItemShelfAssignmentForm(forms.Form):
         label="Producent",
         max_length=255,
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control manufacturer-autocomplete'})
+        widget=forms.TextInput(attrs={
+            'class': 'form-control manufacturer-autocomplete',
+            'placeholder': 'Wpisz producenta',
+            'autocomplete': 'off'
+        })
     )
     expiration_date = forms.DateField(
         label="Data ważności",
