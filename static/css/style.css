@@ -292,73 +292,6 @@ input.item-autocomplete:focus, input.manufacturer-autocomplete:focus {
     box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25);
 }
 
-/* Style for date input */
-input[type="date"] {
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-/* Date input focus state */
-input[type="date"]:focus {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25) !important;
-    outline: 0;
-}
-
-/* Date input calendar icon styling - browser specific */
-/* For Chrome & Safari */
-input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    filter: invert(25%) sepia(96%) saturate(2250%) hue-rotate(341deg) brightness(75%) contrast(93%);
-    opacity: 0.8;
-}
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
-}
-
-/* For Firefox */
-input[type="date"]::-moz-calendar-picker-indicator {
-    cursor: pointer;
-    filter: invert(25%) sepia(96%) saturate(2250%) hue-rotate(341deg) brightness(75%) contrast(93%);
-}
-
-/* Webkit highlight color for date inputs */
-input[type="date"]::selection {
-    background-color: rgba(208, 36, 44, 0.25);
-}
-
-/* Mozilla highlight color for date inputs */
-input[type="date"]::-moz-selection {
-    background-color: rgba(208, 36, 44, 0.25);
-}
-
-/* For Microsoft Edge/IE */
-input[type="date"]::-ms-clear,
-input[type="date"]::-ms-reveal {
-    display: none;
-}
-
-/* Global text selection color */
-::selection {
-    background-color: rgba(208, 36, 44, 0.25);
-    color: #212529;
-}
-
-/* Firefox text selection color */
-::-moz-selection {
-    background-color: rgba(208, 36, 44, 0.25);
-    color: #212529;
-}
-
 /* Improved styling for category select dropdown */
 .category-container .select2-selection {
     background-color: #fff;
@@ -408,7 +341,7 @@ input[type="date"]::-ms-reveal {
 .category-dropdown {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 
 .category-dropdown .select2-results__option {
@@ -470,13 +403,13 @@ input[type="date"]::-ms-reveal {
 .select2-container--bootstrap-5 .select2-dropdown,
 .select2-dropdown {
     border-color: #ced4da !important;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: none !important;
 }
 
 .select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field:focus,
 .select2-search--dropdown .select2-search__field:focus {
     border-color: var(--primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25) !important;
+    box-shadow: none !important;
     outline: none !important;
 }
 
@@ -505,6 +438,38 @@ select:focus,
     border-color: var(--primary) !important;
 }
 
+/* Quantity buttons styling */
+.quantity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-color: #ced4da;
+}
+
+.quantity-btn:hover {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Make sure the input group looks nice with number input */
+.input-group input[type="number"] {
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Hide the default number spinners */
+.input-group input[type="number"]::-webkit-outer-spin-button,
+.input-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
     .card-title {
@@ -513,6 +478,17 @@ select:focus,
     
     .table-responsive {
         font-size: 0.875rem;
+    }
+
+    .quantity-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+    
+    .input-group input[type="number"] {
+        font-size: 1.1rem;
+        height: 44px;
     }
 }
 

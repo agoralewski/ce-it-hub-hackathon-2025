@@ -413,31 +413,22 @@ def add_item_to_shelf(request, shelf_id):
         form = ItemShelfAssignmentForm(request.POST)
         
         if form.is_valid():
-            # Create or get the item - check if it exists first
+            # Get form data
             item_name = form.cleaned_data['item_name'].strip()
             category = form.cleaned_data['category']
             manufacturer = form.cleaned_data['manufacturer'].strip() if form.cleaned_data['manufacturer'] else None
             
-            # Try to find an existing item with the same name and category
-            try:
-                item = Item.objects.get(
-                    name__iexact=item_name,
-                    category=category
-                )
-                # Update manufacturer if provided
-                if manufacturer and not item.manufacturer:
-                    item.manufacturer = manufacturer
-                    item.save()
-            except Item.DoesNotExist:
-                # Create new item
-                item_data = {
-                    'name': item_name,
-                    'category': category,
-                    'manufacturer': manufacturer,
-                    'expiration_date': form.cleaned_data['expiration_date'],
-                    'note': form.cleaned_data['notes'],
-                }
-                item = Item.objects.create(**item_data)
+            # Always create a new item - this ensures each shelf assignment has its own item
+            item_data = {
+                'name': item_name,
+                'category': category,
+                'manufacturer': manufacturer,  # Only use what was explicitly entered in the form
+                'expiration_date': form.cleaned_data['expiration_date'],
+                'note': form.cleaned_data['notes'],
+            }
+            
+            # Create a brand new item every time
+            item = Item.objects.create(**item_data)
             
             # Create assignment
             ItemShelfAssignment.objects.create(
@@ -956,19 +947,24 @@ def get_shelves(request):
 def autocomplete_items(request):
     """AJAX view for item name autocomplete"""
     query = request.GET.get('term', '')
-    # If the query is empty, return all distinct items 
-    # Otherwise filter based on the query
+    
+    # Get distinct item names only, not full objects
     if query:
-        items = Item.objects.filter(name__icontains=query).distinct()
+        # Filter by the query but only get distinct names
+        items = Item.objects.filter(name__icontains=query).values('name').distinct()
     else:
+        # For empty queries, get all distinct names
         items = Item.objects.values('name').distinct()
         
-    # Don't limit the results when returning all items for client-side filtering
-    if not query:
-        results = [{'id': i['name'], 'text': i['name']} for i in items]
-    else:
-        # For specific searches, still limit results
-        results = [{'id': i.id, 'text': i.name} for i in items[:10]]
+    # Format results with only name information
+    results = []
+    # Use .values('name') to ensure we're only getting distinct names
+    for item in items[:500] if not query else items[:10]:  # Limit to 500 items for client-side filtering
+        item_data = {
+            'id': item['name'],
+            'text': item['name'],
+        }
+        results.append(item_data)
     
     return JsonResponse({'results': results})
 

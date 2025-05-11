@@ -53,7 +53,15 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.quantity.label }}</label>
-                                {{ form.quantity }}
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-outline-secondary quantity-btn" id="decrease-quantity">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    {{ form.quantity }}
+                                    <button type="button" class="btn btn-outline-secondary quantity-btn" id="increase-quantity">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
                                 {% if form.quantity.help_text %}
                                 <div class="form-text">{{ form.quantity.help_text }}</div>
                                 {% endif %}
@@ -132,26 +140,77 @@
 {% block extra_js %}
 <script>
     $(document).ready(function() {
-        // Initialize category select with improved behavior
-        $('.category-select').select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Wybierz kategorię',
-            width: '100%',
-            dropdownAutoWidth: true,
-            containerCssClass: 'category-container',
-            dropdownCssClass: 'category-dropdown'
+        // Handle quantity buttons
+        $('#increase-quantity').click(function() {
+            var quantityInput = $('#{{ form.quantity.id_for_label }}');
+            var currentValue = parseInt(quantityInput.val()) || 1;
+            quantityInput.val(currentValue + 1);
         });
         
-        // Make the entire container clickable to focus the input
-        $(document).on('click', '.select2-selection', function() {
-            $(this).closest('.select2-container').siblings('select').select2('open');
+        $('#decrease-quantity').click(function() {
+            var quantityInput = $('#{{ form.quantity.id_for_label }}');
+            var currentValue = parseInt(quantityInput.val()) || 1;
+            if (currentValue > 1) {
+                quantityInput.val(currentValue - 1);
+            }
         });
         
-        // Immediately open dropdown on container click (including the arrow)
-        $('.category-select').on('select2:open', function() {
-            // No longer automatically focus the search field
-            // This allows the dropdown to open without immediately placing cursor in search
+        // Fetch all categories when the page loads
+        var allCategories = [];
+        
+        $.ajax({
+            url: '/warehouse/api/autocomplete/categories/',
+            dataType: 'json',
+            data: { term: '' },  // Empty term to get all categories
+            success: function(data) {
+                // Store all categories
+                allCategories = data.results;
+                
+                // Initialize category select with improved behavior
+                $('.category-select').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Wybierz kategorię',
+                    width: '100%',
+                    dropdownAutoWidth: true,
+                    containerCssClass: 'category-container',
+                    dropdownCssClass: 'category-dropdown',
+                    data: allCategories,
+                    // Custom matcher for client-side filtering
+                    matcher: function(params, data) {
+                        // If there are no search terms, return all of the data
+                        if ($.trim(params.term) === '') {
+                            return data;
+                        }
+                        
+                        // Search in the text only (case insensitive)
+                        if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                            return data;
+                        }
+                        
+                        // Return null if the term should not be displayed
+                        return null;
+                    }
+                });
+                
+                // Make the entire container clickable to focus the input
+                $(document).on('click', '.select2-selection', function() {
+                    $(this).closest('.select2-container').siblings('select').select2('open');
+                });
+                
+                // Focus search field when dropdown opens
+                $('.category-select').on('select2:open', function() {
+                    setTimeout(function() {
+                        $('.select2-search__field').focus();
+                    }, 0);
+                });
+            }
         });
+        
+        // Store item and manufacturer lists globally
+        var allItems = [];
+        var allManufacturers = [];
+            
+        // Original Select2 initialization and event handlers are no longer needed
         
         // Store item and manufacturer lists globally
         var allItems = [];
