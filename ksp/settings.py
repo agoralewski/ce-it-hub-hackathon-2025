@@ -26,7 +26,8 @@ SECRET_KEY = get_env_variable('SECRET_KEY', 'django-insecure-3y#+jc!+bci9pa5f5z6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool_env_variable('DEBUG', True)
 
-ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Updated to include local network IP for mobile access
+ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', 'localhost,127.0.0.1,192.168.0.94').split(',')
 
 
 # Application definition
