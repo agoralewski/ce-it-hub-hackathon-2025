@@ -122,9 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
         alerts.forEach(function(alert) {
-            if (alert.querySelector('.btn-close')) {
-                alert.querySelector('.btn-close').click();
-            }
+            // Create a Bootstrap dismiss instance and hide the alert
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
         });
     }, 5000);
 

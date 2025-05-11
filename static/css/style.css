@@ -35,6 +35,12 @@
 .btn-primary {
     background-color: var(--primary) !important;
     border-color: var(--primary) !important;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+    background-color: #b8212a !important;  /* Slightly darker shade of red */
+    border-color: #b8212a !important;
 }
 
 .btn-outline-primary {
@@ -438,6 +444,18 @@ select:focus,
     border-color: var(--primary) !important;
 }
 
+/* Remove blue focus/highlight from accordion buttons */
+.accordion-button:not(.collapsed),
+.accordion-button:focus {
+    color: var(--dark);
+    background-color: white;
+    box-shadow: none;
+}
+
+.accordion-button::after {
+    color: var(--dark);
+}
+
 /* Quantity buttons styling */
 .quantity-btn {
     display: flex;
@@ -492,6 +510,58 @@ select:focus,
     }
 }
 
+/* Enhanced shelf detail page styling */
+.shelf-header {
+    background-color: #fff;
+}
+
+/* "Add item" button styling */
+.add-item-btn {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    padding: 8px 16px;
+}
+
+.add-item-btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.shelf-icon {
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(208, 36, 44, 0.1);
+    border-radius: 12px;
+}
+
+.shelf-detail-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(208, 36, 44, 0.1);
+    border-radius: 8px;
+}
+
+.empty-shelf-icon {
+    color: rgba(208, 36, 44, 0.3);
+}
+
+.qr-container {
+    background-color: white;
+    border: 1px dashed #dee2e6;
+    border-radius: 8px;
+}
+
+.card-header.border-primary {
+    border-bottom-width: 2px !important;
+    border-bottom-style: solid !important;
+}
+
 /* Print styles for QR codes */
 @media print {
     .no-print {
@@ -501,5 +571,31 @@ select:focus,
     .qr-code-print {
         page-break-inside: avoid;
         margin-bottom: 2cm;
+    }
+    
+    /* Special print styles for shelf detail page */
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .shelf-header, 
+    .table-responsive, 
+    .card-header, 
+    .btn, 
+    .shelf-details {
+        display: none;
+    }
+    
+    .qr-container {
+        border: none;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        text-align: center;
+    }
+    
+    .qr-container img {
+        width: 80% !important;
+        height: auto !important;
     }
 }

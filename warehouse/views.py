@@ -120,7 +120,7 @@ def room_create(request):
         form = RoomForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Room created successfully.')
+            messages.success(request, 'Pokój został pomyślnie utworzony.')
             return redirect('warehouse:room_list')
     else:
         form = RoomForm()
@@ -141,7 +141,7 @@ def room_update(request, pk):
         form = RoomForm(request.POST, instance=room)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Room updated successfully.')
+            messages.success(request, 'Pokój został pomyślnie zaktualizowany.')
             return redirect('warehouse:room_list')
     else:
         form = RoomForm(instance=room)
@@ -167,7 +167,7 @@ def room_delete(request, pk):
     if request.method == 'POST':
         if 'confirm' in request.POST:
             room.delete()
-            messages.success(request, 'Room deleted successfully.')
+            messages.success(request, 'Pokój został pomyślnie usunięty.')
             return redirect('warehouse:room_list')
     
     return render(request, 'warehouse/room_delete.html', {
@@ -188,7 +188,7 @@ def rack_create(request, room_id):
             rack = form.save(commit=False)
             rack.room = room
             rack.save()
-            messages.success(request, 'Rack created successfully.')
+            messages.success(request, 'Regał został pomyślnie utworzony.')
             return redirect('warehouse:room_list')
     else:
         form = RackForm()
@@ -210,7 +210,7 @@ def rack_update(request, pk):
         form = RackForm(request.POST, instance=rack)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Rack updated successfully.')
+            messages.success(request, 'Regał został pomyślnie zaktualizowany.')
             return redirect('warehouse:room_list')
     else:
         form = RackForm(instance=rack)
@@ -237,7 +237,7 @@ def rack_delete(request, pk):
     if request.method == 'POST':
         if 'confirm' in request.POST:
             rack.delete()
-            messages.success(request, 'Rack deleted successfully.')
+            messages.success(request, 'Regał został pomyślnie usunięty.')
             return redirect('warehouse:room_list')
     
     return render(request, 'warehouse/rack_delete.html', {
@@ -258,7 +258,7 @@ def shelf_create(request, rack_id):
             shelf = form.save(commit=False)
             shelf.rack = rack
             shelf.save()
-            messages.success(request, 'Shelf created successfully.')
+            messages.success(request, 'Półka została pomyślnie utworzona.')
             return redirect('warehouse:room_list')
     else:
         form = ShelfForm()
@@ -280,7 +280,7 @@ def shelf_update(request, pk):
         form = ShelfForm(request.POST, instance=shelf)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Shelf updated successfully.')
+            messages.success(request, 'Półka została pomyślnie zaktualizowana.')
             return redirect('warehouse:room_list')
     else:
         form = ShelfForm(instance=shelf)
@@ -307,7 +307,7 @@ def shelf_delete(request, pk):
     if request.method == 'POST':
         if 'confirm' in request.POST:
             shelf.delete()
-            messages.success(request, 'Shelf deleted successfully.')
+            messages.success(request, 'Półka została pomyślnie usunięta.')
             return redirect('warehouse:room_list')
     
     return render(request, 'warehouse/shelf_delete.html', {
@@ -333,7 +333,7 @@ def category_create(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Category created successfully.')
+            messages.success(request, 'Kategoria została pomyślnie utworzona.')
             return redirect('warehouse:category_list')
     else:
         form = CategoryForm()
@@ -354,7 +354,7 @@ def category_update(request, pk):
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Category updated successfully.')
+            messages.success(request, 'Kategoria została pomyślnie zaktualizowana.')
             return redirect('warehouse:category_list')
     else:
         form = CategoryForm(instance=category)
@@ -377,7 +377,7 @@ def category_delete(request, pk):
     if request.method == 'POST':
         if 'confirm' in request.POST and not has_items:
             category.delete()
-            messages.success(request, 'Category deleted successfully.')
+            messages.success(request, 'Kategoria została pomyślnie usunięta.')
             return redirect('warehouse:category_list')
     
     return render(request, 'warehouse/category_delete.html', {
@@ -396,11 +396,17 @@ def shelf_detail(request, pk):
     assignments = ItemShelfAssignment.objects.filter(
         shelf=shelf,
         remove_date__isnull=True
-    ).select_related('item', 'added_by')
+    ).select_related('item', 'item__category', 'added_by')
+    
+    # Add date context for expiration highlighting
+    today_date = timezone.now().date()
+    thirty_days_from_now = today_date + timedelta(days=30)
     
     return render(request, 'warehouse/shelf_detail.html', {
         'shelf': shelf,
-        'assignments': assignments
+        'assignments': assignments,
+        'today_date': today_date,
+        'thirty_days_from_now': thirty_days_from_now
     })
 
 
@@ -437,7 +443,7 @@ def add_item_to_shelf(request, shelf_id):
                 added_by=request.user
             )
             
-            messages.success(request, 'Item added to shelf successfully.')
+            messages.success(request, 'Przedmiot został pomyślnie dodany na półkę.')
             return redirect('warehouse:shelf_detail', pk=shelf_id)
     else:
         form = ItemShelfAssignmentForm()
@@ -471,7 +477,7 @@ def remove_item_from_shelf(request, pk):
         assignment.removed_by = request.user
         assignment.save()
         
-        messages.success(request, 'Item removed from shelf successfully.')
+        messages.success(request, 'Przedmiot został pomyślnie zdjęty z półki.')
         return redirect('warehouse:shelf_detail', pk=assignment.shelf.pk)
     
     return render(request, 'warehouse/remove_item.html', {
@@ -591,7 +597,7 @@ def generate_qr_codes(request):
             response['Content-Disposition'] = 'attachment; filename="shelf_qr_codes.pdf"'
             response.write(pdf)
             
-            messages.success(request, 'QR codes generated successfully.')
+            messages.success(request, 'Kody QR zostały pomyślnie wygenerowane.')
             return response
     
     return render(request, 'warehouse/generate_qr_codes.html', {
@@ -900,7 +906,7 @@ def export_inventory(request):
             
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             
-            messages.success(request, 'Inventory exported successfully.')
+            messages.success(request, 'Inwentarz został pomyślnie wyeksportowany.')
             return response
     else:
         form = ExportForm()
