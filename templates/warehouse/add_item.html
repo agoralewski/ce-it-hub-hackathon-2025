@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Dodaj przedmiot na półkę - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Dodaj przedmiot na półkę {{ shelf.full_location }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.item_name.id_for_label }}" class="form-label">{{ form.item_name.label }}</label>
+                                <input type="text" name="item_name" id="{{ form.item_name.id_for_label }}" class="form-control item-autocomplete" value="{{ input_data.item_name }}" autocomplete="off">
+                                {% if form.item_name.help_text %}
+                                <div class="form-text">{{ form.item_name.help_text }}</div>
+                                {% endif %}
+                                {% if form.item_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.item_name.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                                {{ form.category }}
+                                {% if form.category.help_text %}
+                                <div class="form-text">{{ form.category.help_text }}</div>
+                                {% endif %}
+                                {% if form.category.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.category.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.quantity.label }}</label>
+                                {{ form.quantity }}
+                                {% if form.quantity.help_text %}
+                                <div class="form-text">{{ form.quantity.help_text }}</div>
+                                {% endif %}
+                                {% if form.quantity.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.quantity.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }}</label>
+                                <input type="text" name="manufacturer" id="{{ form.manufacturer.id_for_label }}" class="form-control manufacturer-autocomplete" value="{{ input_data.manufacturer }}" autocomplete="off">
+                                {% if form.manufacturer.help_text %}
+                                <div class="form-text">{{ form.manufacturer.help_text }}</div>
+                                {% endif %}
+                                {% if form.manufacturer.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.manufacturer.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.expiration_date.id_for_label }}" class="form-label">{{ form.expiration_date.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                        {{ form.expiration_date }}
+                        {% if form.expiration_date.help_text %}
+                        <div class="form-text">{{ form.expiration_date.help_text }}</div>
+                        {% endif %}
+                        {% if form.expiration_date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.expiration_date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                        {{ form.notes }}
+                        {% if form.notes.help_text %}
+                        <div class="form-text">{{ form.notes.help_text }}</div>
+                        {% endif %}
+                        {% if form.notes.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.notes.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Dodaj przedmiot
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize category select with improved behavior
+        $('.category-select').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Wybierz kategorię',
+            width: '100%',
+            dropdownAutoWidth: true,
+            containerCssClass: 'category-container',
+            dropdownCssClass: 'category-dropdown'
+        });
+        
+        // Make the entire container clickable to focus the input
+        $(document).on('click', '.select2-selection', function() {
+            $(this).closest('.select2-container').siblings('select').select2('open');
+        });
+        
+        // Immediately open dropdown on container click (including the arrow)
+        $('.category-select').on('select2:open', function() {
+            // No longer automatically focus the search field
+            // This allows the dropdown to open without immediately placing cursor in search
+        });
+        
+        // Store item and manufacturer lists globally
+        var allItems = [];
+        var allManufacturers = [];
+        
+        // Fetch all items once when the page loads
+        $.ajax({
+            url: '/warehouse/api/autocomplete/items/',
+            dataType: 'json',
+            data: { term: '' },  // Empty term to get all items
+            success: function(data) {
+                // Store all items
+                allItems = $.map(data.results, function(item) {
+                    return {
+                        label: item.text,
+                        value: item.text
+                    };
+                });
+                
+                // Initialize item name autocomplete with local data
+                $('.item-autocomplete').autocomplete({
+                    source: function(request, response) {
+                        // Filter the items locally
+                        var term = request.term.toLowerCase();
+                        var filtered = allItems.filter(function(item) {
+                            return item.label.toLowerCase().indexOf(term) !== -1;
+                        });
+                        response(filtered);
+                    },
+                    minLength: 1,
+                    delay: 0,  // No delay needed since we're filtering locally
+                    autoFocus: false  // Changed from true to false to match manufacturer behavior
+                }).attr('placeholder', 'Wpisz nazwę przedmiotu');
+            }
+        });
+        
+        // Fetch all manufacturers once when the page loads
+        $.ajax({
+            url: '/warehouse/api/autocomplete/manufacturers/',
+            dataType: 'json',
+            data: { term: '' },  // Empty term to get all manufacturers
+            success: function(data) {
+                // Store all manufacturers
+                allManufacturers = $.map(data.results, function(item) {
+                    return {
+                        label: item.text,
+                        value: item.text
+                    };
+                });
+                
+                // Initialize manufacturer autocomplete with local data
+                $('.manufacturer-autocomplete').autocomplete({
+                    source: function(request, response) {
+                        // Filter the manufacturers locally
+                        var term = request.term.toLowerCase();
+                        var filtered = allManufacturers.filter(function(item) {
+                            return item.label.toLowerCase().indexOf(term) !== -1;
+                        });
+                        response(filtered);
+                    },
+                    minLength: 1,
+                    delay: 0,  // No delay needed since we're filtering locally
+                    autoFocus: false
+                }).attr('placeholder', 'Wpisz producenta');
+            }
+        });
+    });
+</script>
+{% endblock %}

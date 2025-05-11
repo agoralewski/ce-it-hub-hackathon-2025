@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Strona główna - KSP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Witaj w Krwinkowym Systemie Prezentowym</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card text-center mb-3">
+                            <div class="card-body">
+                                <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
+                                <h5>Aktywne przedmioty</h5>
+                                <p class="display-6">{{ active_items }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center mb-3">
+                            <div class="card-body">
+                                <i class="fas fa-warehouse fa-3x text-primary mb-3"></i>
+                                <h5>Pokoje</h5>
+                                <p class="display-6">{{ rooms.count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center mb-3">
+                            <div class="card-body">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                <h5>Wkrótce przeterminowane</h5>
+                                <p class="display-6">{{ expiring_soon }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Pokoje i regały</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for room in rooms %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">{{ room.name }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Regały:</strong> {{ room.rack_count }}</p>
+                                <p><strong>Półki:</strong> {{ room.shelf_count }}</p>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-search"></i> Zobacz przedmioty
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            Brak pokoi w systemie. {% if user.is_superuser %}<a href="{% url 'warehouse:room_create' %}">Dodaj pierwszy pokój</a>{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_superuser %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Panel administratora</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'warehouse:room_list' %}" class="btn btn-outline-primary d-block py-3">
+                            <i class="fas fa-warehouse fa-2x mb-2 d-block"></i>
+                            Zarządzaj pokojami
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'warehouse:category_list' %}" class="btn btn-outline-primary d-block py-3">
+                            <i class="fas fa-tags fa-2x mb-2 d-block"></i>
+                            Zarządzaj kategoriami
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'warehouse:export_inventory' %}" class="btn btn-outline-primary d-block py-3">
+                            <i class="fas fa-file-excel fa-2x mb-2 d-block"></i>
+                            Eksport do Excela
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'warehouse:generate_qr_codes' %}" class="btn btn-outline-primary d-block py-3">
+                            <i class="fas fa-qrcode fa-2x mb-2 d-block"></i>
+                            Generuj kody QR
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

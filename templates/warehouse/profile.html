@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Profil użytkownika - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Profil użytkownika</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-circle fa-5x text-primary"></i>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Nazwa użytkownika:</th>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>Adres e-mail:</th>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Imię:</th>
+                                <td>{{ user.first_name|default:"Nie podano" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nazwisko:</th>
+                                <td>{{ user.last_name|default:"Nie podano" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Data dołączenia:</th>
+                                <td>{{ user.date_joined }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ostatnie logowanie:</th>
+                                <td>{{ user.last_login }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{% url 'warehouse:change_password' %}" class="btn btn-primary">
+                        <i class="fas fa-key"></i> Zmień hasło
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

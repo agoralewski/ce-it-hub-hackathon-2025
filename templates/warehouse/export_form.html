@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Eksport inwentarza - KSP{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Eksport inwentarza do Excela</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.room.id_for_label }}" class="form-label">{{ form.room.label }}</label>
+                    {{ form.room }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranego pokoju.</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.rack.id_for_label }}" class="form-label">{{ form.rack.label }}</label>
+                    {{ form.rack }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranego regału.</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.shelf.id_for_label }}" class="form-label">{{ form.shelf.label }}</label>
+                    {{ form.shelf }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranej półki.</small>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                    {{ form.category }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko przedmioty z wybranej kategorii.</small>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.include_expired }}
+                        <label class="form-check-label" for="{{ form.include_expired.id_for_label }}">
+                            {{ form.include_expired.label }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.include_removed }}
+                        <label class="form-check-label" for="{{ form.include_removed.id_for_label }}">
+                            {{ form.include_removed.label }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-file-excel"></i> Eksportuj do Excela
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Dynamic filtering for racks based on room selection
+        $('select[name="room"]').on('change', function() {
+            const roomId = $(this).val();
+            const rackSelect = $('select[name="rack"]');
+            const shelfSelect = $('select[name="shelf"]');
+            
+            // Reset rack and shelf selects
+            rackSelect.html('<option value="">---------</option>');
+            shelfSelect.html('<option value="">---------</option>');
+            
+            if (roomId) {
+                // Get racks via AJAX
+                $.ajax({
+                    url: '/warehouse/api/racks/',
+                    data: {
+                        'room': roomId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        $.each(data, function(i, rack) {
+                            rackSelect.append($('<option></option>').attr('value', rack.id).text(rack.name));
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Dynamic filtering for shelves based on rack selection
+        $('select[name="rack"]').on('change', function() {
+            const rackId = $(this).val();
+            const shelfSelect = $('select[name="shelf"]');
+            
+            // Reset shelf select
+            shelfSelect.html('<option value="">---------</option>');
+            
+            if (rackId) {
+                // Get shelves via AJAX
+                $.ajax({
+                    url: '/warehouse/api/shelves/',
+                    data: {
+                        'rack': rackId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        $.each(data, function(i, shelf) {
+                            shelfSelect.append($('<option></option>').attr('value', shelf.id).text(shelf.number));
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
