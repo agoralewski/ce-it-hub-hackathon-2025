@@ -7,8 +7,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Function to dismiss alerts
     function setupAlertDismiss() {
-        // Auto-dismiss all non-danger alerts after 5 seconds
-        const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
+        // Auto-dismiss all alerts except danger and secondary after 5 seconds
+        const alerts = document.querySelectorAll('.alert:not(.alert-danger):not(.alert-secondary)');
         
         alerts.forEach(function(alert) {
             // Set timeout to close the alert
@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Remove from DOM after animation completes
                 setTimeout(function() {
-                    // If the alert is still in the DOM, remove it
                     if (alert.parentNode) {
                         alert.parentNode.removeChild(alert);
                     }

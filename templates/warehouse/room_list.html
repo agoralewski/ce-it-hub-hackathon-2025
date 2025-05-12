@@ -113,7 +113,8 @@
                             </div>
                         </div>
                         {% empty %}
-                        <div class="alert alert-info">
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             Brak regałów w tym pokoju.
                             <a href="{% url 'warehouse:rack_create' room.pk %}" class="alert-link">Dodaj pierwszy
                                 regał</a>.
@@ -125,10 +126,10 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="alert alert-info">
+        <tr>
             Brak pokoi w systemie.
             <a href="{% url 'warehouse:room_create' %}" class="alert-link">Dodaj pierwszy pokój</a>.
-        </div>
+        </tr>
         {% endif %}
     </div>
 </div>

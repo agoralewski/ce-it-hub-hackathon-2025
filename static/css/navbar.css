@@ -21,7 +21,8 @@
 
 /* Ensure proper contrast for navbar links */
 .navbar-dark .navbar-nav .nav-link {
-    color: var(--dark) !important; /* Use dark color for better visibility */
+    color: var(--dark) !important;
+    /* Use dark color for better visibility */
     padding-bottom: 0.5rem;
     border-bottom: 1px solid transparent;
     margin-bottom: -1px;
@@ -31,7 +32,8 @@
 /* Hover and active styles */
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link.active {
-    color: var(--primary) !important; /* Use primary color for hover/active states */
+    color: var(--primary) !important;
+    /* Use primary color for hover/active states */
     border-bottom: 1px solid var(--primary);
 }
 

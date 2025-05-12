@@ -62,7 +62,8 @@
                                 <p><strong>Regały:</strong> {{ room.rack_count }}</p>
                                 <p><strong>Półki:</strong> {{ room.shelf_count }}</p>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}" class="btn btn-outline-primary">
+                                    <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}"
+                                        class="btn btn-outline-primary">
                                         <i class="fas fa-search"></i> Zobacz przedmioty
                                     </a>
                                 </div>
@@ -71,8 +72,10 @@
                     </div>
                     {% empty %}
                     <div class="col-12">
-                        <div class="alert alert-info">
-                            Brak pokoi w systemie. {% if user.is_superuser %}<a href="{% url 'warehouse:room_create' %}">Dodaj pierwszy pokój</a>{% endif %}
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            Brak pokoi w systemie. {% if user.is_superuser %}<a
+                                href="{% url 'warehouse:room_create' %}">Dodaj pierwszy pokój</a>{% endif %}
                         </div>
                     </div>
                     {% endfor %}
