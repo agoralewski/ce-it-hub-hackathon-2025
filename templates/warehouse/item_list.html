@@ -124,13 +124,17 @@
                         <td>{{ assignment.item.manufacturer|default:"-" }}</td>
                         <td>
                             {% if assignment.item.expiration_date %}
-                                {% if assignment.item.expiration_date|date:"Y-m-d" <= today_date|date:"Y-m-d" %}
-                                    <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
-                                {% elif assignment.item.expiration_date|date:"Y-m-d" <= thirty_days_from_now|date:"Y-m-d" %}
-                                    <span class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
-                                {% else %}
-                                    <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
-                                {% endif %}
+                                {% with today_date|date:"Y-m-d" as today %}
+                                {% with thirty_days_from_now|date:"Y-m-d" as soon %}
+                                    {% if assignment.item.expiration_date|date:"Y-m-d" < today %}
+                                        <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
+                                    {% elif assignment.item.expiration_date|date:"Y-m-d" <= soon %}
+                                        <span class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
+                                    {% endif %}
+                                {% endwith %}
+                                {% endwith %}
                             {% else %}
                                 -
                             {% endif %}

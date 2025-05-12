@@ -101,6 +101,9 @@ def item_list(request):
 
     categories = Category.objects.all()
 
+    today_date = timezone.now().date()
+    thirty_days_from_now = today_date + timedelta(days=30)
+
     return render(
         request,
         "warehouse/item_list.html",
@@ -114,6 +117,8 @@ def item_list(request):
             "selected_rack": rack_id,
             "selected_shelf": shelf_id,
             "selected_category": category_id,
+            "today_date": today_date,
+            "thirty_days_from_now": thirty_days_from_now,
         },
     )
 
