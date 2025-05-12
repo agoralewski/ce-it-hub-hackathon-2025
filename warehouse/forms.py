@@ -10,6 +10,11 @@ class RoomForm(forms.ModelForm):
         model = Room
         fields = ["name"]
         widgets = {"name": forms.TextInput(attrs={"class": "form-control"})}
+        error_messages = {
+            "name": {
+                "unique": "Pokój o tej nazwie już istnieje. Proszę wybrać inną nazwę."
+            }
+        }
 
     def clean_name(self):
         name = self.cleaned_data.get("name", "")
@@ -17,23 +22,47 @@ class RoomForm(forms.ModelForm):
 
 
 class RackForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.room = kwargs.pop('room', None)
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = Rack
         fields = ["name"]
         widgets = {"name": forms.TextInput(attrs={"class": "form-control"})}
+        error_messages = {
+            "name": {
+                "unique": "Regał o tej nazwie już istnieje. Proszę wybrać inną nazwę."
+            }
+        }
 
     def clean_name(self):
-        name = self.cleaned_data.get("name", "")
-        if len(name) != 1 or not name.isalpha():
-            raise forms.ValidationError("The rack name must be a single letter.")
-        return name.upper()
+        name = self.cleaned_data.get("name").capitalize()
+        if self.room and Rack.objects.filter(name=name, room=self.room).exists():
+            raise forms.ValidationError("Regał o tej nazwie już istnieje w tym pokoju.")
+        return name
 
 
 class ShelfForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.rack = kwargs.pop('rack', None)
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = Shelf
         fields = ["number"]
         widgets = {"number": forms.NumberInput(attrs={"class": "form-control"})}
+        error_messages = {
+            "number": {
+                "unique": "Półka o tym numerze już istnieje w tym regale. Proszę wybrać inny numer."
+            }
+        }
+
+    def clean_number(self):
+        number = self.cleaned_data.get("number")
+        if self.rack and Shelf.objects.filter(number=number, rack=self.rack).exists():
+            raise forms.ValidationError("Półka o tym numerze już istnieje w tym regale.")
+        return number
 
 
 class CategoryForm(forms.ModelForm):
@@ -41,6 +70,15 @@ class CategoryForm(forms.ModelForm):
         model = Category
         fields = ["name"]
         widgets = {"name": forms.TextInput(attrs={"class": "form-control"})}
+        error_messages = {
+            "name": {
+                "unique": "Kategoria o tej nazwie już istnieje. Proszę wybrać inną nazwę."
+            }
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        return name.capitalize()
 
 
 class ItemForm(forms.ModelForm):
@@ -56,6 +94,10 @@ class ItemForm(forms.ModelForm):
             ),
             "note": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        return name.capitalize()
 
 
 class ItemShelfAssignmentForm(forms.Form):
@@ -189,7 +231,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
-        if User.objects.filter(username__iexact=username).exists():
+        if User.objects.filter(username__iexact(username).exists()):
             raise forms.ValidationError("Użytkownik o tej nazwie już istnieje.")
         return username
 

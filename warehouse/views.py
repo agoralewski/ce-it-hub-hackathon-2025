@@ -11,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils import timezone
+from django.db import IntegrityError
 
 from .models import Room, Rack, Shelf, Category, Item, ItemShelfAssignment
 from .forms import (
@@ -133,9 +134,12 @@ def room_create(request):
     if request.method == "POST":
         form = RoomForm(request.POST)
         if form.is_valid():
-            room = form.save()
-            messages.success(request, "Pokój został pomyślnie utworzony.")
-            return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
+            try:
+                room = form.save()
+                messages.success(request, "Pokój został pomyślnie utworzony.")
+                return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
+            except IntegrityError:
+                messages.error(request, "Pokój o tej nazwie już istnieje.")
     else:
         form = RoomForm()
 
@@ -193,15 +197,15 @@ def rack_create(request, room_id):
     room = get_object_or_404(Room, pk=room_id)
 
     if request.method == "POST":
-        form = RackForm(request.POST)
+        form = RackForm(request.POST, room=room)  # Pass room to the form
         if form.is_valid():
             rack = form.save(commit=False)
-            rack.room = room
+            rack.room = room  # Explicitly set the room
             rack.save()
             messages.success(request, "Regał został pomyślnie utworzony.")
             return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
     else:
-        form = RackForm()
+        form = RackForm(room=room)  # Pass room to the form
 
     return render(
         request,
@@ -261,15 +265,15 @@ def shelf_create(request, rack_id):
     rack = get_object_or_404(Rack, pk=rack_id)
 
     if request.method == "POST":
-        form = ShelfForm(request.POST)
+        form = ShelfForm(request.POST, rack=rack)  # Pass rack to the form
         if form.is_valid():
             shelf = form.save(commit=False)
-            shelf.rack = rack
+            shelf.rack = rack  # Explicitly set the rack
             shelf.save()
             messages.success(request, "Półka została pomyślnie utworzona.")
             return redirect("warehouse:shelf_detail", pk=shelf.pk)
     else:
-        form = ShelfForm()
+        form = ShelfForm(rack=rack)  # Pass rack to the form
 
     return render(
         request,
@@ -338,12 +342,14 @@ def category_create(request):
     if request.method == "POST":
         form = CategoryForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Kategoria została pomyślnie utworzona.")
-            return redirect("warehouse:category_list")
+            try:
+                form.save()
+                messages.success(request, "Kategoria została pomyślnie utworzona.")
+                return redirect("warehouse:category_list")
+            except IntegrityError:
+                messages.error(request, "Kategoria o tej nazwie już istnieje.")
     else:
         form = CategoryForm()
-
     return render(
         request,
         "warehouse/category_form.html",
