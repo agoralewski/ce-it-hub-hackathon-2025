@@ -1,0 +1,15 @@
+[project]
+name = "hackathon25"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.0,<6.0",
+    "django-widget-tweaks>=1.5.0",
+    "pillow>=10.0.0",
+    "python-dotenv>=1.0.0",
+    "qrcode>=7.0",
+    "reportlab>=4.0.0",
+    "xlsxwriter>=3.0",
+]
