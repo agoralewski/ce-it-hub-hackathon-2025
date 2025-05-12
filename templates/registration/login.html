@@ -13,7 +13,7 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-                    
+
                     {% for field in form %}
                     <div class="mb-3">
                         {% if field.name == 'username' %}
@@ -34,7 +34,7 @@
                         {% endif %}
                     </div>
                     {% endfor %}
-                    
+
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">Zaloguj się</button>
                     </div>

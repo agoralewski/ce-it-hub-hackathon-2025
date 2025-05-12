@@ -16,12 +16,12 @@
                 {% for room in rooms %}
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="heading{{ room.id }}">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ room.id }}" aria-expanded="true" aria-controls="collapse{{ room.id }}">
+                        <button class="accordion-button {% if not request.GET.new_room|slugify == room.id|slugify %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ room.id }}" aria-expanded="{% if request.GET.new_room|slugify == room.id|slugify %}true{% else %}false{% endif %}" aria-controls="collapse{{ room.id }}">
                             <span class="me-3"><i class="fas fa-warehouse"></i></span>
                             <strong>{{ room.name }}</strong>
                         </button>
                     </h2>
-                    <div id="collapse{{ room.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ room.id }}" data-bs-parent="#roomsAccordion">
+                    <div id="collapse{{ room.id }}" class="accordion-collapse collapse {% if request.GET.new_room|slugify == room.id|slugify %}show{% endif %}" aria-labelledby="heading{{ room.id }}" data-bs-parent="#roomsAccordion">
                         <div class="accordion-body">
                             <div class="d-flex justify-content-end mb-3">
                                 <div class="btn-group">

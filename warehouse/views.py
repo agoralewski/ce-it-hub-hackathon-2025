@@ -125,9 +125,9 @@ def room_create(request):
     if request.method == "POST":
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
+            room = form.save()
             messages.success(request, "Pokój został pomyślnie utworzony.")
-            return redirect("warehouse:room_list")
+            return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
     else:
         form = RoomForm()
 
@@ -191,7 +191,7 @@ def rack_create(request, room_id):
             rack.room = room
             rack.save()
             messages.success(request, "Regał został pomyślnie utworzony.")
-            return redirect("warehouse:room_list")
+            return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
     else:
         form = RackForm()
 
@@ -259,7 +259,7 @@ def shelf_create(request, rack_id):
             shelf.rack = rack
             shelf.save()
             messages.success(request, "Półka została pomyślnie utworzona.")
-            return redirect("warehouse:room_list")
+            return redirect("warehouse:shelf_detail", pk=shelf.pk)
     else:
         form = ShelfForm()
 
