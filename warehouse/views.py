@@ -35,27 +35,18 @@ def is_admin(user):
 def index(request):
     """Dashboard view"""
     rooms = Room.objects.all().annotate(
-        rack_count=Count("racks"), shelf_count=Count("racks__shelves")
+        rack_count=Count("racks"),
+        shelf_count=Count("racks__shelves"),
+        active_items=Count(
+            "racks__shelves__assignments",
+            filter=Q(racks__shelves__assignments__remove_date__isnull=True),
+        ),
     )
-
-    # Get active item assignments
-    active_items = ItemShelfAssignment.objects.filter(remove_date__isnull=True).count()
-
-    # Get expiring items (within next 30 days)
-    expiring_soon = ItemShelfAssignment.objects.filter(
-        remove_date__isnull=True,
-        item__expiration_date__isnull=False,
-        item__expiration_date__lte=datetime.now().date() + timedelta(days=30),
-    ).count()
 
     return render(
         request,
         "warehouse/index.html",
-        {
-            "rooms": rooms,
-            "active_items": active_items,
-            "expiring_soon": expiring_soon,
-        },
+        {"rooms": rooms},
     )
 
 

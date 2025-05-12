@@ -52,21 +52,31 @@
                 <h5 class="mb-0">Pokoje i regały</h5>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row row-cols-1 row-cols-md-3 g-4">
                     {% for room in rooms %}
-                    <div class="col-md-6 mb-4">
+                    <div class="col">
                         <div class="card h-100">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">{{ room.name }}</h5>
+                                <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}"
+                                    class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-search"></i> Zobacz przedmioty
+                                </a>
                             </div>
                             <div class="card-body">
-                                <p><strong>Regały:</strong> {{ room.rack_count }}</p>
-                                <p><strong>Półki:</strong> {{ room.shelf_count }}</p>
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}"
-                                        class="btn btn-outline-primary">
-                                        <i class="fas fa-search"></i> Zobacz przedmioty
-                                    </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="text-center">
+                                        <h6 class="text-muted">Regały</h6>
+                                        <p class="fs-4 mb-0">{{ room.rack_count }}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <h6 class="text-muted">Półki</h6>
+                                        <p class="fs-4 mb-0">{{ room.shelf_count }}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <h6 class="text-muted">Aktywne przedmioty</h6>
+                                        <p class="fs-4 mb-0">{{ room.active_items }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -84,6 +94,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 {% if user.is_superuser %}
