@@ -6,25 +6,58 @@
 <style>
     .filters-card {
         margin-bottom: 1rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
     }
     .filter-form .form-select {
         width: 100%;
         margin-bottom: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        color: #495057;
     }
-    
+    .filter-form .clear-filters-btn {
+        margin-top: 0.5rem;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+    .filter-form .clear-filters-btn:hover {
+        background-color: #c82333;
+    }
+
     @media (min-width: 768px) {
         .filter-form {
             display: flex;
             gap: 1rem;
+            align-items: center;
         }
         .filter-form .form-select {
             margin-bottom: 0;
         }
-        .filter-form .btn {
-            white-space: nowrap;
+        .filter-form .clear-filters-btn {
+            margin-top: 0;
         }
     }
+
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
+    }
+    .fade-in {
+        opacity: 1;
+        transition: opacity 0.3s ease-in;
+    }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 {% endblock %}
 
 {% block content %}
@@ -36,41 +69,37 @@
         <!-- Filters -->
         <div class="filters-card">
             <form method="get" action="{% url 'warehouse:item_list' %}" class="filter-form">
-                <select name="room" class="form-select">
-                    <option value="">Wszystkie pokoje</option>
+                <select name="room" class="form-select" data-placeholder="Pokój">
+                    <option value="">Pokój</option>
                     {% for room in rooms %}
                     <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
                     {% endfor %}
                 </select>
                 
-                <select name="rack" class="form-select">
-                    <option value="">Wszystkie regały</option>
+                <select name="rack" class="form-select" data-placeholder="Regał">
+                    <option value="">Regał</option>
                     {% for rack in racks %}
                     <option value="{{ rack.id }}" {% if selected_rack == rack.id|slugify %}selected{% endif %}>{{ rack.room.name }}.{{ rack.name }}</option>
                     {% endfor %}
                 </select>
                 
-                <select name="shelf" class="form-select">
-                    <option value="">Wszystkie półki</option>
+                <select name="shelf" class="form-select" data-placeholder="Półka">
+                    <option value="">Półka</option>
                     {% for shelf in shelves %}
                     <option value="{{ shelf.id }}" {% if selected_shelf == shelf.id|slugify %}selected{% endif %}>{{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}</option>
                     {% endfor %}
                 </select>
                 
-                <select name="category" class="form-select">
-                    <option value="">Wszystkie kategorie</option>
+                <select name="category" class="form-select" data-placeholder="Kategoria">
+                    <option value="">Kategoria</option>
                     {% for category in categories %}
                     <option value="{{ category.id }}" {% if selected_category == category.id|slugify %}selected{% endif %}>{{ category.name }}</option>
                     {% endfor %}
                 </select>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> Filtruj
+
+                <button class="clear-filters-btn" title="Wyczyść filtry">
+                    <i class="fas fa-trash"></i>
                 </button>
-                
-                <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-times"></i> Wyczyść
-                </a>
             </form>
         </div>
         
@@ -130,55 +159,33 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Dynamic filtering for racks based on room selection
-        $('select[name="room"]').on('change', function() {
-            const roomId = $(this).val();
-            const rackSelect = $('select[name="rack"]');
-            const shelfSelect = $('select[name="shelf"]');
-            
-            // Reset rack and shelf selects
-            rackSelect.html('<option value="">Wszystkie regały</option>');
-            shelfSelect.html('<option value="">Wszystkie półki</option>');
-            
-            if (roomId) {
-                // Filter racks by room
-                {% for rack in racks %}
-                if ('{{ rack.room.id }}' === roomId) {
-                    rackSelect.append(`<option value="{{ rack.id }}">{{ rack.room.name }}.{{ rack.name }}</option>`);
-                }
-                {% endfor %}
-            } else {
-                // Show all racks
-                {% for rack in racks %}
-                rackSelect.append(`<option value="{{ rack.id }}">{{ rack.room.name }}.{{ rack.name }}</option>`);
-                {% endfor %}
-            }
+        // Initialize Select2 for all dropdowns
+        $('.form-select').select2({
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
+            allowClear: true
         });
-        
-        // Dynamic filtering for shelves based on rack selection
-        $('select[name="rack"]').on('change', function() {
-            const rackId = $(this).val();
-            const shelfSelect = $('select[name="shelf"]');
-            
-            // Reset shelf select
-            shelfSelect.html('<option value="">Wszystkie półki</option>');
-            
-            if (rackId) {
-                // Filter shelves by rack
-                {% for shelf in shelves %}
-                if ('{{ shelf.rack.id }}' === rackId) {
-                    shelfSelect.append(`<option value="{{ shelf.id }}">{{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}</option>`);
-                }
-                {% endfor %}
-            } else {
-                // Show all shelves
-                {% for shelf in shelves %}
-                shelfSelect.append(`<option value="{{ shelf.id }}">{{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}</option>`);
-                {% endfor %}
-            }
+
+        // Automatically submit the form on change
+        $('.form-select').on('change', function() {
+            $('body').removeClass('fade-in').addClass('fade-out');
+            $(this).closest('form').submit();
         });
+
+        // Clear all filters
+        $('.clear-filters-btn').on('click', function(e) {
+            e.preventDefault();
+            $('body').removeClass('fade-in').addClass('fade-out');
+            $('.form-select').val(null).trigger('change');
+        });
+
+        // Add fade-in class on page load
+        $('body').addClass('fade-in');
     });
 </script>
 {% endblock %}
