@@ -87,6 +87,7 @@ def item_list(request):
         assignments = assignments.filter(
             item__expiration_date__isnull=False,
             item__expiration_date__lte=timezone.now().date() + timedelta(days=30),
+            item__expiration_date__gte=timezone.now().date(),  # Exclude expired items
         )
 
     # Apply 'expired' filter if provided
