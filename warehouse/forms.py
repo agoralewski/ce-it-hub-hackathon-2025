@@ -231,12 +231,12 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
-        if User.objects.filter(username__iexact(username).exists()):
+        if User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError("Użytkownik o tej nazwie już istnieje.")
         return username
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if email and User.objects.filter(email__iexact(email).exists()):
+        if email and User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("Użytkownik o tym adresie email już istnieje.")
         return email
