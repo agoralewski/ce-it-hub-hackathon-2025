@@ -19,9 +19,9 @@
     display: none !important;
 }
 
-/* Simple navbar link styling */
+/* Ensure proper contrast for navbar links */
 .navbar-dark .navbar-nav .nav-link {
-    color: #212529 !important;
+    color: var(--dark) !important; /* Use dark color for better visibility */
     padding-bottom: 0.5rem;
     border-bottom: 1px solid transparent;
     margin-bottom: -1px;
@@ -31,23 +31,23 @@
 /* Hover and active styles */
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link.active {
-    color: #d0242c !important;
-    border-bottom: 1px solid #d0242c;
+    color: var(--primary) !important; /* Use primary color for hover/active states */
+    border-bottom: 1px solid var(--primary);
 }
 
 /* Dropdown menu styling */
 .navbar-dark .dropdown-menu {
-    border: 1px solid rgba(208, 36, 44, 0.1);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--primary-light);
+    box-shadow: 0 0.5rem 1rem var(--shadow-light);
 }
 
 .navbar-dark .dropdown-item {
     padding: 0.5rem 1rem;
-    color: #212529;
+    color: var(--dark);
 }
 
 .navbar-dark .dropdown-item:hover,
 .navbar-dark .dropdown-item:focus {
-    background-color: rgba(208, 36, 44, 0.05);
-    color: #d0242c;
+    background-color: var(--primary-light);
+    color: var(--primary);
 }
