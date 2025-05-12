@@ -48,14 +48,14 @@
             <div class="card-body">
                 {% if assignments %}
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover table-vertical-centered">
                         <thead class="table-light">
                             <tr>
                                 <th>Nazwa</th>
                                 <th>Kategoria</th>
                                 <th>Producent</th>
                                 <th>Data ważności</th>
-                                <th>Akcje</th>
+                                <th class="action-cell">Akcje</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,7 +94,7 @@
                                         <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
-                                <td class="align-middle">
+                                <td class="align-middle action-cell">
                                     <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-outline-danger">
                                         <i class="fas fa-minus"></i> Weź z półki
                                     </a>

@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="card shadow mb-4">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-primary text-dark">
         <h5 class="mb-0">Generowanie kodów QR dla półek</h5>
     </div>
     <div class="card-body">
@@ -17,7 +17,7 @@
             {% csrf_token %}
             
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped table-hover table-vertical-centered">
                     <thead>
                         <tr>
                             <th>

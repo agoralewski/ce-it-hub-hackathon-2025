@@ -18,6 +18,10 @@
     box-shadow: 0 4px 12px rgba(208, 36, 44, 0.15) !important;
 }
 
+.text-dark {
+    color: var(--dark) !important;
+}
+
 .navbar-dark .navbar-nav .nav-link,
 .navbar-dark .navbar-brand {
     color: var(--dark) !important;
@@ -189,6 +193,18 @@ body {
 .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+/* General table styling with left alignment and vertical centering */
+.table td, 
+.table th {
+    text-align: left;
+    vertical-align: middle;
+}
+
+/* Action buttons and badges should be centered in their cells */
+.action-cell {
+    text-align: center !important;
 }
 
 /* Select2 customizations */
