@@ -1,13 +1,13 @@
 /* Main CSS file for KSP (Krwinkowy System Prezentowy) */
 
 :root {
-    --primary: #d0242c;
-    --secondary: #6c757d;
+    --primary: #b83847;
+    --secondary: #6f6f6f;
     --success: #198754;
-    --danger: #dc3545;
+    --danger: #b83847;
     --warning: #ffc107;
     --info: #0dcaf0;
-    --light: #ffffff;
+    --light: #f9f9f9;
     --dark: #212529;
     --primary-shadow: rgba(208, 36, 44, 0.15);
     --primary-light: rgba(208, 36, 44, 0.05);
@@ -639,4 +639,33 @@ select:focus,
     color: var(--dark) !important;
     transform: scale(1.02);
     transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Adjust button layout for PC on landing page */
+@media (min-width: 769px) {
+    .landing-page .btn {
+        flex-direction: column;
+        justify-content: center;
+        font-size: 1.2rem;
+        padding: 1.5rem;
+        height: 150px;
+        /* Ensures all buttons have the same height */
+    }
+
+    .landing-page .btn i {
+        margin-bottom: 0.8rem;
+        margin-right: 0;
+        font-size: 1.5rem;
+    }
+}
+
+/* Adjust height for admin-buttons to make them taller */
+.admin-buttons .btn {
+    height: 4rem;
+    /* Increased height for better visibility */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
 }

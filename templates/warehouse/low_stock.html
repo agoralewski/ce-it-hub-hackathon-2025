@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Niski stan magazynowy - KSP{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Kategorie z niskim stanem magazynowym</h5>
+    </div>
+    <div class="card-body">
+        {% if low_stock_categories %}
+        <ul class="list-group">
+            {% for category in low_stock_categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ category.name }}
+                <span class="badge bg-danger rounded-pill">{{ category.active_items }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">Brak kategorii z niskim stanem magazynowym.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

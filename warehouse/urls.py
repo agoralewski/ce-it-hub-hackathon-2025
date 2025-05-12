@@ -62,4 +62,6 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     path("profile/change-password/", views.change_password, name="change_password"),
     path("logout/", views.custom_logout, name="custom_logout"),
+    # Low stock view
+    path("low_stock/", views.low_stock, name="low_stock"),
 ]

@@ -89,6 +89,14 @@ def item_list(request):
             item__expiration_date__lte=timezone.now().date() + timedelta(days=30),
         )
 
+    # Apply 'expired' filter if provided
+    expired = request.GET.get("filter") == "expired"
+    if expired:
+        assignments = assignments.filter(
+            item__expiration_date__isnull=False,
+            item__expiration_date__lt=timezone.now().date(),
+        )
+
     # Get filter options
     rooms = Room.objects.all()
     racks = Rack.objects.all()
@@ -1118,3 +1126,18 @@ def register(request):
         form = CustomUserCreationForm()
 
     return render(request, "registration/register.html", {"form": form})
+
+
+@login_required
+def low_stock(request):
+    """View for categories with low stock"""
+    low_stock_categories = (
+        Category.objects.annotate(active_items=Count('items__assignments', filter=Q(items__assignments__remove_date__isnull=True)))
+        .filter(active_items__lt=10)
+    )
+
+    return render(
+        request,
+        "warehouse/low_stock.html",
+        {"low_stock_categories": low_stock_categories},
+    )
