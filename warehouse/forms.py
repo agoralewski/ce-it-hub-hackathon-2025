@@ -11,12 +11,22 @@ class RoomForm(forms.ModelForm):
         fields = ["name"]
         widgets = {"name": forms.TextInput(attrs={"class": "form-control"})}
 
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        return name.capitalize()
+
 
 class RackForm(forms.ModelForm):
     class Meta:
         model = Rack
         fields = ["name"]
         widgets = {"name": forms.TextInput(attrs={"class": "form-control"})}
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        if len(name) != 1 or not name.isalpha():
+            raise forms.ValidationError("The rack name must be a single letter.")
+        return name.upper()
 
 
 class ShelfForm(forms.ModelForm):
@@ -185,6 +195,6 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if email and User.objects.filter(email__iexact=email).exists():
+        if email and User.objects.filter(email__iexact(email).exists()):
             raise forms.ValidationError("Użytkownik o tym adresie email już istnieje.")
         return email
