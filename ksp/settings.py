@@ -166,3 +166,9 @@ else:
     EMAIL_USE_TLS = get_bool_env_variable('EMAIL_USE_TLS', True)
     EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER', 'fundacja@kwrinka.pl')
     EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', '')
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'warehouse.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

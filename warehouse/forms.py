@@ -153,3 +153,37 @@ class ExportForm(forms.Form):
             self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id)
         else:
             self.fields['shelf'].queryset = Shelf.objects.none()
+
+
+class CustomUserCreationForm(UserCreationForm):
+    """Custom form for user registration with optional email"""
+    email = forms.EmailField(
+        required=False, 
+        widget=forms.EmailInput(attrs={'class': 'form-control'}),
+        help_text='Opcjonalny. Wprowadź adres email, aby móc się zalogować używając go zamiast nazwy użytkownika.'
+    )
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add bootstrap classes to password fields
+        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+        
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError('Użytkownik o tej nazwie już istnieje.')
+        return username
+        
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
+        return email

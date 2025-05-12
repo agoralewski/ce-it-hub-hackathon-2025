@@ -19,7 +19,7 @@ from django.conf import settings
 from .models import Room, Rack, Shelf, Category, Item, ItemShelfAssignment
 from .forms import (
     RoomForm, RackForm, ShelfForm, CategoryForm, ItemForm, 
-    ItemShelfAssignmentForm, ExportForm
+    ItemShelfAssignmentForm, ExportForm, CustomUserCreationForm
 )
 
 
@@ -1027,3 +1027,17 @@ def custom_logout(request):
     logout(request)
     messages.success(request, 'Zostałeś pomyślnie wylogowany.')
     return redirect('login')
+
+# Authentication views
+def register(request):
+    """Registration view for new users"""
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.')
+            return redirect('login')
+    else:
+        form = CustomUserCreationForm()
+    
+    return render(request, 'registration/register.html', {'form': form})
