@@ -59,11 +59,11 @@
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
                                         <div class="me-2">
-                                            {% if assignment.item.category.name == "Elektronika" %}
+                                            {% if assignment.item.category and assignment.item.category.name == "Elektronika" %}
                                             <i class="fas fa-laptop text-info"></i>
-                                            {% elif assignment.item.category.name == "Żywność" %}
+                                            {% elif assignment.item.category and assignment.item.category.name == "Żywność" %}
                                             <i class="fas fa-utensils text-success"></i>
-                                            {% elif assignment.item.category.name == "Meble" %}
+                                            {% elif assignment.item.category and assignment.item.category.name == "Meble" %}
                                             <i class="fas fa-chair text-warning"></i>
                                             {% else %}
                                             <i class="fas fa-box text-secondary"></i>
@@ -73,23 +73,21 @@
                                     </div>
                                 </td>
                                 <td class="align-middle">
-                                    <span class="badge bg-light text-dark rounded-pill">{{ assignment.item.category.name
-                                        }}</span>
+                                    <span class="badge bg-light text-dark rounded-pill">{{ assignment.item.category.name|default:"Brak kategorii" }}</span>
                                 </td>
                                 <td class="align-middle">{{ assignment.item.manufacturer|default:"-" }}</td>
                                 <td class="align-middle">
                                     {% if assignment.item.expiration_date %}
-                                    {% if assignment.item.expiration_date|date:"Y-m-d" <= today_date|date:"Y-m-d" %}
-                                        <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
-                                        {% elif assignment.item.expiration_date|date:"Y-m-d" <=
-                                            thirty_days_from_now|date:"Y-m-d" %} <span class="badge bg-warning">{{
-                                            assignment.item.expiration_date }}</span>
-                                            {% else %}
-                                            <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
-                                            {% endif %}
-                                            {% else %}
-                                            <span class="text-muted">-</span>
-                                            {% endif %}
+                                    {% if assignment.item.expiration_date <= today_date %}
+                                        <span class="badge bg-danger">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                    {% elif assignment.item.expiration_date <= thirty_days_from_now %}
+                                        <span class="badge bg-warning">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
                                 <td class="align-middle">
                                     <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
