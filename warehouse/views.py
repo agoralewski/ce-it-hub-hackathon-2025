@@ -1131,10 +1131,31 @@ def register(request):
 @login_required
 def low_stock(request):
     """View for categories with low stock"""
-    low_stock_categories = (
-        Category.objects.annotate(active_items=Count('items__assignments', filter=Q(items__assignments__remove_date__isnull=True)))
-        .filter(active_items__lt=10)
-    )
+    categories = Category.objects.annotate(
+        active_items=Count('items__assignments', filter=Q(items__assignments__remove_date__isnull=True))
+    ).filter(active_items__lt=10)
+
+    low_stock_categories = []
+    for category in categories:
+        locations = (
+            ItemShelfAssignment.objects.filter(
+                item__category=category, remove_date__isnull=True
+            )
+            .select_related('shelf__rack__room')
+        )
+        location_data = [
+            {
+                "id": assignment.shelf.id,
+                "full_location": assignment.shelf.full_location,
+                "path": reverse("warehouse:shelf_detail", kwargs={"pk": assignment.shelf.id})
+            }
+            for assignment in locations
+        ]
+        low_stock_categories.append({
+            'name': category.name,
+            'active_items': category.active_items,
+            'locations': location_data,
+        })
 
     return render(
         request,

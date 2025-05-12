@@ -19,6 +19,7 @@
 /* Use white as main color with red accents (updated) */
 .bg-primary {
     background-color: var(--light) !important;
+    color: var(--dark) !important;
     /* Use light background for better contrast */
     border-bottom: 3px solid var(--primary) !important;
     box-shadow: 0 4px 12px var(--primary-shadow) !important;
@@ -42,6 +43,7 @@
     background-color: var(--primary) !important;
     border-color: var(--primary) !important;
     transition: background-color 0.2s ease, transform 0.1s ease;
+    text-transform: none;
 }
 
 .btn-primary:hover {
@@ -250,6 +252,7 @@ body {
     font-weight: 600;
     padding: 0.35em 0.65em;
 }
+
 
 /* Custom admin buttons */
 .admin-button {
@@ -668,4 +671,21 @@ select:focus,
     justify-content: center;
     padding: 0.5rem 1rem;
     font-size: 1rem;
+}
+
+.card-text a {
+    display: inline-block;
+    margin: 0.2rem;
+    padding: 0.3rem 0.5rem;
+    background-color: var(--primary-muted);
+    color: var(--primary);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.card-text a:hover {
+    background-color: var(--primary);
+    color: white;
 }
