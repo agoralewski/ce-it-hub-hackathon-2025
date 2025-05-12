@@ -629,3 +629,14 @@ select:focus,
         height: auto !important;
     }
 }
+
+/* Add consistent hover effect for all buttons */
+.btn-primary:hover,
+.btn-warning:hover,
+.btn-info:hover,
+.btn-secondary:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--dark) !important;
+    transform: scale(1.02);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}

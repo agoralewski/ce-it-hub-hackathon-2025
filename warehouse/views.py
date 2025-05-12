@@ -80,6 +80,14 @@ def item_list(request):
     if category_id:
         assignments = assignments.filter(item__category_id=category_id)
 
+    # Apply 'expiring_soon' filter if provided
+    expiring_soon = request.GET.get("filter") == "expiring_soon"
+    if expiring_soon:
+        assignments = assignments.filter(
+            item__expiration_date__isnull=False,
+            item__expiration_date__lte=timezone.now().date() + timedelta(days=30),
+        )
+
     # Get filter options
     rooms = Room.objects.all()
     racks = Rack.objects.all()
