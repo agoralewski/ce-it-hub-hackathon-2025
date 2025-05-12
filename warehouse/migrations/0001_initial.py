@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,66 +14,169 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
             ],
             options={
-                'verbose_name_plural': 'Categories',
+                "verbose_name_plural": "Categories",
             },
         ),
         migrations.CreateModel(
-            name='Room',
+            name="Room",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Item',
+            name="Item",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('manufacturer', models.CharField(blank=True, max_length=255, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('note', models.TextField(blank=True, null=True)),
-                ('is_gifted', models.BooleanField(default=False)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='items', to='warehouse.category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "manufacturer",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                ("note", models.TextField(blank=True, null=True)),
+                ("is_gifted", models.BooleanField(default=False)),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="items",
+                        to="warehouse.category",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Rack',
+            name="Rack",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=1)),
-                ('room', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='racks', to='warehouse.room')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=1)),
+                (
+                    "room",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="racks",
+                        to="warehouse.room",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('name', 'room')},
+                "unique_together": {("name", "room")},
             },
         ),
         migrations.CreateModel(
-            name='Shelf',
+            name="Shelf",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.PositiveIntegerField()),
-                ('rack', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shelves', to='warehouse.rack')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("number", models.PositiveIntegerField()),
+                (
+                    "rack",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="shelves",
+                        to="warehouse.rack",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('number', 'rack')},
+                "unique_together": {("number", "rack")},
             },
         ),
         migrations.CreateModel(
-            name='ItemShelfAssignment',
+            name="ItemShelfAssignment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('add_date', models.DateTimeField(auto_now_add=True)),
-                ('remove_date', models.DateTimeField(blank=True, null=True)),
-                ('added_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='added_items', to=settings.AUTH_USER_MODEL)),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assignments', to='warehouse.item')),
-                ('removed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='removed_items', to=settings.AUTH_USER_MODEL)),
-                ('shelf', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assignments', to='warehouse.shelf')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("add_date", models.DateTimeField(auto_now_add=True)),
+                ("remove_date", models.DateTimeField(blank=True, null=True)),
+                (
+                    "added_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="added_items",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "item",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="assignments",
+                        to="warehouse.item",
+                    ),
+                ),
+                (
+                    "removed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="removed_items",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "shelf",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="assignments",
+                        to="warehouse.shelf",
+                    ),
+                ),
             ],
         ),
     ]
