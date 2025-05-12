@@ -1,0 +1,18 @@
+- user with no email should be able to add email
+- what if the server is connected via ethernet and not wifi? How to connect mobile devices?
+- the landing page should have a prominent scan qr code button that leads to the shelf's item mgmt page.
+- lista przedmiotow tab should also have a button to add an item to a location
+- handle quantity addition instead of always adding 1 item
+- add all needed filters to list view
+- when removing items, one should be able to specify a removal quantity that gets subtracted from current quantity
+- feature to stop current assignment without deleting items
+- UI log of removals/additions for admins to inspect/export
+- fix excel export
+- fix reset password flow
+- shelf/rack sorting
+- email notification for nearly expired
+- search for item by name
+- dockerization for deployment
+- english language support
+- table view for mobile devices
+- manufacturer textbox should have a visible (opcjionalne) attribute like expiration date and notes
