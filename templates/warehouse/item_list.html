@@ -6,6 +6,24 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 <link rel="stylesheet" href="{% static 'css/filters.css' %}">
+<style>
+    .btn-add-item, .btn-remove-item {
+        border: 1px solid #adb5bd; /* grey outline */
+        background: #fff;
+        color: #212529;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-add-item:hover, .btn-add-item:focus {
+        background: #198754; /* Bootstrap green */
+        color: #fff;
+        border-color: #198754;
+    }
+    .btn-remove-item:hover, .btn-remove-item:focus {
+        background: #dc3545; /* Bootstrap red */
+        color: #fff;
+        border-color: #dc3545;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -110,7 +128,7 @@
                         <th>Notatka</th>
                         <th>Data ważności</th>
                         <th>Lokalizacja</th>
-                        <th>Akcje</th>
+                        <th>Czynności</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,8 +161,11 @@
                             </a>
                         </td>
                         <td>
-                            <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-danger">
-                                <i class="fas fa-minus"></i> Pobierz
+                            <a href="{% url 'warehouse:add_item_to_shelf' assignment.shelf.pk %}?item_name={{ assignment.item.name|urlencode }}&category={{ assignment.item.category.pk }}&manufacturer={{ assignment.item.manufacturer|urlencode }}&notes={{ assignment.item.note|urlencode }}&expiration_date={{ assignment.item.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-add-item me-1">
+                                <i class="fas fa-plus"></i> Dodaj kolejny
+                            </a>
+                            <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-remove-item">
+                                <i class="fas fa-minus"></i> Wez z polki
                             </a>
                         </td>
                     </tr>

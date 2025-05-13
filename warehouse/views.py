@@ -494,7 +494,19 @@ def add_item_to_shelf(request, shelf_id):
             messages.success(request, f'{quantity} przedmiot(ów) zostało dodanych na półkę.')
             return redirect('warehouse:shelf_detail', pk=shelf_id)
     else:
-        form = ItemShelfAssignmentForm()
+        # Prepopulate form fields from query parameters if present
+        initial = {}
+        if 'item_name' in request.GET:
+            initial['item_name'] = request.GET.get('item_name', '')
+        if 'category' in request.GET:
+            initial['category'] = request.GET.get('category')
+        if 'manufacturer' in request.GET:
+            initial['manufacturer'] = request.GET.get('manufacturer', '')
+        if 'notes' in request.GET:
+            initial['notes'] = request.GET.get('notes', '')
+        if 'expiration_date' in request.GET:
+            initial['expiration_date'] = request.GET.get('expiration_date')
+        form = ItemShelfAssignmentForm(initial=initial)
 
     # Prepare context data for the form fields
     context = {'form': form, 'shelf': shelf, 'input_data': {}}
