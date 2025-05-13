@@ -474,25 +474,24 @@ def add_item_to_shelf(request, shelf_id):
                 if form.cleaned_data['manufacturer']
                 else None
             )
+            expiration_date = form.cleaned_data['expiration_date']
+            note = form.cleaned_data['notes']
+            quantity = form.cleaned_data['quantity']
 
-            # Always create a new item - this ensures each shelf assignment has its own item
-            item_data = {
-                'name': item_name,
-                'category': category,
-                'manufacturer': manufacturer,  # Only use what was explicitly entered in the form
-                'expiration_date': form.cleaned_data['expiration_date'],
-                'note': form.cleaned_data['notes'],
-            }
+            # Create the specified number of items and assignments
+            for _ in range(quantity):
+                item = Item.objects.create(
+                    name=item_name,
+                    category=category,
+                    manufacturer=manufacturer,
+                    expiration_date=expiration_date,
+                    note=note,
+                )
+                ItemShelfAssignment.objects.create(
+                    item=item, shelf=shelf, added_by=request.user
+                )
 
-            # Create a brand new item every time
-            item = Item.objects.create(**item_data)
-
-            # Create assignment
-            ItemShelfAssignment.objects.create(
-                item=item, shelf=shelf, added_by=request.user
-            )
-
-            messages.success(request, 'Przedmiot został pomyślnie dodany na półkę.')
+            messages.success(request, f'{quantity} przedmiot(ów) zostało dodanych na półkę.')
             return redirect('warehouse:shelf_detail', pk=shelf_id)
     else:
         form = ItemShelfAssignmentForm()
