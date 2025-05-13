@@ -3,6 +3,33 @@
 {% block title %}Strona główna - KSP{% endblock %}
 
 {% block content %}
+<!-- Scan QR Button (visible on mobile and tablets) -->
+<div class="row mb-3 scan-qr-btn-row" style="display: flex; justify-content: center;">
+    <div class="col-12 d-flex justify-content-center">
+        <button id="scan-qr-btn" class="scan-qr-btn" aria-label="Skanuj kod QR">
+            <span class="d-flex flex-column align-items-center justify-content-center">
+                <i class="fas fa-qrcode mb-2"></i>
+                <span class="scan-qr-label">Skanuj kod QR</span>
+            </span>
+        </button>
+    </div>
+</div>
+<!-- QR Scanner Modal -->
+<div class="modal fade" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="qrScannerModalLabel">Skanuj kod QR</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="qr-reader" style="width:100%"></div>
+        <div id="qr-reader-results" class="mt-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row mb-4 landing-page">
     <div class="col-md-12">
         <div class="card shadow">
@@ -142,4 +169,45 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- html5-qrcode library -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var scanBtn = document.getElementById('scan-qr-btn');
+        if (scanBtn) {
+            scanBtn.addEventListener('click', function() {
+                var qrModal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
+                qrModal.show();
+                startQRScanner();
+            });
+        }
+    });
+
+    function startQRScanner() {
+        const qrReader = document.getElementById('qr-reader');
+        qrReader.innerHTML = '';
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            qrCodeMessage => {
+                // Assume QR code contains shelf/item URL or ID
+                window.location.href = qrCodeMessage;
+                html5QrCode.stop();
+            },
+            errorMessage => {
+                // Optionally show scan errors
+            }
+        ).catch(err => {
+            document.getElementById('qr-reader-results').innerText = 'Błąd kamery: ' + err;
+        });
+        // Stop scanner on modal close
+        document.getElementById('qrScannerModal').addEventListener('hidden.bs.modal', function() {
+            html5QrCode.stop().catch(() => {});
+        }, { once: true });
+    }
+</script>
 {% endblock %}
