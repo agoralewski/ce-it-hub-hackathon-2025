@@ -41,7 +41,7 @@ def index(request):
             'racks__shelves__assignments',
             filter=Q(racks__shelves__assignments__remove_date__isnull=True),
         ),
-    )
+    ).order_by('name')  # Sort alphabetically by room name
 
     return render(
         request,
@@ -152,7 +152,7 @@ def item_list(request):
 @user_passes_test(is_admin)
 def room_list(request):
     """List of all rooms with their racks and shelves"""
-    rooms = Room.objects.all().prefetch_related('racks', 'racks__shelves')
+    rooms = Room.objects.all().order_by('name').prefetch_related('racks', 'racks__shelves')
     return render(request, 'warehouse/room_list.html', {'rooms': rooms})
 
 
@@ -360,7 +360,7 @@ def shelf_delete(request, pk):
 @user_passes_test(is_admin)
 def category_list(request):
     """List of all categories"""
-    categories = Category.objects.all()
+    categories = Category.objects.order_by('name')
     return render(request, 'warehouse/category_list.html', {'categories': categories})
 
 
