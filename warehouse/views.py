@@ -98,6 +98,9 @@ def item_list(request):
     shelves = Shelf.objects.all()
     if rack_id:
         shelves = shelves.filter(rack_id=rack_id)
+    elif room_id:
+        # Also filter shelves by room when only room is selected
+        shelves = shelves.filter(rack__room_id=room_id)
 
     categories = Category.objects.all()
 
@@ -998,22 +1001,46 @@ def autocomplete_categories(request):
 def get_racks(request):
     """AJAX view for getting racks by room"""
     room_id = request.GET.get('room')
+    # Return all racks, but add room_name to help with display
+    racks = Rack.objects.all().select_related('room')
+    
     if room_id:
-        racks = Rack.objects.filter(room_id=room_id)
-        return JsonResponse([{'id': r.id, 'name': str(r)} for r in racks], safe=False)
-    return JsonResponse([], safe=False)
+        # Filter by room if specified, but include needed properties
+        racks = racks.filter(room_id=room_id)
+    
+    rack_data = [
+        {
+            'id': r.id, 
+            'name': r.name, 
+            'room_id': r.room.id,
+            'room_name': r.room.name
+        } for r in racks
+    ]
+    
+    return JsonResponse(rack_data, safe=False)
 
 
 @login_required
 def get_shelves(request):
     """AJAX view for getting shelves by rack"""
     rack_id = request.GET.get('rack')
+    shelves = Shelf.objects.all().select_related('rack', 'rack__room')
+    
     if rack_id:
-        shelves = Shelf.objects.filter(rack_id=rack_id)
-        return JsonResponse(
-            [{'id': s.id, 'number': s.number} for s in shelves], safe=False
-        )
-    return JsonResponse([], safe=False)
+        # Filter by rack if specified
+        shelves = shelves.filter(rack_id=rack_id)
+    
+    shelf_data = [
+        {
+            'id': s.id, 
+            'number': s.number,
+            'rack_id': s.rack.id,
+            'room_id': s.rack.room.id,
+            'full_location': s.full_location
+        } for s in shelves
+    ]
+    
+    return JsonResponse(shelf_data, safe=False)
 
 
 @login_required
@@ -1024,7 +1051,7 @@ def autocomplete_items(request):
     # Get distinct item names only, not full objects
     if query:
         # Filter by the query but only get distinct names
-        items = Item.objects.filter(name__icontains=query).values('name').distinct()
+        items = Item.objects.filter(name__icontains(query).values('name').distinct())
     else:
         # For empty queries, get all distinct names
         items = Item.objects.values('name').distinct()
