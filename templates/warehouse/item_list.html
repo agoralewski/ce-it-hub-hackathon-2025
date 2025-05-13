@@ -11,6 +11,7 @@
         border: 1px solid #dee2e6;
         border-radius: 0.25rem;
     }
+
     .filter-form .form-select {
         width: 100%;
         margin-bottom: 0.5rem;
@@ -20,6 +21,7 @@
         font-size: 1rem;
         color: #495057;
     }
+
     .filter-form .clear-filters-btn {
         margin-top: 0.5rem;
         background-color: #dc3545;
@@ -30,6 +32,7 @@
         border-radius: 0.25rem;
         cursor: pointer;
     }
+
     .filter-form .clear-filters-btn:hover {
         background-color: #c82333;
     }
@@ -40,9 +43,11 @@
             gap: 1rem;
             align-items: center;
         }
+
         .filter-form .form-select {
             margin-bottom: 0;
         }
+
         .filter-form .clear-filters-btn {
             margin-top: 0;
         }
@@ -52,6 +57,7 @@
         opacity: 0;
         transition: opacity 0.3s ease-out;
     }
+
     .fade-in {
         opacity: 1;
         transition: opacity 0.3s ease-in;
@@ -69,31 +75,36 @@
         <!-- Filters -->
         <div class="filters-card">
             <form method="get" action="{% url 'warehouse:item_list' %}" class="filter-form">
-                <select name="room" class="form-select" data-placeholder="Pokój">
+                <select name="room" class="form-select" data-placeholder="Pokój" id="room-filter">
                     <option value="">Pokój</option>
                     {% for room in rooms %}
-                    <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
+                    <option value="{{ room.id }}" {% if selected_room==room.id|slugify %}selected{% endif %}>{{
+                        room.name }}</option>
                     {% endfor %}
                 </select>
-                
-                <select name="rack" class="form-select" data-placeholder="Regał">
+
+                <select name="rack" class="form-select" data-placeholder="Regał" id="rack-filter">
                     <option value="">Regał</option>
                     {% for rack in racks %}
-                    <option value="{{ rack.id }}" {% if selected_rack == rack.id|slugify %}selected{% endif %}>{{ rack.room.name }}.{{ rack.name }}</option>
+                    <option value="{{ rack.id }}" {% if selected_rack==rack.id|slugify %}selected{% endif %}
+                        data-room="{{ rack.room.id }}">{{ rack.room.name }}.{{ rack.name }}</option>
                     {% endfor %}
                 </select>
-                
-                <select name="shelf" class="form-select" data-placeholder="Półka">
+
+                <select name="shelf" class="form-select" data-placeholder="Półka" id="shelf-filter">
                     <option value="">Półka</option>
                     {% for shelf in shelves %}
-                    <option value="{{ shelf.id }}" {% if selected_shelf == shelf.id|slugify %}selected{% endif %}>{{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}</option>
+                    <option value="{{ shelf.id }}" {% if selected_shelf==shelf.id|slugify %}selected{% endif %}
+                        data-rack="{{ shelf.rack.id }}" data-room="{{ shelf.rack.room.id }}">{{ shelf.rack.room.name
+                        }}.{{ shelf.rack.name }}.{{ shelf.number }}</option>
                     {% endfor %}
                 </select>
-                
+
                 <select name="category" class="form-select" data-placeholder="Kategoria">
                     <option value="">Kategoria</option>
                     {% for category in categories %}
-                    <option value="{{ category.id }}" {% if selected_category == category.id|slugify %}selected{% endif %}>{{ category.name }}</option>
+                    <option value="{{ category.id }}" {% if selected_category==category.id|slugify %}selected{% endif
+                        %}>{{ category.name }}</option>
                     {% endfor %}
                 </select>
 
@@ -102,7 +113,7 @@
                 </button>
             </form>
         </div>
-        
+
         <!-- Items table -->
         <div class="table-responsive">
             <table class="table table-striped table-hover">
@@ -124,20 +135,20 @@
                         <td>{{ assignment.item.manufacturer|default:"-" }}</td>
                         <td>
                             {% if assignment.item.expiration_date %}
-                                {% with today_date|date:"Y-m-d" as today %}
-                                {% with thirty_days_from_now|date:"Y-m-d" as soon %}
-                                    {% if assignment.item.expiration_date|date:"Y-m-d" < today %}
-                                        <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
-                                    {% elif assignment.item.expiration_date|date:"Y-m-d" <= soon %}
-                                        <span class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
+                            {% with today_date|date:"Y-m-d" as today %}
+                            {% with thirty_days_from_now|date:"Y-m-d" as soon %}
+                            {% if assignment.item.expiration_date|date:"Y-m-d" < today %} <span class="badge bg-danger">
+                                {{ assignment.item.expiration_date }}</span>
+                                {% elif assignment.item.expiration_date|date:"Y-m-d" <= soon %} <span
+                                    class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
+                                    <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
                                     {% endif %}
-                                {% endwith %}
-                                {% endwith %}
-                            {% else %}
-                                -
-                            {% endif %}
+                                    {% endwith %}
+                                    {% endwith %}
+                                    {% else %}
+                                    -
+                                    {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'warehouse:shelf_detail' assignment.shelf.pk %}">
@@ -145,7 +156,8 @@
                             </a>
                         </td>
                         <td>
-                            <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-danger">
+                            <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
+                                class="btn btn-sm btn-danger">
                                 <i class="fas fa-minus"></i> Pobierz
                             </a>
                         </td>
@@ -166,23 +178,118 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize Select2 for all dropdowns
         $('.form-select').select2({
-            placeholder: function() {
+            placeholder: function () {
                 return $(this).data('placeholder');
             },
             allowClear: true
         });
 
+        // Handle filter dependencies
+        function updateFilters(changedFilterId) {
+            let roomId = $('#room-filter').val();
+            let rackId = $('#rack-filter').val();
+            let shelfId = $('#shelf-filter').val();
+
+            // If room changes
+            if (changedFilterId === 'room-filter' && roomId) {
+                // Filter rack options
+                $('#rack-filter option').each(function () {
+                    if ($(this).val() === '' || $(this).data('room') == roomId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Filter shelf options
+                $('#shelf-filter option').each(function () {
+                    if ($(this).val() === '' || $(this).data('room') == roomId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+            }
+
+            // If rack changes
+            if (changedFilterId === 'rack-filter' && rackId) {
+                // Filter shelf options
+                $('#shelf-filter option').each(function () {
+                    if ($(this).val() === '' || $(this).data('rack') == rackId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Filter room options - only show the rack's room
+                $('#room-filter option').each(function () {
+                    let rackRoomId = $('#rack-filter option[value="' + rackId + '"]').data('room');
+                    if ($(this).val() === '' || $(this).val() == rackRoomId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+            }
+
+            // If shelf changes
+            if (changedFilterId === 'shelf-filter' && shelfId) {
+                // Filter rack options - only show the shelf's rack
+                $('#rack-filter option').each(function () {
+                    let shelfRackId = $('#shelf-filter option[value="' + shelfId + '"]').data('rack');
+                    if ($(this).val() === '' || $(this).val() == shelfRackId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+
+                // Filter room options - only show the shelf's room
+                $('#room-filter option').each(function () {
+                    let shelfRoomId = $('#shelf-filter option[value="' + shelfId + '"]').data('room');
+                    if ($(this).val() === '' || $(this).val() == shelfRoomId) {
+                        $(this).prop('disabled', false);
+                    } else {
+                        $(this).prop('disabled', true);
+                    }
+                });
+            }
+
+            // Update Select2 to reflect the disabled options
+            $('.form-select').each(function () {
+                $(this).select2('destroy').select2({
+                    placeholder: function () {
+                        return $(this).data('placeholder');
+                    },
+                    allowClear: true
+                });
+            });
+        }
+
+        // Initialize filters on page load based on any already selected values
+        if ($('#room-filter').val()) {
+            updateFilters('room-filter');
+        }
+        if ($('#rack-filter').val()) {
+            updateFilters('rack-filter');
+        }
+        if ($('#shelf-filter').val()) {
+            updateFilters('shelf-filter');
+        }
+
         // Automatically submit the form on change
-        $('.form-select').on('change', function() {
+        $('.form-select').on('change', function () {
+            updateFilters($(this).attr('id'));
             $('body').removeClass('fade-in').addClass('fade-out');
             $(this).closest('form').submit();
         });
 
         // Clear all filters
-        $('.clear-filters-btn').on('click', function(e) {
+        $('.clear-filters-btn').on('click', function (e) {
             e.preventDefault();
             $('body').removeClass('fade-in').addClass('fade-out');
             $('.form-select').val(null).trigger('change');
