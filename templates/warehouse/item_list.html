@@ -107,6 +107,7 @@
                         <th>Nazwa</th>
                         <th>Kategoria</th>
                         <th>Producent</th>
+                        <th>Notatka</th>
                         <th>Data ważności</th>
                         <th>Lokalizacja</th>
                         <th>Akcje</th>
@@ -118,6 +119,7 @@
                         <td>{{ assignment.item.name }}</td>
                         <td>{{ assignment.item.category.name }}</td>
                         <td>{{ assignment.item.manufacturer|default:"-" }}</td>
+                        <td>{{ assignment.item.note|default:"-" }}</td>
                         <td>
                             {% if assignment.item.expiration_date %}
                                 {% with today_date|date:"Y-m-d" as today %}
@@ -148,7 +150,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">Brak przedmiotów spełniających kryteria.</td>
+                        <td colspan="7" class="text-center">Brak przedmiotów spełniających kryteria.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
