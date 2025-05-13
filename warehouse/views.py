@@ -1,6 +1,6 @@
 import io
 import xlsxwriter
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -35,18 +35,18 @@ def is_admin(user):
 def index(request):
     """Dashboard view"""
     rooms = Room.objects.all().annotate(
-        rack_count=Count("racks"),
-        shelf_count=Count("racks__shelves"),
+        rack_count=Count('racks'),
+        shelf_count=Count('racks__shelves'),
         active_items=Count(
-            "racks__shelves__assignments",
+            'racks__shelves__assignments',
             filter=Q(racks__shelves__assignments__remove_date__isnull=True),
         ),
     )
 
     return render(
         request,
-        "warehouse/index.html",
-        {"rooms": rooms},
+        'warehouse/index.html',
+        {'rooms': rooms},
     )
 
 
@@ -55,13 +55,13 @@ def item_list(request):
     """List of all active items in warehouse"""
     assignments = ItemShelfAssignment.objects.filter(
         remove_date__isnull=True
-    ).select_related("item", "shelf", "shelf__rack", "shelf__rack__room")
+    ).select_related('item', 'shelf', 'shelf__rack', 'shelf__rack__room')
 
     # Apply filters if provided
-    room_id = request.GET.get("room")
-    rack_id = request.GET.get("rack")
-    shelf_id = request.GET.get("shelf")
-    category_id = request.GET.get("category")
+    room_id = request.GET.get('room')
+    rack_id = request.GET.get('rack')
+    shelf_id = request.GET.get('shelf')
+    category_id = request.GET.get('category')
 
     if room_id:
         assignments = assignments.filter(shelf__rack__room_id=room_id)
@@ -73,7 +73,7 @@ def item_list(request):
         assignments = assignments.filter(item__category_id=category_id)
 
     # Apply 'expiring_soon' filter if provided
-    expiring_soon = request.GET.get("filter") == "expiring_soon"
+    expiring_soon = request.GET.get('filter') == 'expiring_soon'
     if expiring_soon:
         assignments = assignments.filter(
             item__expiration_date__isnull=False,
@@ -82,7 +82,7 @@ def item_list(request):
         )
 
     # Apply 'expired' filter if provided
-    expired = request.GET.get("filter") == "expired"
+    expired = request.GET.get('filter') == 'expired'
     if expired:
         assignments = assignments.filter(
             item__expiration_date__isnull=False,
@@ -106,19 +106,19 @@ def item_list(request):
 
     return render(
         request,
-        "warehouse/item_list.html",
+        'warehouse/item_list.html',
         {
-            "assignments": assignments,
-            "rooms": rooms,
-            "racks": racks,
-            "shelves": shelves,
-            "categories": categories,
-            "selected_room": room_id,
-            "selected_rack": rack_id,
-            "selected_shelf": shelf_id,
-            "selected_category": category_id,
-            "today_date": today_date,
-            "thirty_days_from_now": thirty_days_from_now,
+            'assignments': assignments,
+            'rooms': rooms,
+            'racks': racks,
+            'shelves': shelves,
+            'categories': categories,
+            'selected_room': room_id,
+            'selected_rack': rack_id,
+            'selected_shelf': shelf_id,
+            'selected_category': category_id,
+            'today_date': today_date,
+            'thirty_days_from_now': thirty_days_from_now,
         },
     )
 
@@ -128,28 +128,28 @@ def item_list(request):
 @user_passes_test(is_admin)
 def room_list(request):
     """List of all rooms with their racks and shelves"""
-    rooms = Room.objects.all().prefetch_related("racks", "racks__shelves")
-    return render(request, "warehouse/room_list.html", {"rooms": rooms})
+    rooms = Room.objects.all().prefetch_related('racks', 'racks__shelves')
+    return render(request, 'warehouse/room_list.html', {'rooms': rooms})
 
 
 @login_required
 @user_passes_test(is_admin)
 def room_create(request):
     """Create a new room"""
-    if request.method == "POST":
+    if request.method == 'POST':
         form = RoomForm(request.POST)
         if form.is_valid():
             try:
                 room = form.save()
-                messages.success(request, "Pokój został pomyślnie utworzony.")
-                return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
+                messages.success(request, 'Pokój został pomyślnie utworzony.')
+                return redirect(f'{reverse("warehouse:room_list")}?new_room={room.id}')
             except IntegrityError:
-                messages.error(request, "Pokój o tej nazwie już istnieje.")
+                messages.error(request, 'Pokój o tej nazwie już istnieje.')
     else:
         form = RoomForm()
 
     return render(
-        request, "warehouse/room_form.html", {"form": form, "title": "Create Room"}
+        request, 'warehouse/room_form.html', {'form': form, 'title': 'Create Room'}
     )
 
 
@@ -159,17 +159,17 @@ def room_update(request, pk):
     """Update an existing room"""
     room = get_object_or_404(Room, pk=pk)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
         if form.is_valid():
             form.save()
-            messages.success(request, "Pokój został pomyślnie zaktualizowany.")
-            return redirect("warehouse:room_list")
+            messages.success(request, 'Pokój został pomyślnie zaktualizowany.')
+            return redirect('warehouse:room_list')
     else:
         form = RoomForm(instance=room)
 
     return render(
-        request, "warehouse/room_form.html", {"form": form, "title": "Update Room"}
+        request, 'warehouse/room_form.html', {'form': form, 'title': 'Update Room'}
     )
 
 
@@ -184,14 +184,14 @@ def room_delete(request, pk):
         shelf__rack__room=room, remove_date__isnull=True
     ).exists()
 
-    if request.method == "POST":
-        if "confirm" in request.POST:
+    if request.method == 'POST':
+        if 'confirm' in request.POST:
             room.delete()
-            messages.success(request, "Pokój został pomyślnie usunięty.")
-            return redirect("warehouse:room_list")
+            messages.success(request, 'Pokój został pomyślnie usunięty.')
+            return redirect('warehouse:room_list')
 
     return render(
-        request, "warehouse/room_delete.html", {"room": room, "has_items": has_items}
+        request, 'warehouse/room_delete.html', {'room': room, 'has_items': has_items}
     )
 
 
@@ -201,21 +201,21 @@ def rack_create(request, room_id):
     """Create a new rack in a room"""
     room = get_object_or_404(Room, pk=room_id)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = RackForm(request.POST, room=room)  # Pass room to the form
         if form.is_valid():
             rack = form.save(commit=False)
             rack.room = room  # Explicitly set the room
             rack.save()
-            messages.success(request, "Regał został pomyślnie utworzony.")
-            return redirect(f"{reverse('warehouse:room_list')}?new_room={room.id}")
+            messages.success(request, 'Regał został pomyślnie utworzony.')
+            return redirect(f'{reverse("warehouse:room_list")}?new_room={room.id}')
     else:
         form = RackForm(room=room)  # Pass room to the form
 
     return render(
         request,
-        "warehouse/rack_form.html",
-        {"form": form, "room": room, "title": "Create Rack"},
+        'warehouse/rack_form.html',
+        {'form': form, 'room': room, 'title': 'Create Rack'},
     )
 
 
@@ -225,19 +225,19 @@ def rack_update(request, pk):
     """Update an existing rack"""
     rack = get_object_or_404(Rack, pk=pk)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = RackForm(request.POST, instance=rack)
         if form.is_valid():
             form.save()
-            messages.success(request, "Regał został pomyślnie zaktualizowany.")
-            return redirect("warehouse:room_list")
+            messages.success(request, 'Regał został pomyślnie zaktualizowany.')
+            return redirect('warehouse:room_list')
     else:
         form = RackForm(instance=rack)
 
     return render(
         request,
-        "warehouse/rack_form.html",
-        {"form": form, "room": rack.room, "title": "Update Rack"},
+        'warehouse/rack_form.html',
+        {'form': form, 'room': rack.room, 'title': 'Update Rack'},
     )
 
 
@@ -252,14 +252,14 @@ def rack_delete(request, pk):
         shelf__rack=rack, remove_date__isnull=True
     ).exists()
 
-    if request.method == "POST":
-        if "confirm" in request.POST:
+    if request.method == 'POST':
+        if 'confirm' in request.POST:
             rack.delete()
-            messages.success(request, "Regał został pomyślnie usunięty.")
-            return redirect("warehouse:room_list")
+            messages.success(request, 'Regał został pomyślnie usunięty.')
+            return redirect('warehouse:room_list')
 
     return render(
-        request, "warehouse/rack_delete.html", {"rack": rack, "has_items": has_items}
+        request, 'warehouse/rack_delete.html', {'rack': rack, 'has_items': has_items}
     )
 
 
@@ -269,21 +269,21 @@ def shelf_create(request, rack_id):
     """Create a new shelf in a rack"""
     rack = get_object_or_404(Rack, pk=rack_id)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = ShelfForm(request.POST, rack=rack)  # Pass rack to the form
         if form.is_valid():
             shelf = form.save(commit=False)
             shelf.rack = rack  # Explicitly set the rack
             shelf.save()
-            messages.success(request, "Półka została pomyślnie utworzona.")
-            return redirect("warehouse:shelf_detail", pk=shelf.pk)
+            messages.success(request, 'Półka została pomyślnie utworzona.')
+            return redirect('warehouse:shelf_detail', pk=shelf.pk)
     else:
         form = ShelfForm(rack=rack)  # Pass rack to the form
 
     return render(
         request,
-        "warehouse/shelf_form.html",
-        {"form": form, "rack": rack, "title": "Create Shelf"},
+        'warehouse/shelf_form.html',
+        {'form': form, 'rack': rack, 'title': 'Create Shelf'},
     )
 
 
@@ -293,19 +293,19 @@ def shelf_update(request, pk):
     """Update an existing shelf"""
     shelf = get_object_or_404(Shelf, pk=pk)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = ShelfForm(request.POST, instance=shelf)
         if form.is_valid():
             form.save()
-            messages.success(request, "Półka została pomyślnie zaktualizowana.")
-            return redirect("warehouse:room_list")
+            messages.success(request, 'Półka została pomyślnie zaktualizowana.')
+            return redirect('warehouse:room_list')
     else:
         form = ShelfForm(instance=shelf)
 
     return render(
         request,
-        "warehouse/shelf_form.html",
-        {"form": form, "rack": shelf.rack, "title": "Update Shelf"},
+        'warehouse/shelf_form.html',
+        {'form': form, 'rack': shelf.rack, 'title': 'Update Shelf'},
     )
 
 
@@ -320,14 +320,14 @@ def shelf_delete(request, pk):
         shelf=shelf, remove_date__isnull=True
     ).exists()
 
-    if request.method == "POST":
-        if "confirm" in request.POST:
+    if request.method == 'POST':
+        if 'confirm' in request.POST:
             shelf.delete()
-            messages.success(request, "Półka została pomyślnie usunięta.")
-            return redirect("warehouse:room_list")
+            messages.success(request, 'Półka została pomyślnie usunięta.')
+            return redirect('warehouse:room_list')
 
     return render(
-        request, "warehouse/shelf_delete.html", {"shelf": shelf, "has_items": has_items}
+        request, 'warehouse/shelf_delete.html', {'shelf': shelf, 'has_items': has_items}
     )
 
 
@@ -337,28 +337,28 @@ def shelf_delete(request, pk):
 def category_list(request):
     """List of all categories"""
     categories = Category.objects.all()
-    return render(request, "warehouse/category_list.html", {"categories": categories})
+    return render(request, 'warehouse/category_list.html', {'categories': categories})
 
 
 @login_required
 @user_passes_test(is_admin)
 def category_create(request):
     """Create a new category"""
-    if request.method == "POST":
+    if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
             try:
                 form.save()
-                messages.success(request, "Kategoria została pomyślnie utworzona.")
-                return redirect("warehouse:category_list")
+                messages.success(request, 'Kategoria została pomyślnie utworzona.')
+                return redirect('warehouse:category_list')
             except IntegrityError:
-                messages.error(request, "Kategoria o tej nazwie już istnieje.")
+                messages.error(request, 'Kategoria o tej nazwie już istnieje.')
     else:
         form = CategoryForm()
     return render(
         request,
-        "warehouse/category_form.html",
-        {"form": form, "title": "Create Category"},
+        'warehouse/category_form.html',
+        {'form': form, 'title': 'Create Category'},
     )
 
 
@@ -368,19 +368,19 @@ def category_update(request, pk):
     """Update an existing category"""
     category = get_object_or_404(Category, pk=pk)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
-            messages.success(request, "Kategoria została pomyślnie zaktualizowana.")
-            return redirect("warehouse:category_list")
+            messages.success(request, 'Kategoria została pomyślnie zaktualizowana.')
+            return redirect('warehouse:category_list')
     else:
         form = CategoryForm(instance=category)
 
     return render(
         request,
-        "warehouse/category_form.html",
-        {"form": form, "title": "Update Category"},
+        'warehouse/category_form.html',
+        {'form': form, 'title': 'Update Category'},
     )
 
 
@@ -393,16 +393,16 @@ def category_delete(request, pk):
     # Check if category has any items
     has_items = Item.objects.filter(category=category).exists()
 
-    if request.method == "POST":
-        if "confirm" in request.POST and not has_items:
+    if request.method == 'POST':
+        if 'confirm' in request.POST and not has_items:
             category.delete()
-            messages.success(request, "Kategoria została pomyślnie usunięta.")
-            return redirect("warehouse:category_list")
+            messages.success(request, 'Kategoria została pomyślnie usunięta.')
+            return redirect('warehouse:category_list')
 
     return render(
         request,
-        "warehouse/category_delete.html",
-        {"category": category, "has_items": has_items},
+        'warehouse/category_delete.html',
+        {'category': category, 'has_items': has_items},
     )
 
 
@@ -415,7 +415,7 @@ def shelf_detail(request, pk):
     # Get active assignments
     assignments = ItemShelfAssignment.objects.filter(
         shelf=shelf, remove_date__isnull=True
-    ).select_related("item", "item__category", "added_by")
+    ).select_related('item', 'item__category', 'added_by')
 
     # Add date context for expiration highlighting
     today_date = timezone.now().date()
@@ -423,12 +423,12 @@ def shelf_detail(request, pk):
 
     return render(
         request,
-        "warehouse/shelf_detail.html",
+        'warehouse/shelf_detail.html',
         {
-            "shelf": shelf,
-            "assignments": assignments,
-            "today_date": today_date,
-            "thirty_days_from_now": thirty_days_from_now,
+            'shelf': shelf,
+            'assignments': assignments,
+            'today_date': today_date,
+            'thirty_days_from_now': thirty_days_from_now,
         },
     )
 
@@ -438,26 +438,26 @@ def add_item_to_shelf(request, shelf_id):
     """Add an item to a shelf"""
     shelf = get_object_or_404(Shelf, pk=shelf_id)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = ItemShelfAssignmentForm(request.POST)
 
         if form.is_valid():
             # Get form data
-            item_name = form.cleaned_data["item_name"].strip()
-            category = form.cleaned_data["category"]
+            item_name = form.cleaned_data['item_name'].strip()
+            category = form.cleaned_data['category']
             manufacturer = (
-                form.cleaned_data["manufacturer"].strip()
-                if form.cleaned_data["manufacturer"]
+                form.cleaned_data['manufacturer'].strip()
+                if form.cleaned_data['manufacturer']
                 else None
             )
 
             # Always create a new item - this ensures each shelf assignment has its own item
             item_data = {
-                "name": item_name,
-                "category": category,
-                "manufacturer": manufacturer,  # Only use what was explicitly entered in the form
-                "expiration_date": form.cleaned_data["expiration_date"],
-                "note": form.cleaned_data["notes"],
+                'name': item_name,
+                'category': category,
+                'manufacturer': manufacturer,  # Only use what was explicitly entered in the form
+                'expiration_date': form.cleaned_data['expiration_date'],
+                'note': form.cleaned_data['notes'],
             }
 
             # Create a brand new item every time
@@ -468,22 +468,22 @@ def add_item_to_shelf(request, shelf_id):
                 item=item, shelf=shelf, added_by=request.user
             )
 
-            messages.success(request, "Przedmiot został pomyślnie dodany na półkę.")
-            return redirect("warehouse:shelf_detail", pk=shelf_id)
+            messages.success(request, 'Przedmiot został pomyślnie dodany na półkę.')
+            return redirect('warehouse:shelf_detail', pk=shelf_id)
     else:
         form = ItemShelfAssignmentForm()
 
     # Prepare context data for the form fields
-    context = {"form": form, "shelf": shelf, "input_data": {}}
+    context = {'form': form, 'shelf': shelf, 'input_data': {}}
 
     # If this is a POST request, pass input values for Select2 fields
-    if request.method == "POST" and not form.is_valid():
-        context["input_data"] = {
-            "item_name": request.POST.get("item_name", ""),
-            "manufacturer": request.POST.get("manufacturer", ""),
+    if request.method == 'POST' and not form.is_valid():
+        context['input_data'] = {
+            'item_name': request.POST.get('item_name', ''),
+            'manufacturer': request.POST.get('manufacturer', ''),
         }
 
-    return render(request, "warehouse/add_item.html", context)
+    return render(request, 'warehouse/add_item.html', context)
 
 
 @login_required
@@ -491,17 +491,17 @@ def remove_item_from_shelf(request, pk):
     """Remove an item from a shelf"""
     assignment = get_object_or_404(ItemShelfAssignment, pk=pk, remove_date__isnull=True)
 
-    if request.method == "POST":
-        quantity = int(request.POST.get("quantity", 1))
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
         # Mark the assignment as removed
         assignment.remove_date = timezone.now()
         assignment.removed_by = request.user
         assignment.save()
 
-        messages.success(request, "Przedmiot został pomyślnie zdjęty z półki.")
-        return redirect("warehouse:shelf_detail", pk=assignment.shelf.pk)
+        messages.success(request, 'Przedmiot został pomyślnie zdjęty z półki.')
+        return redirect('warehouse:shelf_detail', pk=assignment.shelf.pk)
 
-    return render(request, "warehouse/remove_item.html", {"assignment": assignment})
+    return render(request, 'warehouse/remove_item.html', {'assignment': assignment})
 
 
 # QR code generation
@@ -509,10 +509,10 @@ def remove_item_from_shelf(request, pk):
 @user_passes_test(is_admin)
 def generate_qr_codes(request):
     """Generate QR codes for shelves"""
-    shelves = Shelf.objects.all().select_related("rack", "rack__room")
+    shelves = Shelf.objects.all().select_related('rack', 'rack__room')
 
-    if request.method == "POST":
-        selected_shelves = request.POST.getlist("shelves")
+    if request.method == 'POST':
+        selected_shelves = request.POST.getlist('shelves')
 
         if selected_shelves:
             # Create an in-memory PDF file with QR codes
@@ -571,19 +571,19 @@ def generate_qr_codes(request):
 
                 # Create the URL for the shelf detail page
                 shelf_url = request.build_absolute_uri(
-                    reverse("warehouse:shelf_detail", kwargs={"pk": shelf.pk})
+                    reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
                 )
 
                 qr.add_data(shelf_url)
                 qr.make(fit=True)
 
                 # Create an image from the QR Code instance
-                img = qr.make_image(fill_color="black", back_color="white")
+                img = qr.make_image(fill_color='black', back_color='white')
 
                 # Create a temporary file for the image
                 import tempfile
 
-                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
                 temp_filename = temp_file.name
 
                 # Save the image to the temporary file
@@ -601,9 +601,9 @@ def generate_qr_codes(request):
                     pass  # Ignore errors during cleanup
 
                 # Draw shelf information below the QR code
-                p.setFont("Helvetica", 12)
-                p.drawString(x, y - 15, f"Location: {shelf.full_location}")
-                p.drawString(x, y - 30, f"Shelf: {shelf}")
+                p.setFont('Helvetica', 12)
+                p.drawString(x, y - 15, f'Location: {shelf.full_location}')
+                p.drawString(x, y - 30, f'Shelf: {shelf}')
 
             # Save the PDF
             p.showPage()
@@ -614,16 +614,16 @@ def generate_qr_codes(request):
             buffer.close()
 
             # Create the HTTP response with PDF content
-            response = HttpResponse(content_type="application/pdf")
-            response["Content-Disposition"] = (
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = (
                 'attachment; filename="shelf_qr_codes.pdf"'
             )
             response.write(pdf)
 
-            messages.success(request, "Kody QR zostały pomyślnie wygenerowane.")
+            messages.success(request, 'Kody QR zostały pomyślnie wygenerowane.')
             return response
 
-    return render(request, "warehouse/generate_qr_codes.html", {"shelves": shelves})
+    return render(request, 'warehouse/generate_qr_codes.html', {'shelves': shelves})
 
 
 # Excel export
@@ -636,16 +636,16 @@ def export_inventory(request):
     shelves = Shelf.objects.all()
     categories = Category.objects.all()
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = ExportForm(request.POST)
 
         if form.is_valid():
-            room_id = form.cleaned_data.get("room")
-            rack_id = form.cleaned_data.get("rack")
-            shelf_id = form.cleaned_data.get("shelf")
-            category_id = form.cleaned_data.get("category")
-            include_expired = form.cleaned_data.get("include_expired", False)
-            include_removed = form.cleaned_data.get("include_removed", False)
+            room_id = form.cleaned_data.get('room')
+            rack_id = form.cleaned_data.get('rack')
+            shelf_id = form.cleaned_data.get('shelf')
+            category_id = form.cleaned_data.get('category')
+            include_expired = form.cleaned_data.get('include_expired', False)
+            include_removed = form.cleaned_data.get('include_removed', False)
 
             # Build query based on form data
             query = Q()
@@ -670,60 +670,60 @@ def export_inventory(request):
                 )
 
             assignments = ItemShelfAssignment.objects.filter(query).select_related(
-                "item",
-                "item__category",
-                "shelf",
-                "shelf__rack",
-                "shelf__rack__room",
-                "added_by",
-                "removed_by",
+                'item',
+                'item__category',
+                'shelf',
+                'shelf__rack',
+                'shelf__rack__room',
+                'added_by',
+                'removed_by',
             )
 
             # Create Excel file
             output = io.BytesIO()
-            workbook = xlsxwriter.Workbook(output, {"remove_timezone": True})
+            workbook = xlsxwriter.Workbook(output, {'remove_timezone': True})
 
             # Add formatting
             header_format = workbook.add_format(
                 {
-                    "bold": True,
-                    "bg_color": "#4a86e8",
-                    "font_color": "white",
-                    "border": 1,
+                    'bold': True,
+                    'bg_color': '#4a86e8',
+                    'font_color': 'white',
+                    'border': 1,
                 }
             )
 
-            date_format = workbook.add_format({"num_format": "yyyy-mm-dd"})
-            datetime_format = workbook.add_format({"num_format": "yyyy-mm-dd hh:mm:ss"})
-            expired_format = workbook.add_format({"bg_color": "#ffcccb", "border": 1})
+            date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
+            datetime_format = workbook.add_format({'num_format': 'yyyy-mm-dd hh:mm:ss'})
+            expired_format = workbook.add_format({'bg_color': '#ffcccb', 'border': 1})
             removed_format = workbook.add_format(
-                {"color": "#888888", "italic": True, "border": 1}
+                {'color': '#888888', 'italic': True, 'border': 1}
             )
-            cell_format = workbook.add_format({"border": 1})
+            cell_format = workbook.add_format({'border': 1})
 
             # Create main inventory worksheet
-            worksheet = workbook.add_worksheet("Inventory")
-            worksheet.set_column("A:A", 25)  # Item name
-            worksheet.set_column("B:B", 15)  # Category
-            worksheet.set_column("C:C", 15)  # Manufacturer
-            worksheet.set_column("D:D", 12)  # Expiration Date
-            worksheet.set_column("E:E", 20)  # Location
-            worksheet.set_column("F:G", 15)  # Added/Removed By
-            worksheet.set_column("H:I", 18)  # Add/Remove Date
-            worksheet.set_column("J:J", 25)  # Notes
+            worksheet = workbook.add_worksheet('Inventory')
+            worksheet.set_column('A:A', 25)  # Item name
+            worksheet.set_column('B:B', 15)  # Category
+            worksheet.set_column('C:C', 15)  # Manufacturer
+            worksheet.set_column('D:D', 12)  # Expiration Date
+            worksheet.set_column('E:E', 20)  # Location
+            worksheet.set_column('F:G', 15)  # Added/Removed By
+            worksheet.set_column('H:I', 18)  # Add/Remove Date
+            worksheet.set_column('J:J', 25)  # Notes
 
             # Add header
             headers = [
-                "Item Name",
-                "Category",
-                "Manufacturer",
-                "Expiration Date",
-                "Location",
-                "Added By",
-                "Add Date",
-                "Removed By",
-                "Remove Date",
-                "Notes",
+                'Item Name',
+                'Category',
+                'Manufacturer',
+                'Expiration Date',
+                'Location',
+                'Added By',
+                'Add Date',
+                'Removed By',
+                'Remove Date',
+                'Notes',
             ]
 
             for col, header in enumerate(headers):
@@ -749,18 +749,18 @@ def export_inventory(request):
                 # Write the row data with appropriate formatting
                 worksheet.write(row, 0, item.name, current_format)
                 worksheet.write(row, 1, item.category.name, current_format)
-                worksheet.write(row, 2, item.manufacturer or "", current_format)
+                worksheet.write(row, 2, item.manufacturer or '', current_format)
 
                 if item.expiration_date:
                     worksheet.write_datetime(row, 3, item.expiration_date, date_format)
                 else:
-                    worksheet.write(row, 3, "", current_format)
+                    worksheet.write(row, 3, '', current_format)
 
                 worksheet.write(row, 4, assignment.shelf.full_location, current_format)
                 worksheet.write(
                     row,
                     5,
-                    assignment.added_by.username if assignment.added_by else "System",
+                    assignment.added_by.username if assignment.added_by else 'System',
                     current_format,
                 )
                 worksheet.write_datetime(row, 6, assignment.add_date, datetime_format)
@@ -770,108 +770,108 @@ def export_inventory(request):
                         row, 7, assignment.removed_by.username, current_format
                     )
                 else:
-                    worksheet.write(row, 7, "", current_format)
+                    worksheet.write(row, 7, '', current_format)
 
                 if assignment.remove_date:
                     worksheet.write_datetime(
                         row, 8, assignment.remove_date, datetime_format
                     )
                 else:
-                    worksheet.write(row, 8, "", current_format)
+                    worksheet.write(row, 8, '', current_format)
 
-                worksheet.write(row, 9, item.note or "", current_format)
+                worksheet.write(row, 9, item.note or '', current_format)
 
             # Create summary worksheet
-            summary_sheet = workbook.add_worksheet("Summary")
-            summary_sheet.set_column("A:A", 30)  # Description
-            summary_sheet.set_column("B:B", 15)  # Count
+            summary_sheet = workbook.add_worksheet('Summary')
+            summary_sheet.set_column('A:A', 30)  # Description
+            summary_sheet.set_column('B:B', 15)  # Count
 
             title_format = workbook.add_format(
                 {
-                    "bold": True,
-                    "font_size": 14,
-                    "align": "center",
-                    "valign": "vcenter",
-                    "border": 2,
+                    'bold': True,
+                    'font_size': 14,
+                    'align': 'center',
+                    'valign': 'vcenter',
+                    'border': 2,
                 }
             )
 
             subtitle_format = workbook.add_format(
-                {"bold": True, "bg_color": "#d9d9d9", "border": 1}
+                {'bold': True, 'bg_color': '#d9d9d9', 'border': 1}
             )
 
-            count_format = workbook.add_format({"align": "right", "border": 1})
+            count_format = workbook.add_format({'align': 'right', 'border': 1})
 
             # Add title
-            summary_sheet.merge_range("A1:B1", "Inventory Summary", title_format)
+            summary_sheet.merge_range('A1:B1', 'Inventory Summary', title_format)
 
             # Add dates section
             row_num = 2
-            summary_sheet.write(row_num, 0, "Export Date", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Export Date', subtitle_format)
             summary_sheet.write(
-                row_num, 1, timezone.now().strftime("%Y-%m-%d"), count_format
+                row_num, 1, timezone.now().strftime('%Y-%m-%d'), count_format
             )
 
             # Add filter criteria used
             row_num += 2
-            summary_sheet.write(row_num, 0, "Filter Criteria", title_format)
-            summary_sheet.write(row_num, 1, "", title_format)
+            summary_sheet.write(row_num, 0, 'Filter Criteria', title_format)
+            summary_sheet.write(row_num, 1, '', title_format)
 
             row_num += 1
             if room_id:
                 room = Room.objects.get(id=room_id)
-                summary_sheet.write(row_num, 0, "Room", subtitle_format)
+                summary_sheet.write(row_num, 0, 'Room', subtitle_format)
                 summary_sheet.write(row_num, 1, room.name, count_format)
                 row_num += 1
 
             if rack_id:
                 rack = Rack.objects.get(id=rack_id)
-                summary_sheet.write(row_num, 0, "Rack", subtitle_format)
+                summary_sheet.write(row_num, 0, 'Rack', subtitle_format)
                 summary_sheet.write(row_num, 1, str(rack), count_format)
                 row_num += 1
 
             if shelf_id:
                 shelf = Shelf.objects.get(id=shelf_id)
-                summary_sheet.write(row_num, 0, "Shelf", subtitle_format)
+                summary_sheet.write(row_num, 0, 'Shelf', subtitle_format)
                 summary_sheet.write(row_num, 1, str(shelf), count_format)
                 row_num += 1
 
             if category_id:
                 category = Category.objects.get(id=category_id)
-                summary_sheet.write(row_num, 0, "Category", subtitle_format)
+                summary_sheet.write(row_num, 0, 'Category', subtitle_format)
                 summary_sheet.write(row_num, 1, category.name, count_format)
                 row_num += 1
 
-            summary_sheet.write(row_num, 0, "Include Expired Items", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Include Expired Items', subtitle_format)
             summary_sheet.write(
-                row_num, 1, "Yes" if include_expired else "No", count_format
+                row_num, 1, 'Yes' if include_expired else 'No', count_format
             )
             row_num += 1
 
-            summary_sheet.write(row_num, 0, "Include Removed Items", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Include Removed Items', subtitle_format)
             summary_sheet.write(
-                row_num, 1, "Yes" if include_removed else "No", count_format
+                row_num, 1, 'Yes' if include_removed else 'No', count_format
             )
 
             # Add statistics
             row_num += 2
-            summary_sheet.write(row_num, 0, "Statistics", title_format)
-            summary_sheet.write(row_num, 1, "", title_format)
+            summary_sheet.write(row_num, 0, 'Statistics', title_format)
+            summary_sheet.write(row_num, 1, '', title_format)
 
             row_num += 1
-            summary_sheet.write(row_num, 0, "Total Items", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Total Items', subtitle_format)
             summary_sheet.write(row_num, 1, assignments.count(), count_format)
             row_num += 1
 
             # Count active items (not removed)
             active_count = sum(1 for a in assignments if not a.remove_date)
-            summary_sheet.write(row_num, 0, "Active Items", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Active Items', subtitle_format)
             summary_sheet.write(row_num, 1, active_count, count_format)
             row_num += 1
 
             # Count removed items
             removed_count = sum(1 for a in assignments if a.remove_date)
-            summary_sheet.write(row_num, 0, "Removed Items", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Removed Items', subtitle_format)
             summary_sheet.write(row_num, 1, removed_count, count_format)
             row_num += 1
 
@@ -881,7 +881,7 @@ def export_inventory(request):
                 for a in assignments
                 if a.item.expiration_date and a.item.expiration_date < today
             )
-            summary_sheet.write(row_num, 0, "Expired Items", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Expired Items', subtitle_format)
             summary_sheet.write(row_num, 1, expired_count, count_format)
             row_num += 1
 
@@ -892,14 +892,14 @@ def export_inventory(request):
                 if a.item.expiration_date
                 and today <= a.item.expiration_date <= today + timedelta(days=30)
             )
-            summary_sheet.write(row_num, 0, "Expiring in Next 30 Days", subtitle_format)
+            summary_sheet.write(row_num, 0, 'Expiring in Next 30 Days', subtitle_format)
             summary_sheet.write(row_num, 1, expiring_soon, count_format)
             row_num += 1
 
             # Add breakdown by category
             row_num += 2
-            summary_sheet.write(row_num, 0, "Items by Category", title_format)
-            summary_sheet.write(row_num, 1, "", title_format)
+            summary_sheet.write(row_num, 0, 'Items by Category', title_format)
+            summary_sheet.write(row_num, 1, '', title_format)
             row_num += 1
 
             # Get category statistics
@@ -920,8 +920,8 @@ def export_inventory(request):
 
             # Add breakdown by location
             row_num += 2
-            summary_sheet.write(row_num, 0, "Items by Location", title_format)
-            summary_sheet.write(row_num, 1, "", title_format)
+            summary_sheet.write(row_num, 0, 'Items by Location', title_format)
+            summary_sheet.write(row_num, 1, '', title_format)
             row_num += 1
 
             # Get location statistics
@@ -945,27 +945,27 @@ def export_inventory(request):
             output.seek(0)
             response = HttpResponse(
                 output.read(),
-                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
 
             # Define filename based on export parameters
-            filename_parts = ["inventory"]
+            filename_parts = ['inventory']
 
             if room_id:
                 room_name = Room.objects.get(id=room_id).name
-                filename_parts.append(f"room-{room_name}")
+                filename_parts.append(f'room-{room_name}')
 
             if category_id:
                 category_name = Category.objects.get(id=category_id).name
-                filename_parts.append(f"cat-{category_name}")
+                filename_parts.append(f'cat-{category_name}')
 
-            filename_parts.append(timezone.now().strftime("%Y-%m-%d"))
-            filename = "_".join(filename_parts) + ".xlsx"
-            filename = filename.replace(" ", "_").lower()
+            filename_parts.append(timezone.now().strftime('%Y-%m-%d'))
+            filename = '_'.join(filename_parts) + '.xlsx'
+            filename = filename.replace(' ', '_').lower()
 
-            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
-            messages.success(request, "Inwentarz został pomyślnie wyeksportowany.")
+            messages.success(request, 'Inwentarz został pomyślnie wyeksportowany.')
             return response
     else:
         form = ExportForm()
@@ -973,13 +973,13 @@ def export_inventory(request):
     # If no POST or form is invalid, show the form
     return render(
         request,
-        "warehouse/export_form.html",
+        'warehouse/export_form.html',
         {
-            "form": form,
-            "rooms": rooms,
-            "racks": racks,
-            "shelves": shelves,
-            "categories": categories,
+            'form': form,
+            'rooms': rooms,
+            'racks': racks,
+            'shelves': shelves,
+            'categories': categories,
         },
     )
 
@@ -988,30 +988,30 @@ def export_inventory(request):
 @login_required
 def autocomplete_categories(request):
     """AJAX view for category autocomplete"""
-    query = request.GET.get("term", "")
+    query = request.GET.get('term', '')
     categories = Category.objects.filter(name__icontains=query)[:10]
-    results = [{"id": c.id, "text": c.name} for c in categories]
-    return JsonResponse({"results": results})
+    results = [{'id': c.id, 'text': c.name} for c in categories]
+    return JsonResponse({'results': results})
 
 
 @login_required
 def get_racks(request):
     """AJAX view for getting racks by room"""
-    room_id = request.GET.get("room")
+    room_id = request.GET.get('room')
     if room_id:
         racks = Rack.objects.filter(room_id=room_id)
-        return JsonResponse([{"id": r.id, "name": str(r)} for r in racks], safe=False)
+        return JsonResponse([{'id': r.id, 'name': str(r)} for r in racks], safe=False)
     return JsonResponse([], safe=False)
 
 
 @login_required
 def get_shelves(request):
     """AJAX view for getting shelves by rack"""
-    rack_id = request.GET.get("rack")
+    rack_id = request.GET.get('rack')
     if rack_id:
         shelves = Shelf.objects.filter(rack_id=rack_id)
         return JsonResponse(
-            [{"id": s.id, "number": s.number} for s in shelves], safe=False
+            [{'id': s.id, 'number': s.number} for s in shelves], safe=False
         )
     return JsonResponse([], safe=False)
 
@@ -1019,15 +1019,15 @@ def get_shelves(request):
 @login_required
 def autocomplete_items(request):
     """AJAX view for item name autocomplete"""
-    query = request.GET.get("term", "")
+    query = request.GET.get('term', '')
 
     # Get distinct item names only, not full objects
     if query:
         # Filter by the query but only get distinct names
-        items = Item.objects.filter(name__icontains=query).values("name").distinct()
+        items = Item.objects.filter(name__icontains=query).values('name').distinct()
     else:
         # For empty queries, get all distinct names
-        items = Item.objects.values("name").distinct()
+        items = Item.objects.values('name').distinct()
 
     # Format results with only name information
     results = []
@@ -1036,18 +1036,18 @@ def autocomplete_items(request):
         items[:500] if not query else items[:10]
     ):  # Limit to 500 items for client-side filtering
         item_data = {
-            "id": item["name"],
-            "text": item["name"],
+            'id': item['name'],
+            'text': item['name'],
         }
         results.append(item_data)
 
-    return JsonResponse({"results": results})
+    return JsonResponse({'results': results})
 
 
 @login_required
 def autocomplete_manufacturers(request):
     """AJAX view for manufacturer autocomplete"""
-    query = request.GET.get("term", "")
+    query = request.GET.get('term', '')
 
     # Base query - exclude null manufacturers
     base_query = Item.objects.filter(manufacturer__isnull=False)
@@ -1057,100 +1057,103 @@ def autocomplete_manufacturers(request):
     if query:
         manufacturers = (
             base_query.filter(manufacturer__icontains=query)
-            .values_list("manufacturer", flat=True)
+            .values_list('manufacturer', flat=True)
             .distinct()[:10]
         )
     else:
         # For an empty query, get all distinct manufacturers
-        manufacturers = base_query.values_list("manufacturer", flat=True).distinct()
+        manufacturers = base_query.values_list('manufacturer', flat=True).distinct()
 
-    results = [{"id": m, "text": m} for m in manufacturers]
-    return JsonResponse({"results": results})
+    results = [{'id': m, 'text': m} for m in manufacturers]
+    return JsonResponse({'results': results})
 
 
 # User account views
 @login_required
 def profile(request):
     """User profile view"""
-    return render(request, "warehouse/profile.html")
+    return render(request, 'warehouse/profile.html')
 
 
 @login_required
 def change_password(request):
     """Change password view"""
-    if request.method == "POST":
+    if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(
                 request, user
             )  # Important to keep the user logged in
-            messages.success(request, "Twoje hasło zostało pomyślnie zmienione!")
-            return redirect("warehouse:profile")
+            messages.success(request, 'Twoje hasło zostało pomyślnie zmienione!')
+            return redirect('warehouse:profile')
         else:
-            messages.error(request, "Proszę poprawić błędy w formularzu.")
+            messages.error(request, 'Proszę poprawić błędy w formularzu.')
     else:
         form = PasswordChangeForm(request.user)
 
-    return render(request, "warehouse/change_password.html", {"form": form})
+    return render(request, 'warehouse/change_password.html', {'form': form})
 
 
 def custom_logout(request):
     """Custom logout view to ensure proper redirection"""
     logout(request)
-    messages.success(request, "Zostałeś pomyślnie wylogowany.")
-    return redirect("login")
+    messages.success(request, 'Zostałeś pomyślnie wylogowany.')
+    return redirect('login')
 
 
 # Authentication views
 def register(request):
     """Registration view for new users"""
-    if request.method == "POST":
+    if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(
                 request,
-                "Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.",
+                'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.',
             )
-            return redirect("login")
+            return redirect('login')
     else:
         form = CustomUserCreationForm()
 
-    return render(request, "registration/register.html", {"form": form})
+    return render(request, 'registration/register.html', {'form': form})
 
 
 @login_required
 def low_stock(request):
     """View for categories with low stock"""
     categories = Category.objects.annotate(
-        active_items=Count('items__assignments', filter=Q(items__assignments__remove_date__isnull=True))
+        active_items=Count(
+            'items__assignments', filter=Q(items__assignments__remove_date__isnull=True)
+        )
     ).filter(active_items__lt=10)
 
     low_stock_categories = []
     for category in categories:
-        locations = (
-            ItemShelfAssignment.objects.filter(
-                item__category=category, remove_date__isnull=True
-            )
-            .select_related('shelf__rack__room')
-        )
+        locations = ItemShelfAssignment.objects.filter(
+            item__category=category, remove_date__isnull=True
+        ).select_related('shelf__rack__room')
         location_data = [
             {
-                "id": assignment.shelf.id,
-                "full_location": assignment.shelf.full_location,
-                "path": reverse("warehouse:shelf_detail", kwargs={"pk": assignment.shelf.id})
+                'id': assignment.shelf.id,
+                'full_location': assignment.shelf.full_location,
+                'path': reverse(
+                    'warehouse:shelf_detail', kwargs={'pk': assignment.shelf.id}
+                ),
             }
             for assignment in locations
         ]
-        low_stock_categories.append({
-            'name': category.name,
-            'active_items': category.active_items,
-            'locations': location_data,
-        })
+        low_stock_categories.append(
+            {
+                'name': category.name,
+                'active_items': category.active_items,
+                'locations': location_data,
+            }
+        )
 
     return render(
         request,
-        "warehouse/low_stock.html",
-        {"low_stock_categories": low_stock_categories},
+        'warehouse/low_stock.html',
+        {'low_stock_categories': low_stock_categories},
     )

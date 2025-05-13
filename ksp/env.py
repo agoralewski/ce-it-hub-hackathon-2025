@@ -16,4 +16,4 @@ def get_bool_env_variable(var_name, default=False):
     value = get_env_variable(var_name, default)
     if isinstance(value, bool):
         return value
-    return value.lower() in ("true", "1", "t", "y", "yes")
+    return value.lower() in ('true', '1', 't', 'y', 'yes')

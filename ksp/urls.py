@@ -23,11 +23,11 @@ from django.views.generic import RedirectView
 from warehouse.views import register
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("accounts/register/", register, name="register"),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("warehouse/", include("warehouse.urls")),
-    path("", RedirectView.as_view(url="/warehouse/", permanent=True)),
+    path('admin/', admin.site.urls),
+    path('accounts/register/', register, name='register'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('warehouse/', include('warehouse.urls')),
+    path('', RedirectView.as_view(url='/warehouse/', permanent=True)),
 ]
 
 if settings.DEBUG:
