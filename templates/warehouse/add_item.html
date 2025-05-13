@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }}</label>
+                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }} <span class="text-muted">(opcjonalnie)</span></label>
                                 {{ form.manufacturer }}
                                 {% if form.manufacturer.help_text %}
                                 <div class="form-text">{{ form.manufacturer.help_text }}</div>
