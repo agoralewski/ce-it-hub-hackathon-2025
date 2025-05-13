@@ -690,40 +690,6 @@ select:focus,
     color: white;
 }
 
-/* Filters styling */
-.filters-card {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-}
-
-.filter-form .form-select {
-    width: 100%;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    color: #495057;
-}
-
-.filter-form .clear-filters-btn {
-    margin-top: 0.5rem;
-    background-color: var(--danger);
-    color: white;
-    border: none;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-}
-
-.filter-form .clear-filters-btn:hover {
-    background-color: #c82333;
-}
-
 /* Invalidated option styling for filters */
 .select2-container--default .select2-results__option--invalidated {
     color: #999 !important;
@@ -734,23 +700,6 @@ select:focus,
     content: " (wyczysc inne filtry)";
     font-size: 0.8em;
     color: var(--light);
-}
-
-/* Responsive filter form layout */
-@media (min-width: 768px) {
-    .filter-form {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-    }
-
-    .filter-form .form-select {
-        margin-bottom: 0;
-    }
-
-    .filter-form .clear-filters-btn {
-        margin-top: 0;
-    }
 }
 
 /* Page transition effects */
