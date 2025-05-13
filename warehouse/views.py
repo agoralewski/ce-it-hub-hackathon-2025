@@ -1193,16 +1193,20 @@ def low_stock(request):
         locations = ItemShelfAssignment.objects.filter(
             item__category=category, remove_date__isnull=True
         ).select_related('shelf__rack__room')
-        location_data = [
-            {
-                'id': assignment.shelf.id,
-                'full_location': assignment.shelf.full_location,
-                'path': reverse(
-                    'warehouse:shelf_detail', kwargs={'pk': assignment.shelf.id}
-                ),
-            }
-            for assignment in locations
-        ]
+        # Deduplicate shelves by their id
+        seen_shelf_ids = set()
+        location_data = []
+        for assignment in locations:
+            shelf_id = assignment.shelf.id
+            if shelf_id not in seen_shelf_ids:
+                seen_shelf_ids.add(shelf_id)
+                location_data.append({
+                    'id': shelf_id,
+                    'full_location': assignment.shelf.full_location,
+                    'path': reverse(
+                        'warehouse:shelf_detail', kwargs={'pk': shelf_id}
+                    ),
+                })
         low_stock_categories.append(
             {
                 'name': category.name,
