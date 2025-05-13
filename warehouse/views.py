@@ -62,6 +62,9 @@ def item_list(request):
     rack_id = request.GET.get('rack')
     shelf_id = request.GET.get('shelf')
     category_id = request.GET.get('category')
+    search_query = request.GET.get('search')
+    filter_values = request.GET.getlist('filter')  # Get all filter values as a list
+    has_note = request.GET.get('has_note')
 
     if room_id:
         assignments = assignments.filter(shelf__rack__room_id=room_id)
@@ -71,23 +74,38 @@ def item_list(request):
         assignments = assignments.filter(shelf_id=shelf_id)
     if category_id:
         assignments = assignments.filter(item__category_id=category_id)
+    
+    # Apply search filter if provided
+    if search_query:
+        assignments = assignments.filter(item__name__icontains=search_query)
+    
+    # Apply 'has_note' filter if provided
+    if has_note:
+        assignments = assignments.filter(item__note__isnull=False).exclude(item__note='')
 
+    # Create a Q object to collect multiple filter conditions
+    filters_q = Q()
+    
     # Apply 'expiring_soon' filter if provided
-    expiring_soon = request.GET.get('filter') == 'expiring_soon'
-    if expiring_soon:
-        assignments = assignments.filter(
+    if 'expiring_soon' in filter_values:
+        expiring_soon_q = Q(
             item__expiration_date__isnull=False,
             item__expiration_date__lte=timezone.now().date() + timedelta(days=30),
             item__expiration_date__gte=timezone.now().date(),  # Exclude expired items
         )
+        filters_q |= expiring_soon_q
 
     # Apply 'expired' filter if provided
-    expired = request.GET.get('filter') == 'expired'
-    if expired:
-        assignments = assignments.filter(
+    if 'expired' in filter_values:
+        expired_q = Q(
             item__expiration_date__isnull=False,
             item__expiration_date__lt=timezone.now().date(),
         )
+        filters_q |= expired_q
+    
+    # Apply combined filters if any were selected
+    if filter_values:
+        assignments = assignments.filter(filters_q)
 
     # Get filter options
     rooms = Room.objects.all()
@@ -120,6 +138,9 @@ def item_list(request):
             'selected_rack': rack_id,
             'selected_shelf': shelf_id,
             'selected_category': category_id,
+            'search_query': search_query,
+            'filter_values': filter_values,
+            'has_note': has_note,
             'today_date': today_date,
             'thirty_days_from_now': thirty_days_from_now,
         },
@@ -1051,7 +1072,7 @@ def autocomplete_items(request):
     # Get distinct item names only, not full objects
     if query:
         # Filter by the query but only get distinct names
-        items = Item.objects.filter(name__icontains(query).values('name').distinct())
+        items = Item.objects.filter(name__icontains=query).values('name').distinct()
     else:
         # For empty queries, get all distinct names
         items = Item.objects.values('name').distinct()

@@ -4,6 +4,123 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<style>
+    .filters-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .advanced-filters-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 8px; /* Reduced from 15px */
+        padding-bottom: 8px; /* Reduced from 15px */
+        border-bottom: 1px solid #e3e6f0;
+        justify-content: space-between;
+    }
+    
+    .dropdown-filters-container {
+        display: flex;
+        flex-wrap: nowrap; /* Changed from wrap to nowrap for PC devices */
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+    }
+    
+    /* Make each dropdown take equal width on PC */
+    .dropdown-filters-container .form-select {
+        flex: 1;
+        min-width: 0; /* Prevents overflow */
+    }
+    
+    /* Switch to wrap on mobile devices */
+    @media (max-width: 768px) {
+        .dropdown-filters-container {
+            flex-wrap: wrap;
+        }
+        
+        .dropdown-filters-container .form-select {
+            width: 100%;
+            flex: none;
+        }
+    }
+    
+    .filter-button {
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: #f8f9fc;
+        border: 1px solid #d1d3e2;
+        color: #6e707e;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .filter-button.active {
+        background-color: #4e73df;
+        color: white;
+        border-color: #4e73df;
+    }
+    
+    .search-input-container {
+        flex-grow: 1;
+        position: relative;
+        min-width: 200px;
+    }
+    
+    .search-input-container .form-control {
+        padding-left: 35px;
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #858796;
+    }
+    
+    @media (max-width: 768px) {
+        .search-input-container {
+            width: 100%;
+        }
+        
+        .filter-button {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+    
+    .clear-filters-btn {
+        border: none;
+        background: transparent;
+        color: #e74a3b;
+        cursor: pointer;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        gap: 6px;
+        font-size: 0.85rem;
+    }
+    
+    .clear-filters-btn:hover {
+        background-color: #f8f9fc;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -15,46 +132,85 @@
         <!-- Filters -->
         <div class="filters-card">
             <form method="get" action="{% url 'warehouse:item_list' %}" class="filter-form" id="item-filter-form">
-                <select name="room" class="form-select" data-placeholder="Pokój" id="room-select">
-                    <option value="">Pokój</option>
-                    {% for room in rooms %}
-                    <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
-                    {% endfor %}
-                </select>
                 
-                <select name="rack" class="form-select" data-placeholder="Regał" id="rack-select">
-                    <option value="">Regał</option>
-                    {% for rack in racks %}
-                    <option value="{{ rack.id }}" 
-                            data-room="{{ rack.room.id }}"
-                            {% if selected_rack == rack.id|slugify %}selected{% endif %}>
-                        {{ rack.room.name }}.{{ rack.name }}
-                    </option>
-                    {% endfor %}
-                </select>
+                <!-- Advanced filters (new) -->
+                <div class="advanced-filters-container">
+                    <div class="search-input-container">
+                        <span class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control" id="product-search" 
+                               placeholder="Szukaj"
+                               value="{{ search_query|default:'' }}">
+                    </div>
+                    
+                    <button type="button" class="filter-button" id="expired-filter" 
+                            data-filter="expired" 
+                            {% if 'expired' in filter_values %}aria-pressed="true"{% endif %}>
+                        <i class="fas fa-clock"></i> Przeterminowane
+                    </button>
+                    
+                    <button type="button" class="filter-button" id="expiring-filter" 
+                            data-filter="expiring_soon"
+                            {% if 'expiring_soon' in filter_values %}aria-pressed="true"{% endif %}>
+                        <i class="fas fa-exclamation-triangle"></i> Wkrótce przeterminowane
+                    </button>
+                    
+                    <button type="button" class="filter-button" id="has-note-filter" 
+                            data-filter="has_note"
+                            {% if has_note %}aria-pressed="true"{% endif %}>
+                        <i class="fas fa-sticky-note"></i> Z notatką
+                    </button>
+                    
+                    <!-- Hidden inputs to store filter values -->
+                    <input type="hidden" id="expired-input" name="filter" value="expired" disabled>
+                    <input type="hidden" id="expiring-input" name="filter" value="expiring_soon" disabled>
+                    <input type="hidden" id="has-note-input" name="has_note" value="1" disabled>
+                    
+                    <button type="button" class="clear-filters-btn" title="Wyczyść filtry" id="clear-filters">
+                        <i class="fas fa-times"></i> Wyczyść filtry
+                    </button>
+                </div>
                 
-                <select name="shelf" class="form-select" data-placeholder="Półka" id="shelf-select">
-                    <option value="">Półka</option>
-                    {% for shelf in shelves %}
-                    <option value="{{ shelf.id }}" 
-                            data-rack="{{ shelf.rack.id }}"
-                            data-room="{{ shelf.rack.room.id }}"
-                            {% if selected_shelf == shelf.id|slugify %}selected{% endif %}>
-                        {{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}
-                    </option>
-                    {% endfor %}
-                </select>
-                
-                <select name="category" class="form-select" data-placeholder="Kategoria" id="category-select">
-                    <option value="">Kategoria</option>
-                    {% for category in categories %}
-                    <option value="{{ category.id }}" {% if selected_category == category.id|slugify %}selected{% endif %}>{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-
-                <button type="button" class="clear-filters-btn" title="Wyczyść filtry" id="clear-filters">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <!-- Dropdown filters (existing) -->
+                <div class="dropdown-filters-container">
+                    <select name="room" class="form-select" data-placeholder="Pokój" id="room-select">
+                        <option value="">Pokój</option>
+                        {% for room in rooms %}
+                        <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="rack" class="form-select" data-placeholder="Regał" id="rack-select">
+                        <option value="">Regał</option>
+                        {% for rack in racks %}
+                        <option value="{{ rack.id }}" 
+                                data-room="{{ rack.room.id }}"
+                                {% if selected_rack == rack.id|slugify %}selected{% endif %}>
+                            {{ rack.room.name }}.{{ rack.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="shelf" class="form-select" data-placeholder="Półka" id="shelf-select">
+                        <option value="">Półka</option>
+                        {% for shelf in shelves %}
+                        <option value="{{ shelf.id }}" 
+                                data-rack="{{ shelf.rack.id }}"
+                                data-room="{{ shelf.rack.room.id }}"
+                                {% if selected_shelf == shelf.id|slugify %}selected{% endif %}>
+                            {{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="category" class="form-select" data-placeholder="Kategoria" id="category-select">
+                        <option value="">Kategoria</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|slugify %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </form>
         </div>
         
@@ -130,6 +286,33 @@
         let rackSelect = $('#rack-select');
         let shelfSelect = $('#shelf-select');
         let categorySelect = $('#category-select');
+        let productSearch = $('#product-search');
+        
+        // Hidden inputs for filters
+        let expiredInput = $('#expired-input');
+        let expiringInput = $('#expiring-input');
+        let hasNoteInput = $('#has-note-input');
+        
+        // Filter buttons
+        let expiredFilterBtn = $('#expired-filter');
+        let expiringFilterBtn = $('#expiring-filter');
+        let hasNoteFilterBtn = $('#has-note-filter');
+        
+        // Initialize filter buttons based on URL parameters
+        if (expiredFilterBtn.attr('aria-pressed') === 'true') {
+            expiredFilterBtn.addClass('active');
+            expiredInput.prop('disabled', false);
+        }
+        
+        if (expiringFilterBtn.attr('aria-pressed') === 'true') {
+            expiringFilterBtn.addClass('active');
+            expiringInput.prop('disabled', false);
+        }
+        
+        if (hasNoteFilterBtn.attr('aria-pressed') === 'true') {
+            hasNoteFilterBtn.addClass('active');
+            hasNoteInput.prop('disabled', false);
+        }
         
         // Initialize Select2
         $('.form-select').select2({
@@ -138,6 +321,55 @@
             },
             allowClear: true,
             templateResult: formatOption
+        });
+        
+        // Initialize product search with Select2 for autocomplete
+        productSearch.select2({
+            placeholder: "Szukaj",
+            allowClear: true,
+            minimumInputLength: 2,
+            ajax: {
+                url: "{% url 'warehouse:autocomplete_items' %}",
+                dataType: 'json',
+                delay: 300, // Wait 300ms before triggering the request
+                data: function (params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            },
+            templateResult: formatItem
+        }).on('select2:select', function(e) {
+            // Set the value in the input field and submit the form
+            $(this).val(e.params.data.text);
+            submitForm();
+        }).on('select2:clear', function() {
+            // Handle clear button click
+            $(this).val('');
+            submitForm();
+        });
+        
+        // Initialize the search field with existing value
+        if (productSearch.val()) {
+            const existingSearchText = productSearch.val();
+            // Create a placeholder option and append it to make Select2 show the text
+            const placeholderOption = new Option(existingSearchText, existingSearchText, true, true);
+            productSearch.append(placeholderOption).trigger('change');
+        }
+        
+        // Handle manual input in search field - debounce to reduce request frequency
+        let searchTimeout;
+        productSearch.on('keyup', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                submitForm();
+            }, 500); // 500ms delay
         });
         
         // Formatting function for Select2 options
@@ -156,6 +388,17 @@
             }
             
             return option.text;
+        }
+        
+        // Formatting function for item search results
+        function formatItem(item) {
+            if (!item.id) {
+                return item.text;
+            }
+            
+            const $result = $('<div></div>');
+            $result.text(item.text);
+            return $result;
         }
         
         // Store initial rack options
@@ -253,6 +496,27 @@
             if (!skipUpdate) {
                 submitForm();
             }
+        });
+        
+        // Handle filter button clicks
+        $('.filter-button').on('click', function() {
+            const $this = $(this);
+            const filterType = $this.data('filter');
+            
+            // Toggle active state
+            $this.toggleClass('active');
+            
+            // Handle corresponding hidden input
+            if (filterType === 'expired') {
+                expiredInput.prop('disabled', !$this.hasClass('active'));
+            } else if (filterType === 'expiring_soon') {
+                expiringInput.prop('disabled', !$this.hasClass('active'));
+            } else if (filterType === 'has_note') {
+                hasNoteInput.prop('disabled', !$this.hasClass('active'));
+            }
+            
+            // Submit the form
+            submitForm();
         });
         
         // Update all filter options based on current selections
@@ -371,6 +635,15 @@
             
             // Reset all selects
             $('.form-select').val(null).trigger('change', [true]);
+            
+            // Reset filter buttons
+            $('.filter-button').removeClass('active');
+            expiredInput.prop('disabled', true);
+            expiringInput.prop('disabled', true);
+            hasNoteInput.prop('disabled', true);
+            
+            // Reset search
+            productSearch.val('').trigger('change');
             
             // Clear URL parameters and reload
             window.location.href = '{% url "warehouse:item_list" %}';
