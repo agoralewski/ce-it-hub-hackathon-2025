@@ -162,13 +162,13 @@ class ExportForm(forms.Form):
     )
     rack = forms.ModelChoiceField(
         label='Regał',
-        queryset=Rack.objects.all(),
+        queryset=Rack.objects.none(),  # Start with empty queryset
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     shelf = forms.ModelChoiceField(
         label='Półka',
-        queryset=Shelf.objects.all(),
+        queryset=Shelf.objects.none(),  # Start with empty queryset
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
@@ -193,20 +193,29 @@ class ExportForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        
+        # Always start with all rooms sorted by name
+        self.fields['room'].queryset = Room.objects.all().order_by('name')
+        
         # Filter racks based on selected room
-        if 'data' in kwargs and 'room' in kwargs['data'] and kwargs['data']['room']:
-            room_id = kwargs['data']['room']
-            self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id)
-        else:
-            self.fields['rack'].queryset = Rack.objects.none()
-
-        # Filter shelves based on selected rack
-        if 'data' in kwargs and 'rack' in kwargs['data'] and kwargs['data']['rack']:
-            rack_id = kwargs['data']['rack']
-            self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id)
-        else:
-            self.fields['shelf'].queryset = Shelf.objects.none()
+        if args and 'room' in args[0] and args[0]['room']:
+            room_id = args[0]['room']
+            self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            
+            # If a rack is selected, populate shelves for that rack
+            if 'rack' in args[0] and args[0]['rack']:
+                rack_id = args[0]['rack']
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
+        
+        # For GET requests (initial display)
+        initial_data = kwargs.get('initial', {})
+        if 'room' in initial_data and initial_data['room']:
+            room_id = initial_data['room']
+            self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            
+            if 'rack' in initial_data and initial_data['rack']:
+                rack_id = initial_data['rack']
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
 
 
 class CustomUserCreationForm(UserCreationForm):

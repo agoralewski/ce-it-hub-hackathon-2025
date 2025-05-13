@@ -5,7 +5,6 @@
 ## Frontend
 - when removing items, should the user be able to specify a removal quantity that gets subtracted from current quantity?
 - UI log of removals/additions for admins to inspect/export
-- shelf/rack sorting
 - english language support
 - table view for mobile devices with only key info and open accordion for row on click
 

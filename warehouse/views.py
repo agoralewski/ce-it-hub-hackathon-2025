@@ -675,10 +675,18 @@ def export_inventory(request):
         form = ExportForm(request.POST)
 
         if form.is_valid():
-            room_id = form.cleaned_data.get('room')
-            rack_id = form.cleaned_data.get('rack')
-            shelf_id = form.cleaned_data.get('shelf')
-            category_id = form.cleaned_data.get('category')
+            # Get form data and ensure we have IDs, not objects
+            room = form.cleaned_data.get('room')
+            rack = form.cleaned_data.get('rack')
+            shelf = form.cleaned_data.get('shelf')
+            category = form.cleaned_data.get('category')
+            
+            # Extract IDs from model objects if present
+            room_id = room.id if room else None
+            rack_id = rack.id if rack else None
+            shelf_id = shelf.id if shelf else None
+            category_id = category.id if category else None
+            
             include_expired = form.cleaned_data.get('include_expired', False)
             include_removed = form.cleaned_data.get('include_removed', False)
 
@@ -737,28 +745,28 @@ def export_inventory(request):
             cell_format = workbook.add_format({'border': 1})
 
             # Create main inventory worksheet
-            worksheet = workbook.add_worksheet('Inventory')
-            worksheet.set_column('A:A', 25)  # Item name
-            worksheet.set_column('B:B', 15)  # Category
-            worksheet.set_column('C:C', 15)  # Manufacturer
-            worksheet.set_column('D:D', 12)  # Expiration Date
-            worksheet.set_column('E:E', 20)  # Location
-            worksheet.set_column('F:G', 15)  # Added/Removed By
-            worksheet.set_column('H:I', 18)  # Add/Remove Date
-            worksheet.set_column('J:J', 25)  # Notes
+            worksheet = workbook.add_worksheet('Inwentarz')
+            worksheet.set_column('A:A', 25)  # Nazwa przedmiotu
+            worksheet.set_column('B:B', 15)  # Kategoria
+            worksheet.set_column('C:C', 15)  # Producent
+            worksheet.set_column('D:D', 12)  # Data ważności
+            worksheet.set_column('E:E', 20)  # Lokalizacja
+            worksheet.set_column('F:G', 15)  # Dodany/Usunięty przez
+            worksheet.set_column('H:I', 18)  # Data dodania/usunięcia
+            worksheet.set_column('J:J', 25)  # Notatki
 
-            # Add header
+            # Add header with Polish names
             headers = [
-                'Item Name',
-                'Category',
-                'Manufacturer',
-                'Expiration Date',
-                'Location',
-                'Added By',
-                'Add Date',
-                'Removed By',
-                'Remove Date',
-                'Notes',
+                'Nazwa przedmiotu',
+                'Kategoria',
+                'Producent',
+                'Data ważności',
+                'Lokalizacja',
+                'Dodany przez',
+                'Data dodania',
+                'Usunięty przez',
+                'Data usunięcia',
+                'Notatki',
             ]
 
             for col, header in enumerate(headers):
@@ -817,9 +825,9 @@ def export_inventory(request):
                 worksheet.write(row, 9, item.note or '', current_format)
 
             # Create summary worksheet
-            summary_sheet = workbook.add_worksheet('Summary')
-            summary_sheet.set_column('A:A', 30)  # Description
-            summary_sheet.set_column('B:B', 15)  # Count
+            summary_sheet = workbook.add_worksheet('Podsumowanie')
+            summary_sheet.set_column('A:A', 30)  # Opis
+            summary_sheet.set_column('B:B', 15)  # Liczba
 
             title_format = workbook.add_format(
                 {
@@ -838,75 +846,75 @@ def export_inventory(request):
             count_format = workbook.add_format({'align': 'right', 'border': 1})
 
             # Add title
-            summary_sheet.merge_range('A1:B1', 'Inventory Summary', title_format)
+            summary_sheet.merge_range('A1:B1', 'Podsumowanie inwentarza', title_format)
 
             # Add dates section
             row_num = 2
-            summary_sheet.write(row_num, 0, 'Export Date', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Data eksportu', subtitle_format)
             summary_sheet.write(
                 row_num, 1, timezone.now().strftime('%Y-%m-%d'), count_format
             )
 
             # Add filter criteria used
             row_num += 2
-            summary_sheet.write(row_num, 0, 'Filter Criteria', title_format)
+            summary_sheet.write(row_num, 0, 'Kryteria filtrowania', title_format)
             summary_sheet.write(row_num, 1, '', title_format)
 
             row_num += 1
             if room_id:
-                room = Room.objects.get(id=room_id)
-                summary_sheet.write(row_num, 0, 'Room', subtitle_format)
-                summary_sheet.write(row_num, 1, room.name, count_format)
+                room_name = Room.objects.get(id=room_id).name
+                summary_sheet.write(row_num, 0, 'Pokój', subtitle_format)
+                summary_sheet.write(row_num, 1, room_name, count_format)
                 row_num += 1
 
             if rack_id:
-                rack = Rack.objects.get(id=rack_id)
-                summary_sheet.write(row_num, 0, 'Rack', subtitle_format)
-                summary_sheet.write(row_num, 1, str(rack), count_format)
+                rack_name = Rack.objects.get(id=rack_id).name
+                summary_sheet.write(row_num, 0, 'Regał', subtitle_format)
+                summary_sheet.write(row_num, 1, rack_name, count_format)
                 row_num += 1
 
             if shelf_id:
-                shelf = Shelf.objects.get(id=shelf_id)
-                summary_sheet.write(row_num, 0, 'Shelf', subtitle_format)
-                summary_sheet.write(row_num, 1, str(shelf), count_format)
+                shelf_number = Shelf.objects.get(id=shelf_id).number
+                summary_sheet.write(row_num, 0, 'Półka', subtitle_format)
+                summary_sheet.write(row_num, 1, str(shelf_number), count_format)
                 row_num += 1
 
             if category_id:
-                category = Category.objects.get(id=category_id)
-                summary_sheet.write(row_num, 0, 'Category', subtitle_format)
-                summary_sheet.write(row_num, 1, category.name, count_format)
+                category_name = Category.objects.get(id=category_id).name
+                summary_sheet.write(row_num, 0, 'Kategoria', subtitle_format)
+                summary_sheet.write(row_num, 1, category_name, count_format)
                 row_num += 1
 
-            summary_sheet.write(row_num, 0, 'Include Expired Items', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Uwzględnij przedmioty przeterminowane', subtitle_format)
             summary_sheet.write(
-                row_num, 1, 'Yes' if include_expired else 'No', count_format
+                row_num, 1, 'Tak' if include_expired else 'Nie', count_format
             )
             row_num += 1
 
-            summary_sheet.write(row_num, 0, 'Include Removed Items', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Uwzględnij przedmioty usunięte', subtitle_format)
             summary_sheet.write(
-                row_num, 1, 'Yes' if include_removed else 'No', count_format
+                row_num, 1, 'Tak' if include_removed else 'Nie', count_format
             )
 
             # Add statistics
             row_num += 2
-            summary_sheet.write(row_num, 0, 'Statistics', title_format)
+            summary_sheet.write(row_num, 0, 'Statystyki', title_format)
             summary_sheet.write(row_num, 1, '', title_format)
 
             row_num += 1
-            summary_sheet.write(row_num, 0, 'Total Items', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Łączna liczba przedmiotów', subtitle_format)
             summary_sheet.write(row_num, 1, assignments.count(), count_format)
             row_num += 1
 
             # Count active items (not removed)
             active_count = sum(1 for a in assignments if not a.remove_date)
-            summary_sheet.write(row_num, 0, 'Active Items', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Aktywne przedmioty', subtitle_format)
             summary_sheet.write(row_num, 1, active_count, count_format)
             row_num += 1
 
             # Count removed items
             removed_count = sum(1 for a in assignments if a.remove_date)
-            summary_sheet.write(row_num, 0, 'Removed Items', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Usunięte przedmioty', subtitle_format)
             summary_sheet.write(row_num, 1, removed_count, count_format)
             row_num += 1
 
@@ -916,7 +924,7 @@ def export_inventory(request):
                 for a in assignments
                 if a.item.expiration_date and a.item.expiration_date < today
             )
-            summary_sheet.write(row_num, 0, 'Expired Items', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Przeterminowane przedmioty', subtitle_format)
             summary_sheet.write(row_num, 1, expired_count, count_format)
             row_num += 1
 
@@ -927,13 +935,13 @@ def export_inventory(request):
                 if a.item.expiration_date
                 and today <= a.item.expiration_date <= today + timedelta(days=30)
             )
-            summary_sheet.write(row_num, 0, 'Expiring in Next 30 Days', subtitle_format)
+            summary_sheet.write(row_num, 0, 'Przedmioty kończące się w ciągu 30 dni', subtitle_format)
             summary_sheet.write(row_num, 1, expiring_soon, count_format)
             row_num += 1
 
             # Add breakdown by category
             row_num += 2
-            summary_sheet.write(row_num, 0, 'Items by Category', title_format)
+            summary_sheet.write(row_num, 0, 'Przedmioty według kategorii', title_format)
             summary_sheet.write(row_num, 1, '', title_format)
             row_num += 1
 
@@ -955,7 +963,7 @@ def export_inventory(request):
 
             # Add breakdown by location
             row_num += 2
-            summary_sheet.write(row_num, 0, 'Items by Location', title_format)
+            summary_sheet.write(row_num, 0, 'Przedmioty według lokalizacji', title_format)
             summary_sheet.write(row_num, 1, '', title_format)
             row_num += 1
 
@@ -1002,6 +1010,11 @@ def export_inventory(request):
 
             messages.success(request, 'Inwentarz został pomyślnie wyeksportowany.')
             return response
+        else:
+            # If form is invalid, add error messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     else:
         form = ExportForm()
 
@@ -1036,7 +1049,7 @@ def get_racks(request):
     # Return all racks, but add room_name to help with display
     racks = Rack.objects.all().select_related('room')
     
-    if room_id:
+    if (room_id):
         # Filter by room if specified, but include needed properties
         racks = racks.filter(room_id=room_id)
     
