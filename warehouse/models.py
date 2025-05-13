@@ -5,6 +5,12 @@ import uuid
 
 class Room(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    qr_code_uuid = models.UUIDField(null=True, blank=True, unique=True)
+
+    def save(self, *args, **kwargs):
+        if not self.qr_code_uuid:
+            self.qr_code_uuid = uuid.uuid4()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -13,9 +19,15 @@ class Room(models.Model):
 class Rack(models.Model):
     name = models.CharField(max_length=1)  # A, B, C, etc.
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='racks')
+    qr_code_uuid = models.UUIDField(null=True, blank=True, unique=True)
 
     class Meta:
         unique_together = ['name', 'room']
+
+    def save(self, *args, **kwargs):
+        if not self.qr_code_uuid:
+            self.qr_code_uuid = uuid.uuid4()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.room.name}.{self.name}'

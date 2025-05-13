@@ -34,14 +34,18 @@ def is_admin(user):
 @login_required
 def index(request):
     """Dashboard view"""
-    rooms = Room.objects.all().annotate(
-        rack_count=Count('racks'),
-        shelf_count=Count('racks__shelves'),
-        active_items=Count(
-            'racks__shelves__assignments',
-            filter=Q(racks__shelves__assignments__remove_date__isnull=True),
-        ),
-    ).order_by('name')  # Sort alphabetically by room name
+    rooms = (
+        Room.objects.all()
+        .annotate(
+            rack_count=Count('racks'),
+            shelf_count=Count('racks__shelves'),
+            active_items=Count(
+                'racks__shelves__assignments',
+                filter=Q(racks__shelves__assignments__remove_date__isnull=True),
+            ),
+        )
+        .order_by('name')
+    )  # Sort alphabetically by room name
 
     return render(
         request,
@@ -53,9 +57,17 @@ def index(request):
 @login_required
 def item_list(request):
     """List of all active items in warehouse"""
+    # Use select_related to fetch related objects in a single query
     assignments = ItemShelfAssignment.objects.filter(
         remove_date__isnull=True
-    ).select_related('item', 'shelf', 'shelf__rack', 'shelf__rack__room')
+    ).select_related(
+        'item',
+        'shelf',
+        'shelf__rack',
+        'shelf__rack__room',
+        'item__category',
+        'added_by',
+    )
 
     # Apply filters if provided
     room_id = request.GET.get('room')
@@ -74,18 +86,20 @@ def item_list(request):
         assignments = assignments.filter(shelf_id=shelf_id)
     if category_id:
         assignments = assignments.filter(item__category_id=category_id)
-    
+
     # Apply search filter if provided
     if search_query:
         assignments = assignments.filter(item__name__icontains=search_query)
-    
+
     # Apply 'has_note' filter if provided
     if has_note:
-        assignments = assignments.filter(item__note__isnull=False).exclude(item__note='')
+        assignments = assignments.filter(item__note__isnull=False).exclude(
+            item__note=''
+        )
 
     # Create a Q object to collect multiple filter conditions
     filters_q = Q()
-    
+
     # Apply 'expiring_soon' filter if provided
     if 'expiring_soon' in filter_values:
         expiring_soon_q = Q(
@@ -102,7 +116,7 @@ def item_list(request):
             item__expiration_date__lt=timezone.now().date(),
         )
         filters_q |= expired_q
-    
+
     # Apply combined filters if any were selected
     if filter_values:
         assignments = assignments.filter(filters_q)
@@ -152,7 +166,9 @@ def item_list(request):
 @user_passes_test(is_admin)
 def room_list(request):
     """List of all rooms with their racks and shelves"""
-    rooms = Room.objects.all().order_by('name').prefetch_related('racks', 'racks__shelves')
+    rooms = (
+        Room.objects.all().order_by('name').prefetch_related('racks', 'racks__shelves')
+    )
     return render(request, 'warehouse/room_list.html', {'rooms': rooms})
 
 
@@ -434,9 +450,9 @@ def category_delete(request, pk):
 @login_required
 def shelf_detail(request, pk):
     """Detail view of a shelf with its items"""
-    shelf = get_object_or_404(Shelf, pk=pk)
+    shelf = get_object_or_404(Shelf.objects.select_related('rack', 'rack__room'), pk=pk)
 
-    # Get active assignments
+    # Get active assignments with optimized related fields
     assignments = ItemShelfAssignment.objects.filter(
         shelf=shelf, remove_date__isnull=True
     ).select_related('item', 'item__category', 'added_by')
@@ -460,7 +476,9 @@ def shelf_detail(request, pk):
 @login_required
 def add_item_to_shelf(request, shelf_id):
     """Add an item to a shelf"""
-    shelf = get_object_or_404(Shelf, pk=shelf_id)
+    shelf = get_object_or_404(
+        Shelf.objects.select_related('rack', 'rack__room'), pk=shelf_id
+    )
 
     if request.method == 'POST':
         form = ItemShelfAssignmentForm(request.POST)
@@ -478,20 +496,34 @@ def add_item_to_shelf(request, shelf_id):
             note = form.cleaned_data['notes']
             quantity = form.cleaned_data['quantity']
 
-            # Create the specified number of items and assignments
+            # Use bulk create for better performance when adding multiple items
+            items_to_create = []
             for _ in range(quantity):
-                item = Item.objects.create(
-                    name=item_name,
-                    category=category,
-                    manufacturer=manufacturer,
-                    expiration_date=expiration_date,
-                    note=note,
-                )
-                ItemShelfAssignment.objects.create(
-                    item=item, shelf=shelf, added_by=request.user
+                items_to_create.append(
+                    Item(
+                        name=item_name,
+                        category=category,
+                        manufacturer=manufacturer,
+                        expiration_date=expiration_date,
+                        note=note,
+                    )
                 )
 
-            messages.success(request, f'{quantity} przedmiot(ów) zostało dodanych na półkę.')
+            # Bulk create the items
+            created_items = Item.objects.bulk_create(items_to_create)
+
+            # Create assignments for all created items
+            assignments_to_create = [
+                ItemShelfAssignment(item=item, shelf=shelf, added_by=request.user)
+                for item in created_items
+            ]
+
+            # Bulk create the assignments
+            ItemShelfAssignment.objects.bulk_create(assignments_to_create)
+
+            messages.success(
+                request, f'{quantity} przedmiot(ów) zostało dodanych na półkę.'
+            )
             return redirect('warehouse:shelf_detail', pk=shelf_id)
     else:
         # Prepopulate form fields from query parameters if present
@@ -527,7 +559,7 @@ def remove_item_from_shelf(request, pk):
     assignment = get_object_or_404(ItemShelfAssignment, pk=pk, remove_date__isnull=True)
 
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
+        request.POST.get('quantity', 1)
         # Mark the assignment as removed
         assignment.remove_date = timezone.now()
         assignment.removed_by = request.user
@@ -544,7 +576,12 @@ def remove_item_from_shelf(request, pk):
 @user_passes_test(is_admin)
 def generate_qr_codes(request):
     """Generate QR codes for shelves"""
-    shelves = Shelf.objects.all().select_related('rack', 'rack__room')
+    # Get shelves with related entities to reduce db queries
+    shelves = (
+        Shelf.objects.all()
+        .select_related('rack', 'rack__room')
+        .order_by('rack__room__name', 'rack__name', 'number')
+    )
 
     if request.method == 'POST':
         selected_shelves = request.POST.getlist('shelves')
@@ -554,17 +591,22 @@ def generate_qr_codes(request):
             from reportlab.pdfgen import canvas
             from reportlab.lib.pagesizes import A4
             from reportlab.lib.units import mm
-            from reportlab.platypus import SimpleDocTemplate
+            import qrcode
             import io
+            import tempfile
+            import os
 
-            # Get the selected shelves
-            selected_shelves = Shelf.objects.filter(id__in=selected_shelves)
+            # Get the selected shelves - select_related to avoid additional queries
+            selected_shelves = (
+                Shelf.objects.filter(id__in=selected_shelves)
+                .select_related('rack', 'rack__room')
+                .order_by('rack__room__name', 'rack__name', 'number')
+            )
 
             # Create a BytesIO buffer to receive the PDF data
             buffer = io.BytesIO()
 
-            # Create the PDF document
-            doc = SimpleDocTemplate(buffer, pagesize=A4)
+            # Get the page dimensions
             width, height = A4
 
             # Setup for 2x2 grid of QR codes per page
@@ -591,8 +633,6 @@ def generate_qr_codes(request):
                 y = height - (margin + qr_size) - row * (qr_size + spacing)
 
                 # Generate QR code for the shelf's URL
-                import qrcode
-
                 qr = qrcode.QRCode(
                     version=1,
                     error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -616,8 +656,6 @@ def generate_qr_codes(request):
                 img = qr.make_image(fill_color='black', back_color='white')
 
                 # Create a temporary file for the image
-                import tempfile
-
                 temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
                 temp_filename = temp_file.name
 
@@ -628,11 +666,9 @@ def generate_qr_codes(request):
                 p.drawImage(temp_filename, x, y, width=qr_size, height=qr_size)
 
                 # Clean up the temporary file
-                import os
-
                 try:
                     os.unlink(temp_filename)
-                except:
+                except: #noqa
                     pass  # Ignore errors during cleanup
 
                 # Draw shelf information below the QR code
@@ -680,13 +716,13 @@ def export_inventory(request):
             rack = form.cleaned_data.get('rack')
             shelf = form.cleaned_data.get('shelf')
             category = form.cleaned_data.get('category')
-            
+
             # Extract IDs from model objects if present
             room_id = room.id if room else None
             rack_id = rack.id if rack else None
             shelf_id = shelf.id if shelf else None
             category_id = category.id if category else None
-            
+
             include_expired = form.cleaned_data.get('include_expired', False)
             include_removed = form.cleaned_data.get('include_removed', False)
 
@@ -885,13 +921,17 @@ def export_inventory(request):
                 summary_sheet.write(row_num, 1, category_name, count_format)
                 row_num += 1
 
-            summary_sheet.write(row_num, 0, 'Uwzględnij przedmioty przeterminowane', subtitle_format)
+            summary_sheet.write(
+                row_num, 0, 'Uwzględnij przedmioty przeterminowane', subtitle_format
+            )
             summary_sheet.write(
                 row_num, 1, 'Tak' if include_expired else 'Nie', count_format
             )
             row_num += 1
 
-            summary_sheet.write(row_num, 0, 'Uwzględnij przedmioty usunięte', subtitle_format)
+            summary_sheet.write(
+                row_num, 0, 'Uwzględnij przedmioty usunięte', subtitle_format
+            )
             summary_sheet.write(
                 row_num, 1, 'Tak' if include_removed else 'Nie', count_format
             )
@@ -902,7 +942,9 @@ def export_inventory(request):
             summary_sheet.write(row_num, 1, '', title_format)
 
             row_num += 1
-            summary_sheet.write(row_num, 0, 'Łączna liczba przedmiotów', subtitle_format)
+            summary_sheet.write(
+                row_num, 0, 'Łączna liczba przedmiotów', subtitle_format
+            )
             summary_sheet.write(row_num, 1, assignments.count(), count_format)
             row_num += 1
 
@@ -924,7 +966,9 @@ def export_inventory(request):
                 for a in assignments
                 if a.item.expiration_date and a.item.expiration_date < today
             )
-            summary_sheet.write(row_num, 0, 'Przeterminowane przedmioty', subtitle_format)
+            summary_sheet.write(
+                row_num, 0, 'Przeterminowane przedmioty', subtitle_format
+            )
             summary_sheet.write(row_num, 1, expired_count, count_format)
             row_num += 1
 
@@ -935,7 +979,9 @@ def export_inventory(request):
                 if a.item.expiration_date
                 and today <= a.item.expiration_date <= today + timedelta(days=30)
             )
-            summary_sheet.write(row_num, 0, 'Przedmioty kończące się w ciągu 30 dni', subtitle_format)
+            summary_sheet.write(
+                row_num, 0, 'Przedmioty kończące się w ciągu 30 dni', subtitle_format
+            )
             summary_sheet.write(row_num, 1, expiring_soon, count_format)
             row_num += 1
 
@@ -963,7 +1009,9 @@ def export_inventory(request):
 
             # Add breakdown by location
             row_num += 2
-            summary_sheet.write(row_num, 0, 'Przedmioty według lokalizacji', title_format)
+            summary_sheet.write(
+                row_num, 0, 'Przedmioty według lokalizacji', title_format
+            )
             summary_sheet.write(row_num, 1, '', title_format)
             row_num += 1
 
@@ -1014,7 +1062,7 @@ def export_inventory(request):
             # If form is invalid, add error messages
             for field, errors in form.errors.items():
                 for error in errors:
-                    messages.error(request, f"Error in {field}: {error}")
+                    messages.error(request, f'Error in {field}: {error}')
     else:
         form = ExportForm()
 
@@ -1046,22 +1094,22 @@ def autocomplete_categories(request):
 def get_racks(request):
     """AJAX view for getting racks by room"""
     room_id = request.GET.get('room')
-    # Return all racks, but add room_name to help with display
-    racks = Rack.objects.all().select_related('room')
-    
-    if (room_id):
-        # Filter by room if specified, but include needed properties
+
+    # Use select_related to reduce database queries
+    racks = Rack.objects.select_related('room')
+
+    if room_id:
+        # Filter by room if specified
         racks = racks.filter(room_id=room_id)
-    
+
+    # Order by room name and then rack name for consistent display
+    racks = racks.order_by('room__name', 'name')
+
     rack_data = [
-        {
-            'id': r.id, 
-            'name': r.name, 
-            'room_id': r.room.id,
-            'room_name': r.room.name
-        } for r in racks
+        {'id': r.id, 'name': r.name, 'room_id': r.room.id, 'room_name': r.room.name}
+        for r in racks
     ]
-    
+
     return JsonResponse(rack_data, safe=False)
 
 
@@ -1069,22 +1117,32 @@ def get_racks(request):
 def get_shelves(request):
     """AJAX view for getting shelves by rack"""
     rack_id = request.GET.get('rack')
-    shelves = Shelf.objects.all().select_related('rack', 'rack__room')
-    
+    room_id = request.GET.get('room')
+
+    # Start with all shelves, select_related to reduce db queries
+    shelves = Shelf.objects.select_related('rack', 'rack__room')
+
+    # Apply filters if provided
     if rack_id:
-        # Filter by rack if specified
         shelves = shelves.filter(rack_id=rack_id)
-    
+    elif room_id:
+        # If only room is provided, filter by room
+        shelves = shelves.filter(rack__room_id=room_id)
+
+    # Order by location for consistent display
+    shelves = shelves.order_by('rack__room__name', 'rack__name', 'number')
+
     shelf_data = [
         {
-            'id': s.id, 
+            'id': s.id,
             'number': s.number,
             'rack_id': s.rack.id,
             'room_id': s.rack.room.id,
-            'full_location': s.full_location
-        } for s in shelves
+            'full_location': s.full_location,
+        }
+        for s in shelves
     ]
-    
+
     return JsonResponse(shelf_data, safe=False)
 
 
@@ -1195,31 +1253,46 @@ def register(request):
 @login_required
 def low_stock(request):
     """View for categories with low stock"""
-    categories = Category.objects.annotate(
-        active_items=Count(
-            'items__assignments', filter=Q(items__assignments__remove_date__isnull=True)
+    # Use a more efficient query with prefetch_related to reduce database hits
+    categories = (
+        Category.objects.annotate(
+            active_items=Count(
+                'items__assignments',
+                filter=Q(items__assignments__remove_date__isnull=True),
+            )
         )
-    ).filter(active_items__lt=10)
+        .filter(active_items__lt=10)
+        .prefetch_related('items__assignments__shelf__rack__room')
+    )
 
     low_stock_categories = []
     for category in categories:
-        locations = ItemShelfAssignment.objects.filter(
-            item__category=category, remove_date__isnull=True
-        ).select_related('shelf__rack__room')
+        # Use optimized query that leverages the prefetched data
+        assignments = [
+            a
+            for item in category.items.all()
+            for a in item.assignments.all()
+            if a.remove_date is None
+        ]
+
         # Deduplicate shelves by their id
         seen_shelf_ids = set()
         location_data = []
-        for assignment in locations:
+
+        for assignment in assignments:
             shelf_id = assignment.shelf.id
             if shelf_id not in seen_shelf_ids:
                 seen_shelf_ids.add(shelf_id)
-                location_data.append({
-                    'id': shelf_id,
-                    'full_location': assignment.shelf.full_location,
-                    'path': reverse(
-                        'warehouse:shelf_detail', kwargs={'pk': shelf_id}
-                    ),
-                })
+                location_data.append(
+                    {
+                        'id': shelf_id,
+                        'full_location': assignment.shelf.full_location,
+                        'path': reverse(
+                            'warehouse:shelf_detail', kwargs={'pk': shelf_id}
+                        ),
+                    }
+                )
+
         low_stock_categories.append(
             {
                 'name': category.name,
