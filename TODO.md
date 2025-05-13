@@ -14,5 +14,4 @@
 ## Fullstack
 - user with no email should be able to add email
 - feature to stop current assignment without deleting items
-- fix excel export
 - fix reset password flow

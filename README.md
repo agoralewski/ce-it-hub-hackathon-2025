@@ -18,6 +18,7 @@ KSP (Krwinkowy System Prezentowy) is an inventory management system (IMS) develo
 - Python 3.8 or higher
 - Django 5.0 or higher
 - Additional dependencies listed in `requirements.txt`
+- (Recommended) Python package manager: UV
 
 ## Quick Start Guide
 
@@ -28,20 +29,22 @@ git clone https://github.com/yourusername/ce-it-hub-hackathon-2025.git
 cd ce-it-hub-hackathon-2025
 ```
 
-### 2. Set up a virtual environment
+### 2.A Use uv to create a virtual environment and install dependencies
+
+[Install uv](https://docs.astral.sh/uv/getting-started/installation/#installing-uv)
+```bash
+uv sync
+```
+
+### 2.B (alternative if not using uv) Create venv and install dependencies
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows, use: venv\Scripts\activate
-```
-
-### 3. Install dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 3. Configure environment variables
 
 Copy the example environment file and update it with your settings:
 
@@ -53,27 +56,39 @@ Edit the `.env` file with your specific configuration:
 - Set a secure `SECRET_KEY`
 - Configure email settings for password reset functionality
 
-### 5. Set up the database
+### 4. Set up the database
 
+```bash
+uv run manage.py migrate
+```
+or
 ```bash
 python manage.py migrate
 ```
 
-### 6. Create a superuser (admin account)
+### 5. Create a superuser (admin account)
 
+```bash
+uv run manage.py createsuperuser
+```
+or
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Run the development server
+### 6. Run the development server
 
+```bash
+uv run manage.py runserver
+```
+or
 ```bash
 python manage.py runserver
 ```
 
 The application will be available at http://127.0.0.1:8000/
 
-### 8. Access the admin interface
+### 7. Access the admin interface
 
 Visit http://127.0.0.1:8000/admin/ and log in with the superuser credentials.
 
