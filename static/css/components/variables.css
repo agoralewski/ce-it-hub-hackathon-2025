@@ -1,0 +1,17 @@
+/* CSS variables for KSP (Krwinkowy System Prezentowy) */
+
+:root {
+    --primary: #b83847;
+    --secondary: #6f6f6f;
+    --success: #198754;
+    --danger: #b83847;
+    --warning: #ffc107;
+    --info: #0dcaf0;
+    --light: #f9f9f9;
+    --dark: #212529;
+    --primary-shadow: rgba(208, 36, 44, 0.15);
+    --primary-light: rgba(208, 36, 44, 0.05);
+    --shadow-light: rgba(0, 0, 0, 0.075);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    --primary-muted: rgba(208, 36, 44, 0.3);
+}

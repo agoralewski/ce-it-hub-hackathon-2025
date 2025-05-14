@@ -3,6 +3,36 @@
 
 {% block title %}Dodaj przedmiot na półkę - KSP{% endblock %}
 
+{% block extra_css %}
+<style>
+    .progress {
+        height: 25px;
+    }
+    .progress-bar {
+        transition: width 0.5s ease;
+    }
+    .stats-container {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+    .stats-item {
+        margin-bottom: 5px;
+    }
+    .bulk-operation-container {
+        margin-top: 20px;
+    }
+    #processing-message {
+        margin-top: 15px;
+        font-style: italic;
+    }
+    #cancel-bulk-btn {
+        margin-left: 10px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
@@ -11,6 +41,70 @@
                 <h5 class="mb-0">Dodaj przedmiot na półkę {{ shelf.full_location }}</h5>
             </div>
             <div class="card-body">
+                {% if bulk_operation %}
+                <!-- Bulk operation interface -->
+                <div class="bulk-operation-container">
+                    <h4>Dodawanie dużej ilości przedmiotów</h4>
+                    <p>Rozpoczynam dodawanie <strong>{{ quantity }}</strong> egzemplarzy przedmiotu <strong>{{ item_name }}</strong> na półkę {{ shelf.full_location }}.</p>
+                    
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    
+                    <div id="processing-message" class="text-muted">
+                        <i class="fas fa-spinner fa-spin"></i> Przygotowywanie operacji...
+                    </div>
+                    
+                    <div id="stats-container" class="stats-container d-none">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="stats-item">
+                                    <strong>Przetworzono:</strong> <span id="processed-count">0</span> / {{ quantity }}
+                                </div>
+                                <div class="stats-item">
+                                    <strong>Pozostało:</strong> <span id="remaining-count">{{ quantity }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stats-item">
+                                    <strong>Czas trwania:</strong> <span id="duration">0.00</span> sek.
+                                </div>
+                                <div class="stats-item">
+                                    <strong>Prędkość:</strong> <span id="speed">0</span> przedmiotów/s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex justify-content-between">
+                        <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary" id="back-btn">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        <div>
+                            <button type="button" class="btn btn-success d-none" id="view-shelf-btn">
+                                <i class="fas fa-eye"></i> Zobacz półkę
+                            </button>
+                            <button type="button" class="btn btn-danger" id="cancel-bulk-btn">
+                                <i class="fas fa-times"></i> Anuluj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden form data for AJAX requests -->
+                <form id="bulk-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="shelf-id" name="shelf_id" value="{{ shelf.pk }}">
+                    <input type="hidden" id="item-name" name="item_name" value="{{ item_name }}">
+                    <input type="hidden" id="category-id" name="category_id" value="{{ category_id }}">
+                    <input type="hidden" id="manufacturer" name="manufacturer" value="{{ manufacturer }}">
+                    <input type="hidden" id="expiration-date" name="expiration_date" value="{{ expiration_date }}">
+                    <input type="hidden" id="note" name="note" value="{{ note }}">
+                    <input type="hidden" id="quantity" name="quantity" value="{{ quantity }}">
+                </form>
+                
+                {% else %}
+                <!-- Regular item addition form -->
                 <form method="post">
                     {% csrf_token %}
                     
@@ -131,6 +225,7 @@
                         </button>
                     </div>
                 </form>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -209,12 +304,6 @@
         // Store item and manufacturer lists globally
         var allItems = [];
         var allManufacturers = [];
-            
-        // Original Select2 initialization and event handlers are no longer needed
-        
-        // Store item and manufacturer lists globally
-        var allItems = [];
-        var allManufacturers = [];
         
         // Fetch all items once when the page loads
         $.ajax({
@@ -277,6 +366,123 @@
                 }).attr('placeholder', 'Wpisz producenta');
             }
         });
+
+        // Bulk operation AJAX processing
+        {% if bulk_operation %}
+        var isCancelled = false;
+        var isComplete = false;
+        var totalProcessed = 0;
+        var totalBatches = 0;
+        var startTime = new Date();
+        var batchSize = 5000; // Optimal batch size for best performance
+        
+        // Process items in batches using AJAX
+        function processItemBatch(offset) {
+            if (isCancelled) {
+                return;
+            }
+            
+            // Get form data with CSRF token
+            var formData = $('#bulk-form').serialize();
+            formData += '&batch_size=' + batchSize + '&offset=' + offset;
+            
+            // Update UI
+            $('#processing-message').html('<i class="fas fa-spinner fa-spin"></i> Przetwarzanie przedmiotów (' + 
+                (offset + 1) + ' - ' + Math.min(parseInt($('#quantity').val()), offset + batchSize) + 
+                ' z ' + $('#quantity').val() + ')...');
+            
+            // Make AJAX request to process this batch
+            $.ajax({
+                url: '{% url "warehouse:ajax_bulk_add_items" %}',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    // Update statistics
+                    $('#stats-container').removeClass('d-none');
+                    $('#processed-count').text(response.total_processed);
+                    $('#remaining-count').text(response.remaining);
+                    
+                    // Update progress bar
+                    var progressPercent = response.progress.toFixed(1);
+                    $('#progress-bar').css('width', progressPercent + '%')
+                                     .attr('aria-valuenow', progressPercent)
+                                     .text(progressPercent + '%');
+                    
+                    // Update processing speed
+                    var elapsed = (new Date() - startTime) / 1000; // seconds
+                    var itemsPerSecond = (response.total_processed / elapsed).toFixed(2);
+                    $('#duration').text(elapsed.toFixed(2));
+                    $('#speed').text(itemsPerSecond);
+                    
+                    // If this batch is done but we have more to process
+                    if (!response.complete) {
+                        totalProcessed = response.total_processed;
+                        totalBatches++;
+                        
+                        // Process next batch
+                        setTimeout(function() {
+                            processItemBatch(response.offset);
+                        }, 0); // No delay needed, continue immediately
+                    } else {
+                        // All done
+                        isComplete = true;
+                        var totalTime = (new Date() - startTime) / 1000;
+                        var finalSpeed = (parseInt($('#quantity').val()) / totalTime).toFixed(2);
+                        
+                        $('#progress-bar').removeClass('progress-bar-animated')
+                                         .removeClass('progress-bar-striped')
+                                         .addClass('bg-success');
+                        
+                        $('#processing-message').html('<i class="fas fa-check-circle text-success"></i> ' + 
+                            'Dodano ' + $('#quantity').val() + ' przedmiotów' + 
+                            totalTime.toFixed(2) + ' sekund (' + finalSpeed + ' przedmiotów/s)');
+                        
+                        // Show view shelf button and hide cancel button
+                        $('#view-shelf-btn').removeClass('d-none').attr('onclick', 
+                            'window.location.href="{% url "warehouse:shelf_detail" shelf.pk %}"');
+                        $('#cancel-bulk-btn').addClass('d-none');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = "Wystąpił błąd podczas dodawania przedmiotów.";
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing JSON response:", e);
+                    }
+                    
+                    $('#processing-message').html('<i class="fas fa-exclamation-triangle text-danger"></i> ' + 
+                        errorMessage);
+                        
+                    // Keep partial progress information
+                    $('#progress-bar').addClass('bg-danger');
+                }
+            });
+        }
+        
+        // Start processing when page loads
+        setTimeout(function() {
+            processItemBatch(0);
+        }, 500);
+        
+        // Handle cancel button
+        $('#cancel-bulk-btn').click(function() {
+            if (isComplete) return;
+            
+            if (confirm('Czy na pewno chcesz anulować dodawanie przedmiotów? Dotychczas dodane przedmioty pozostaną na półce.')) {
+                isCancelled = true;
+                $('#processing-message').html('<i class="fas fa-ban text-danger"></i> Operacja została anulowana.');
+                $('#progress-bar').addClass('bg-danger');
+                $(this).addClass('d-none');
+                $('#view-shelf-btn').removeClass('d-none').attr('onclick', 
+                    'window.location.href="{% url "warehouse:shelf_detail" shelf.pk %}"');
+            }
+        });
+        {% endif %}
     });
 </script>
 {% endblock %}

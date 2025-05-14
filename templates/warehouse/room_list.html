@@ -15,31 +15,30 @@
         <div class="accordion" id="roomsAccordion">
             {% for room in rooms %}
             <div class="accordion-item">
-                <h2 class="accordion-header" id="heading{{ room.id }}">
+                <h2 class="accordion-header position-relative" id="heading{{ room.id }}">
                     <button
-                        class="accordion-button position-relative {% if not request.GET.new_room|slugify == room.id|slugify %}collapsed{% endif %}"
+                        class="accordion-button {% if not request.GET.new_room|slugify == room.id|slugify %}collapsed{% endif %}"
                         type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ room.id }}"
                         aria-expanded="{% if request.GET.new_room|slugify == room.id|slugify %}true{% else %}false{% endif %}"
                         aria-controls="collapse{{ room.id }}">
                         <span class="me-3"><i class="fas fa-warehouse"></i></span>
                         <strong>{{ room.name }}</strong>
-                        
-                        <div class="btn-group position-absolute" style="right: 50px; opacity: 0; transition: opacity 0.2s;"
-                             id="roomButtons{{ room.id }}">
-                            <a href="{% url 'warehouse:room_update' room.pk %}"
-                                class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-edit"></i> Edytuj
-                            </a>
-                            <a href="{% url 'warehouse:room_delete' room.pk %}"
-                                class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash"></i> Usuń
-                            </a>
-                            <a href="{% url 'warehouse:rack_create' room.pk %}"
-                                class="btn btn-sm btn-outline-success">
-                                <i class="fas fa-plus"></i> Dodaj regał
-                            </a>
-                        </div>
                     </button>
+                    <div class="btn-group room-buttons" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); z-index: 100; opacity: 0; transition: opacity 0.2s;"
+                         id="roomButtons{{ room.id }}">
+                        <a href="{% url 'warehouse:room_update' room.pk %}"
+                            class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edytuj
+                        </a>
+                        <a href="{% url 'warehouse:room_delete' room.pk %}"
+                            class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i> Usuń
+                        </a>
+                        <a href="{% url 'warehouse:rack_create' room.pk %}"
+                            class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-plus"></i> Dodaj regał
+                        </a>
+                    </div>
                 </h2>
                 <div id="collapse{{ room.id }}"
                     class="accordion-collapse collapse {% if request.GET.new_room|slugify == room.id|slugify %}show{% endif %}"
@@ -145,6 +144,8 @@
             // Initialize buttons visibility based on accordion state
             if (button.getAttribute('aria-expanded') === 'true') {
                 buttonGroup.style.opacity = '1';
+            } else {
+                buttonGroup.style.opacity = '0';
             }
             
             // Toggle buttons visibility when accordion is toggled
@@ -157,6 +158,32 @@
                         buttonGroup.style.opacity = '0';
                     }
                 }, 10);
+            });
+        });
+        
+        // Make room buttons always visible on hover
+        const accordionItems = document.querySelectorAll('.accordion-item');
+        accordionItems.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            const buttonGroup = item.querySelector('.room-buttons');
+            
+            header.addEventListener('mouseenter', function() {
+                buttonGroup.style.opacity = '1';
+            });
+            
+            header.addEventListener('mouseleave', function() {
+                const button = header.querySelector('.accordion-button');
+                if (button.getAttribute('aria-expanded') !== 'true') {
+                    buttonGroup.style.opacity = '0';
+                }
+            });
+        });
+        
+        // Prevent accordion toggle when clicking room buttons
+        const roomButtons = document.querySelectorAll('.room-buttons a');
+        roomButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
             });
         });
     });
