@@ -594,7 +594,7 @@ def add_item_to_shelf(request, shelf_id):
 
                 messages.success(
                     request,
-                    f'{quantity} przedmiot(ów) zostało dodanych na półkę w {duration:.2f} sekund ({items_per_second:.2f} przedmiotów/s).',
+                    f'{quantity} przedmiot(ów) zostało dodanych na półkę.',
                 )
                 return redirect('warehouse:shelf_detail', pk=shelf_id)
 
