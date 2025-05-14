@@ -38,8 +38,8 @@ def index(request):
     rooms = (
         Room.objects.all()
         .annotate(
-            rack_count=Count('racks'),
-            shelf_count=Count('racks__shelves'),
+            rack_count=Count('racks', distinct=True),
+            shelf_count=Count('racks__shelves', distinct=True),
             active_items=Count(
                 'racks__shelves__assignments',
                 filter=Q(racks__shelves__assignments__remove_date__isnull=True),
