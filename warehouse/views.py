@@ -106,6 +106,37 @@ def item_list(request):
     # Apply combined filters if any were selected
     if filter_values:
         assignments = assignments.filter(filters_q)
+    
+    # Group assignments by item name, shelf, category and other properties
+    grouped_assignments = {}
+    for assignment in assignments:
+        # Create a unique key for each group based on name, location and other relevant properties
+        key = (
+            assignment.item.name,
+            assignment.shelf.pk,
+            assignment.item.category.pk,
+            assignment.item.manufacturer or '',
+            str(assignment.item.expiration_date or ''),
+            assignment.item.note or ''
+        )
+        
+        if key not in grouped_assignments:
+            grouped_assignments[key] = {
+                'item_name': assignment.item.name,
+                'shelf': assignment.shelf,
+                'category': assignment.item.category,
+                'manufacturer': assignment.item.manufacturer,
+                'expiration_date': assignment.item.expiration_date,
+                'note': assignment.item.note,
+                'assignments': [],
+                'count': 0
+            }
+        
+        grouped_assignments[key]['assignments'].append(assignment)
+        grouped_assignments[key]['count'] += 1
+
+    # Convert dictionary to list for the template
+    grouped_items = list(grouped_assignments.values())
 
     # Get filter options
     rooms = Room.objects.all()
@@ -129,7 +160,8 @@ def item_list(request):
         request,
         'warehouse/item_list.html',
         {
-            'assignments': assignments,
+            'assignments': assignments,  # Keep original for backward compatibility
+            'grouped_items': grouped_items,  # New grouped items for display
             'rooms': rooms,
             'racks': racks,
             'shelves': shelves,
@@ -525,18 +557,41 @@ def add_item_to_shelf(request, shelf_id):
 def remove_item_from_shelf(request, pk):
     """Remove an item from a shelf"""
     assignment = get_object_or_404(ItemShelfAssignment, pk=pk, remove_date__isnull=True)
+    item_name = assignment.item.name
+    shelf_id = assignment.shelf.pk
+    
+    # Get all active assignments for this item on this shelf that match the same properties
+    matching_assignments = ItemShelfAssignment.objects.filter(
+        item__name=item_name,
+        shelf_id=shelf_id,
+        remove_date__isnull=True,
+        item__category=assignment.item.category,
+        item__manufacturer=assignment.item.manufacturer,
+        item__expiration_date=assignment.item.expiration_date,
+        item__note=assignment.item.note
+    ).select_related('item')
+    
+    total_available = matching_assignments.count()
 
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
-        # Mark the assignment as removed
-        assignment.remove_date = timezone.now()
-        assignment.removed_by = request.user
-        assignment.save()
+        # Ensure quantity doesn't exceed available items
+        quantity = min(quantity, total_available)
+        
+        # Mark the specified number of assignments as removed
+        assignments_to_remove = matching_assignments[:quantity]
+        for assignment_to_remove in assignments_to_remove:
+            assignment_to_remove.remove_date = timezone.now()
+            assignment_to_remove.removed_by = request.user
+            assignment_to_remove.save()
 
-        messages.success(request, 'Przedmiot został pomyślnie zdjęty z półki.')
-        return redirect('warehouse:shelf_detail', pk=assignment.shelf.pk)
+        messages.success(request, f'{quantity} przedmiot(ów) "{item_name}" zostało pomyślnie zdjętych z półki.')
+        return redirect('warehouse:shelf_detail', pk=shelf_id)
 
-    return render(request, 'warehouse/remove_item.html', {'assignment': assignment})
+    return render(request, 'warehouse/remove_item.html', {
+        'assignment': assignment,
+        'total_available': total_available
+    })
 
 
 # QR code generation

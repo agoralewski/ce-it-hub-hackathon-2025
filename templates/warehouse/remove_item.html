@@ -33,6 +33,11 @@
                 
                 <form method="post">
                     {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label"><strong>Liczba do usunięcia:</strong></label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ total_available }}" value="1" required>
+                        <div class="form-text">Dostępne przedmioty: {{ total_available }}</div>
+                    </div>
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'warehouse:shelf_detail' assignment.shelf.pk %}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Anuluj
