@@ -12,6 +12,7 @@ from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils import timezone
 from django.db import IntegrityError
+from django.core.paginator import Paginator
 
 from .models import Room, Rack, Shelf, Category, Item, ItemShelfAssignment
 from .forms import (
@@ -57,6 +58,15 @@ def index(request):
 @login_required
 def item_list(request):
     """List of all active items in warehouse"""
+    # Get filter parameters
+    room_id = request.GET.get('room')
+    rack_id = request.GET.get('rack')
+    shelf_id = request.GET.get('shelf')
+    category_id = request.GET.get('category')
+    search_query = request.GET.get('search')
+    filter_values = request.GET.getlist('filter')  # Get all filter values as a list
+    has_note = request.GET.get('has_note')
+
     # Use select_related to fetch related objects in a single query
     assignments = ItemShelfAssignment.objects.filter(
         remove_date__isnull=True
@@ -70,14 +80,6 @@ def item_list(request):
     )
 
     # Apply filters if provided
-    room_id = request.GET.get('room')
-    rack_id = request.GET.get('rack')
-    shelf_id = request.GET.get('shelf')
-    category_id = request.GET.get('category')
-    search_query = request.GET.get('search')
-    filter_values = request.GET.getlist('filter')  # Get all filter values as a list
-    has_note = request.GET.get('has_note')
-
     if room_id:
         assignments = assignments.filter(shelf__rack__room_id=room_id)
     if rack_id:
@@ -121,6 +123,14 @@ def item_list(request):
     if filter_values:
         assignments = assignments.filter(filters_q)
 
+    # Get total count for stats (before pagination)
+    total_count = assignments.count()
+
+    # Add pagination
+    paginator = Paginator(assignments, 100)  # Show 100 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # Get filter options
     rooms = Room.objects.all()
     racks = Rack.objects.all()
@@ -143,7 +153,9 @@ def item_list(request):
         request,
         'warehouse/item_list.html',
         {
-            'assignments': assignments,
+            'assignments': page_obj,  # Use paginated assignments
+            'page_obj': page_obj,  # Add page object for pagination controls
+            'total_count': total_count,
             'rooms': rooms,
             'racks': racks,
             'shelves': shelves,
@@ -457,6 +469,11 @@ def shelf_detail(request, pk):
         shelf=shelf, remove_date__isnull=True
     ).select_related('item', 'item__category', 'added_by')
 
+    # Add pagination to handle large number of items on a shelf
+    paginator = Paginator(assignments, 50)  # Show 50 items per page
+    page_number = request.GET.get('page')
+    assignments_page = paginator.get_page(page_number)
+
     # Add date context for expiration highlighting
     today_date = timezone.now().date()
     thirty_days_from_now = today_date + timedelta(days=30)
@@ -466,7 +483,9 @@ def shelf_detail(request, pk):
         'warehouse/shelf_detail.html',
         {
             'shelf': shelf,
-            'assignments': assignments,
+            'assignments': assignments_page,
+            'page_obj': assignments_page,
+            'total_count': assignments.count(),
             'today_date': today_date,
             'thirty_days_from_now': thirty_days_from_now,
         },
@@ -496,35 +515,94 @@ def add_item_to_shelf(request, shelf_id):
             note = form.cleaned_data['notes']
             quantity = form.cleaned_data['quantity']
 
-            # Use bulk create for better performance when adding multiple items
-            items_to_create = []
-            for _ in range(quantity):
-                items_to_create.append(
-                    Item(
-                        name=item_name,
-                        category=category,
-                        manufacturer=manufacturer,
-                        expiration_date=expiration_date,
-                        note=note,
-                    )
+            # For very large quantities, use an AJAX approach to show progress
+            if quantity > 10000:
+                context = {
+                    'form': form,
+                    'shelf': shelf,
+                    'input_data': {},
+                    'bulk_operation': True,
+                    'quantity': quantity,
+                    'item_name': item_name,
+                    'category_id': category.id,
+                    'manufacturer': manufacturer or '',
+                    'expiration_date': expiration_date.isoformat()
+                    if expiration_date
+                    else '',
+                    'note': note or '',
+                }
+                return render(request, 'warehouse/add_item.html', context)
+
+            # Use transaction to ensure all database operations succeed or fail together
+            from django.db import transaction
+
+            try:
+                # Determine optimal batch size based on quantity
+                # Larger quantities can use larger batches for better performance
+                if quantity <= 1000:
+                    batch_size = 1000
+                elif quantity <= 10000:
+                    batch_size = 2500
+                else:
+                    batch_size = 5000
+
+                start_time = timezone.now()
+
+                # SQLite doesn't support parallel processing well due to locking
+                # So we'll use the optimized single-thread approach
+                with transaction.atomic():
+                    remaining = quantity
+
+                    while remaining > 0:
+                        # Process in batches of batch_size or remaining items, whichever is smaller
+                        current_batch = min(batch_size, remaining)
+
+                        # Create items for this batch - use a list comprehension instead of
+                        # appending in a loop for better performance
+                        items_to_create = [
+                            Item(
+                                name=item_name,
+                                category=category,
+                                manufacturer=manufacturer,
+                                expiration_date=expiration_date,
+                                note=note,
+                            )
+                            for _ in range(current_batch)
+                        ]
+
+                        # Bulk create the items for this batch
+                        created_items = Item.objects.bulk_create(items_to_create)
+
+                        # Create assignments for this batch of items - use a list comprehension
+                        # for better performance
+                        assignments_to_create = [
+                            ItemShelfAssignment(
+                                item=item, shelf=shelf, added_by=request.user
+                            )
+                            for item in created_items
+                        ]
+
+                        # Bulk create the assignments for this batch
+                        ItemShelfAssignment.objects.bulk_create(assignments_to_create)
+
+                        # Update remaining count
+                        remaining -= current_batch
+
+                end_time = timezone.now()
+                duration = (end_time - start_time).total_seconds()
+                items_per_second = quantity / duration if duration > 0 else 0
+
+                messages.success(
+                    request,
+                    f'{quantity} przedmiot(ów) zostało dodanych na półkę w {duration:.2f} sekund ({items_per_second:.2f} przedmiotów/s).',
+                )
+                return redirect('warehouse:shelf_detail', pk=shelf_id)
+
+            except Exception as e:
+                messages.error(
+                    request, f'Wystąpił błąd podczas dodawania przedmiotów: {str(e)}'
                 )
 
-            # Bulk create the items
-            created_items = Item.objects.bulk_create(items_to_create)
-
-            # Create assignments for all created items
-            assignments_to_create = [
-                ItemShelfAssignment(item=item, shelf=shelf, added_by=request.user)
-                for item in created_items
-            ]
-
-            # Bulk create the assignments
-            ItemShelfAssignment.objects.bulk_create(assignments_to_create)
-
-            messages.success(
-                request, f'{quantity} przedmiot(ów) zostało dodanych na półkę.'
-            )
-            return redirect('warehouse:shelf_detail', pk=shelf_id)
     else:
         # Prepopulate form fields from query parameters if present
         initial = {}
@@ -541,7 +619,7 @@ def add_item_to_shelf(request, shelf_id):
         form = ItemShelfAssignmentForm(initial=initial)
 
     # Prepare context data for the form fields
-    context = {'form': form, 'shelf': shelf, 'input_data': {}}
+    context = {'form': form, 'shelf': shelf, 'input_data': {}, 'bulk_operation': False}
 
     # If this is a POST request, pass input values for Select2 fields
     if request.method == 'POST' and not form.is_valid():
@@ -668,7 +746,7 @@ def generate_qr_codes(request):
                 # Clean up the temporary file
                 try:
                     os.unlink(temp_filename)
-                except: #noqa
+                except:  # noqa
                     pass  # Ignore errors during cleanup
 
                 # Draw shelf information below the QR code
@@ -1154,22 +1232,19 @@ def autocomplete_items(request):
     # Get distinct item names only, not full objects
     if query:
         # Filter by the query but only get distinct names
-        items = Item.objects.filter(name__icontains=query).values('name').distinct()
+        # Using values_list with flat=True is more efficient than values() for simple name retrieval
+        items = (
+            Item.objects.filter(name__icontains=query)
+            .values_list('name', flat=True)
+            .distinct()[:10]
+        )
+        # Limit to 10 items for better performance on large datasets
     else:
-        # For empty queries, get all distinct names
-        items = Item.objects.values('name').distinct()
+        # For empty queries, return an empty list to avoid loading all items
+        items = []
 
     # Format results with only name information
-    results = []
-    # Use .values('name') to ensure we're only getting distinct names
-    for item in (
-        items[:500] if not query else items[:10]
-    ):  # Limit to 500 items for client-side filtering
-        item_data = {
-            'id': item['name'],
-            'text': item['name'],
-        }
-        results.append(item_data)
+    results = [{'id': name, 'text': name} for name in items]
 
     return JsonResponse({'results': results})
 
@@ -1179,20 +1254,19 @@ def autocomplete_manufacturers(request):
     """AJAX view for manufacturer autocomplete"""
     query = request.GET.get('term', '')
 
-    # Base query - exclude null manufacturers
-    base_query = Item.objects.filter(manufacturer__isnull=False)
-
-    # If the query is empty, return all distinct manufacturers
-    # Otherwise filter based on the query
+    # Use values_list with flat=True for better performance
     if query:
+        # If there's a search query, filter and limit results
         manufacturers = (
-            base_query.filter(manufacturer__icontains=query)
+            Item.objects.filter(
+                manufacturer__isnull=False, manufacturer__icontains=query
+            )
             .values_list('manufacturer', flat=True)
             .distinct()[:10]
         )
     else:
-        # For an empty query, get all distinct manufacturers
-        manufacturers = base_query.values_list('manufacturer', flat=True).distinct()
+        # For empty queries, don't return anything to avoid loading the entire dataset
+        manufacturers = []
 
     results = [{'id': m, 'text': m} for m in manufacturers]
     return JsonResponse({'results': results})
@@ -1306,3 +1380,118 @@ def low_stock(request):
         'warehouse/low_stock.html',
         {'low_stock_categories': low_stock_categories},
     )
+
+
+@login_required
+def ajax_bulk_add_items(request):
+    """AJAX endpoint for adding large quantities of items with progress tracking"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+    # Extract parameters from the request
+    try:
+        shelf_id = int(request.POST.get('shelf_id'))
+        item_name = request.POST.get('item_name', '').strip()
+        category_id = int(request.POST.get('category_id'))
+        manufacturer = request.POST.get('manufacturer', '').strip() or None
+        expiration_date = request.POST.get('expiration_date')
+        if expiration_date and expiration_date != 'null':
+            # Parse ISO format date
+            from datetime import datetime
+
+            expiration_date = datetime.fromisoformat(expiration_date).date()
+        else:
+            expiration_date = None
+        note = request.POST.get('note', '')
+        quantity = int(request.POST.get('quantity'))
+        batch_size = int(request.POST.get('batch_size', 10000))
+        offset = int(request.POST.get('offset', 0))
+    except (ValueError, TypeError) as e:
+        return JsonResponse({'error': f'Invalid parameters: {str(e)}'}, status=400)
+
+    # Validate parameters
+    if not all([shelf_id, item_name, category_id, quantity > 0]):
+        return JsonResponse({'error': 'Missing required parameters'}, status=400)
+
+    # Get shelf and category
+    try:
+        shelf = Shelf.objects.get(pk=shelf_id)
+        category = Category.objects.get(pk=category_id)
+    except (Shelf.DoesNotExist, Category.DoesNotExist):
+        return JsonResponse({'error': 'Invalid shelf or category'}, status=400)
+
+    # Calculate how many items to process in this request
+    items_to_process = min(batch_size, quantity - offset)
+
+    if items_to_process <= 0:
+        # All items have been processed
+        return JsonResponse(
+            {
+                'success': True,
+                'complete': True,
+                'message': f'Successfully added {quantity} items',
+                'total_processed': quantity,
+            }
+        )
+
+    # Use transaction to ensure all database operations succeed or fail together
+    from django.db import transaction
+
+    try:
+        start_time = timezone.now()
+
+        with transaction.atomic():
+            # Create items for this batch
+            items_to_create = [
+                Item(
+                    name=item_name,
+                    category=category,
+                    manufacturer=manufacturer,
+                    expiration_date=expiration_date,
+                    note=note,
+                )
+                for _ in range(items_to_process)
+            ]
+
+            # Bulk create the items for this batch
+            created_items = Item.objects.bulk_create(items_to_create)
+
+            # Create assignments for this batch of items
+            assignments_to_create = [
+                ItemShelfAssignment(item=item, shelf=shelf, added_by=request.user)
+                for item in created_items
+            ]
+
+            # Bulk create the assignments for this batch
+            ItemShelfAssignment.objects.bulk_create(assignments_to_create)
+
+        end_time = timezone.now()
+        duration = (end_time - start_time).total_seconds()
+        items_per_second = items_to_process / duration if duration > 0 else 0
+
+        # Calculate progress
+        new_offset = offset + items_to_process
+        progress = (new_offset / quantity) * 100
+
+        # Check if we're done
+        is_complete = new_offset >= quantity
+
+        return JsonResponse(
+            {
+                'success': True,
+                'complete': is_complete,
+                'progress': progress,
+                'processed': items_to_process,
+                'total_processed': new_offset,
+                'remaining': quantity - new_offset,
+                'duration': duration,
+                'items_per_second': items_per_second,
+                'offset': new_offset,  # Pass the new offset for the next batch
+                'message': f'Processed {items_to_process} items in {duration:.2f} seconds ({items_per_second:.2f} items/s)',
+            }
+        )
+
+    except Exception as e:
+        return JsonResponse(
+            {'error': f'Error processing items: {str(e)}', 'offset': offset}, status=500
+        )

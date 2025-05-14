@@ -37,11 +37,25 @@
     <!-- Main content - Items on Shelf -->
     <div class="col-md-8 mb-4">
         <div class="card shadow h-100">
-            <div class="card-header">
-                <!-- Updated header to use consistent styling -->
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Przedmioty na półce</h5>
+                <!-- Item counter badge -->
+                {% if total_count > 0 %}
+                <span class="badge bg-primary rounded-pill">
+                    {{ total_count }} przedmiotów
+                </span>
+                {% endif %}
             </div>
             <div class="card-body">
                 {% if assignments %}
+                <!-- Pagination Info -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <div class="pagination-info mb-3 text-muted">
+                    Pokazuję {{ assignments|length }} z {{ total_count }} przedmiotów
+                    (Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }})
+                </div>
+                {% endif %}
+                
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-light">
@@ -100,6 +114,58 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Pagination Controls -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">&laquo; First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">&laquo; First</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Next</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Last &raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
                 {% else %}
                 <div class="text-center py-5">
                     <div class="empty-shelf-icon mb-3">
@@ -182,7 +248,5 @@
             </div>
         </div>
     </div>
-</div>
-</div>
 </div>
 {% endblock %}

@@ -58,6 +58,7 @@ urlpatterns = [
     # AJAX endpoints for dynamic filtering
     path('api/racks/', views.get_racks, name='get_racks'),
     path('api/shelves/', views.get_shelves, name='get_shelves'),
+    path('ajax/bulk-add-items/', views.ajax_bulk_add_items, name='ajax_bulk_add_items'),
     # User profile and password management
     path('profile/', views.profile, name='profile'),
     path('profile/change-password/', views.change_password, name='change_password'),
