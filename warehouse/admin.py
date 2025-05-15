@@ -38,14 +38,22 @@ class ItemAdmin(admin.ModelAdmin):
 
 @admin.register(ItemShelfAssignment)
 class ItemShelfAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('item', 'shelf', 'added_by', 'add_date', 'removed_by', 'remove_date', 'is_active_status')
+    list_display = (
+        'item',
+        'shelf',
+        'added_by',
+        'add_date',
+        'removed_by',
+        'remove_date',
+        'is_active_status',
+    )
     list_filter = ('shelf__rack__room', 'item__category')
     search_fields = ('item__name', 'shelf__rack__room__name')
     date_hierarchy = 'add_date'
     readonly_fields = ('add_date',)
-    
+
     def is_active_status(self, obj):
         return obj.remove_date is None
-    
+
     is_active_status.boolean = True
     is_active_status.short_description = 'Active'

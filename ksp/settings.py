@@ -21,13 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_variable('SECRET_KEY', 'django-insecure-3y#+jc!+bci9pa5f5z67dqw+p9q#8(#yu-0+ceiq_k8p2jwd#h')
+SECRET_KEY = get_env_variable(
+    'SECRET_KEY', 'django-insecure-3y#+jc!+bci9pa5f5z67dqw+p9q#8(#yu-0+ceiq_k8p2jwd#h'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool_env_variable('DEBUG', True)
 
 # Updated to include local network IP for mobile access
-ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', 'localhost,127.0.0.1,192.168.0.94').split(',')
+ALLOWED_HOSTS = get_env_variable(
+    'ALLOWED_HOSTS', 'localhost,127.0.0.1,192.168.0.94'
+).split(',')
 
 
 # Application definition
@@ -166,3 +170,9 @@ else:
     EMAIL_USE_TLS = get_bool_env_variable('EMAIL_USE_TLS', True)
     EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER', 'fundacja@kwrinka.pl')
     EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', '')
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'warehouse.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

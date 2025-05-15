@@ -1,21 +1,21 @@
 /* Main CSS file for KSP (Krwinkowy System Prezentowy) */
 
-:root {
-    --primary: #d0242c;
-    --secondary: #6c757d;
-    --success: #198754;
-    --danger: #dc3545;
-    --warning: #ffc107;
-    --info: #0dcaf0;
-    --light: #f8f9fa;
-    --dark: #212529;
-}
+/* Import component styles */
+@import url('components/variables.css');
+@import url('components/buttons.css');
+@import url('components/cards.css');
+@import url('components/select2.css');
+@import url('components/form-elements.css');
+@import url('components/utilities.css');
 
-/* Use white as main color with red accents (updated) */
+/* ========== Navbar Styling (kept in main file for clarity) ========== */
+
+/* Override Bootstrap's navbar colors */
 .bg-primary {
-    background-color: white !important;
+    background-color: var(--light) !important;
+    color: var(--dark) !important;
     border-bottom: 3px solid var(--primary) !important;
-    box-shadow: 0 4px 12px rgba(208, 36, 44, 0.15) !important;
+    box-shadow: 0 4px 12px var(--primary-shadow) !important;
 }
 
 .navbar-dark .navbar-nav .nav-link,
@@ -32,47 +32,13 @@
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28208, 36, 44, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
-.btn-primary {
-    background-color: var(--primary) !important;
-    border-color: var(--primary) !important;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.btn-primary:hover {
-    background-color: #b8212a !important;  /* Slightly darker shade of red */
-    border-color: #b8212a !important;
-}
-
-.btn-outline-primary {
-    color: var(--primary) !important;
-    border-color: var(--primary) !important;
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--primary) !important;
-    color: white !important;
-}
-
-.text-primary {
-    color: var(--primary) !important;
-}
-
-.border-primary {
-    border-color: var(--primary) !important;
-}
-
-.nav-link.active {
-    color: var(--primary) !important;
-    font-weight: bold;
-}
-
 /* Navbar logo styling */
 .navbar-logo {
     height: 30px;
     width: auto;
 }
 
-/* Simple navbar styling with 90% border width */
+/* Simple navbar styling with underline */
 .navbar-nav .nav-item .nav-link {
     color: var(--dark) !important;
     position: relative;
@@ -85,7 +51,7 @@
     display: none !important;
 }
 
-/* Fixing the hover transition with a different approach - using ::before for underline */
+/* Underline effect for navbar links */
 .navbar-nav .nav-item .nav-link::before {
     content: '';
     position: absolute;
@@ -107,7 +73,7 @@
     color: var(--primary) !important;
 }
 
-/* Properly styled dropdown arrow - completely separate from the underline */
+/* Properly styled dropdown arrow */
 .dropdown-toggle::after {
     display: inline-block !important;
     margin-left: 0.255em;
@@ -120,31 +86,6 @@
     width: auto !important;
     height: auto !important;
     background-color: transparent !important;
-}
-
-.navbar-nav .nav-item.active .nav-link, 
-.navbar-nav .nav-link.active {
-    color: var(--primary) !important;
-    font-weight: bold;
-}
-
-/* Dropdown styling with ultra-thin border */
-.dropdown-menu {
-    border-radius: 0.25rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border-width: 0.5px !important;
-    border-color: rgba(208, 36, 44, 0.05) !important;
-    padding: 0.25rem;
-}
-
-.dropdown-item:active, .dropdown-item:hover {
-    background-color: rgba(208, 36, 44, 0.05) !important;
-    color: var(--primary) !important;
-}
-
-/* Fix for dropdown items */
-.dropdown-item {
-    border: none !important;
 }
 
 /* Override Bootstrap's dropdown arrow styling */
@@ -162,440 +103,21 @@
     background: none !important;
 }
 
-body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.footer {
-    margin-top: auto;
-}
-
-/* Custom styling for cards */
-.card {
+/* Dropdown menu styling */
+.dropdown-menu {
+    border-radius: 0.25rem;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border: none;
-    margin-bottom: 1rem;
+    border-width: 0.5px !important;
+    border-color: var(--primary-light) !important;
+    padding: 0.25rem;
 }
 
-.card-header {
-    font-weight: 500;
-    border-bottom: 2px solid var(--primary);
-    background-color: white;
+.dropdown-item:active,
+.dropdown-item:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--primary) !important;
 }
 
-/* Responsive tables */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Select2 customizations */
-.select2-container--bootstrap-5 .select2-selection {
-    min-height: calc(1.5em + 0.75rem + 2px);
-}
-
-/* Free text select2 input styling */
-.select2-container--bootstrap-5 .select2-search--inline .select2-search__field {
-    height: calc(1.5em + 0.5rem);
-    padding: 0.25rem 0.5rem;
-    margin-top: 0;
-}
-
-.select2-container--bootstrap-5 .select2-selection--single {
-    padding: 0.375rem 0.75rem;
-}
-
-.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 0.25rem;
-}
-
-/* QR code container */
-.qr-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 0.25rem;
-}
-
-/* Badges for expiration dates */
-.badge.bg-danger, .badge.bg-warning, .badge.bg-success {
-    font-size: 0.875em;
-    font-weight: 600;
-    padding: 0.35em 0.65em;
-}
-
-/* Custom admin buttons */
-.admin-button {
-    text-align: center;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 0.5rem;
-    transition: transform 0.2s ease;
-}
-
-.admin-button:hover {
-    transform: translateY(-5px);
-}
-
-/* Custom styling for jQuery UI Autocomplete */
-.ui-autocomplete {
-    max-height: 200px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0.25rem 0;
-    margin: 0.125rem 0 0;
-    font-size: 0.875rem;
-    color: var(--dark);
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 0.25rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-    z-index: 1050 !important;
-}
-
-.ui-autocomplete .ui-menu-item {
-    padding: 0;
-}
-
-.ui-autocomplete .ui-menu-item-wrapper {
-    padding: 0.5rem 1rem;
-    color: #212529;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
-    cursor: pointer;
-}
-
-.ui-autocomplete .ui-menu-item-wrapper.ui-state-active {
-    background-color: var(--primary);
-    color: white;
-    margin: 0;
-    border: none;
-}
-
-.ui-helper-hidden-accessible {
-    display: none;
-}
-
-/* Improve the appearance of input fields with autocomplete */
-input.item-autocomplete, input.manufacturer-autocomplete {
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-input.item-autocomplete:focus, input.manufacturer-autocomplete:focus {
-    border-color: var(--primary);
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25);
-}
-
-/* Improved styling for category select dropdown */
-.category-container .select2-selection {
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    height: 38px;
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    cursor: pointer;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.category-container .select2-selection:focus,
-.category-container .select2-container--focus .select2-selection {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25);
-}
-
-.category-container .select2-selection--single {
-    display: flex;
-    align-items: center;
-}
-
-.category-container .select2-selection__rendered {
-    color: #212529;
-    padding: 0;
-    line-height: 1.5;
-    flex-grow: 1;
-}
-
-.category-container .select2-selection__arrow {
-    position: static;
-    height: auto;
-    top: auto;
-    right: auto;
-    margin-left: 8px;
-}
-
-.category-container .select2-selection__arrow b {
-    border-color: #6c757d transparent transparent transparent;
-}
-
-/* Fix dropdown placement */
-.category-dropdown {
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    box-shadow: none;
-}
-
-.category-dropdown .select2-results__option {
-    padding: 0.5rem 0.75rem;
-}
-
-.category-dropdown .select2-results__option--highlighted,
-.select2-container--bootstrap-5 .select2-results__option.select2-results__option--highlighted,
-.select2-container--bootstrap-5 .select2-results__option--selected {
-    background-color: var(--primary) !important;
-    color: white !important;
-}
-
-/* Ensure the search box has the same styling */
-.select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field {
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-}
-
-/* Match selected item styling with the items and manufacturers */
-.category-container .select2-selection__choice,
-.select2-container--bootstrap-5 .select2-selection__choice {
-    background-color: var(--primary) !important;
-    color: white !important;
+.dropdown-item {
     border: none !important;
-    border-radius: 0.2rem !important;
-    padding: 0.25rem 0.5rem !important;
-    margin-right: 5px !important;
-}
-
-.category-container .select2-selection__choice__remove,
-.select2-container--bootstrap-5 .select2-selection__choice__remove {
-    color: white !important;
-    margin-right: 5px !important;
-    border: none !important;
-    background: transparent !important;
-}
-
-.category-container .select2-selection__choice__remove:hover,
-.select2-container--bootstrap-5 .select2-selection__choice__remove:hover {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    color: white !important;
-}
-
-/* Style for the current selected value */
-.category-container .select2-selection__rendered {
-    color: var(--dark) !important;
-}
-
-/* Ensure active dropdown items match */
-.select2-container--bootstrap-5.select2-container--focus .select2-selection,
-.select2-container--bootstrap-5.select2-container--open .select2-selection {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25) !important;
-}
-
-/* Remove blue outline and add consistent styling for the search field */
-.select2-container--bootstrap-5 .select2-dropdown,
-.select2-dropdown {
-    border-color: #ced4da !important;
-    box-shadow: none !important;
-}
-
-.select2-container--bootstrap-5 .select2-search--dropdown .select2-search__field:focus,
-.select2-search--dropdown .select2-search__field:focus {
-    border-color: var(--primary) !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-/* Fix the select2 dropdown border */
-.select2-results {
-    border-color: #ced4da !important;
-}
-
-/* Override any blue outline for selects */
-select:focus,
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(208, 36, 44, 0.25) !important;
-}
-
-/* Make select2 search field match our styling */
-.select2-search__field {
-    border-color: #ced4da !important;
-    border-radius: 0.25rem !important;
-}
-
-/* Additional styling for select2 dropdown */
-.select2-container--bootstrap-5 .select2-dropdown,
-.select2-container--default .select2-dropdown {
-    border-color: var(--primary) !important;
-}
-
-/* Remove blue focus/highlight from accordion buttons */
-.accordion-button:not(.collapsed),
-.accordion-button:focus {
-    color: var(--dark);
-    background-color: white;
-    box-shadow: none;
-}
-
-.accordion-button::after {
-    color: var(--dark);
-}
-
-/* Quantity buttons styling */
-.quantity-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    border-color: #ced4da;
-}
-
-.quantity-btn:hover {
-    background-color: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-/* Make sure the input group looks nice with number input */
-.input-group input[type="number"] {
-    text-align: center;
-    appearance: textfield;
-    -moz-appearance: textfield; /* Firefox */
-}
-
-/* Hide the default number spinners */
-.input-group input[type="number"]::-webkit-outer-spin-button,
-.input-group input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    appearance: none;
-    margin: 0;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-    .card-title {
-        font-size: 1.25rem;
-    }
-    
-    .table-responsive {
-        font-size: 0.875rem;
-    }
-
-    .quantity-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-    }
-    
-    .input-group input[type="number"] {
-        font-size: 1.1rem;
-        height: 44px;
-    }
-}
-
-/* Enhanced shelf detail page styling */
-.shelf-header {
-    background-color: #fff;
-}
-
-/* "Add item" button styling */
-.add-item-btn {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-weight: 500;
-    padding: 8px 16px;
-}
-
-.add-item-btn:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.shelf-icon {
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background-color: rgba(208, 36, 44, 0.1);
-    border-radius: 12px;
-}
-
-.shelf-detail-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: rgba(208, 36, 44, 0.1);
-    border-radius: 8px;
-}
-
-.empty-shelf-icon {
-    color: rgba(208, 36, 44, 0.3);
-}
-
-.qr-container {
-    background-color: white;
-    border: 1px dashed #dee2e6;
-    border-radius: 8px;
-}
-
-.card-header.border-primary {
-    border-bottom-width: 2px !important;
-    border-bottom-style: solid !important;
-}
-
-/* Print styles for QR codes */
-@media print {
-    .no-print {
-        display: none;
-    }
-    
-    .qr-code-print {
-        page-break-inside: avoid;
-        margin-bottom: 2cm;
-    }
-    
-    /* Special print styles for shelf detail page */
-    .card {
-        border: none !important;
-        box-shadow: none !important;
-    }
-    
-    .shelf-header, 
-    .table-responsive, 
-    .card-header, 
-    .btn, 
-    .shelf-details {
-        display: none;
-    }
-    
-    .qr-container {
-        border: none;
-        padding: 0 !important;
-        margin: 0 auto !important;
-        text-align: center;
-    }
-    
-    .qr-container img {
-        width: 80% !important;
-        height: auto !important;
-    }
 }

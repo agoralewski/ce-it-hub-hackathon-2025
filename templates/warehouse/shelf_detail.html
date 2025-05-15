@@ -16,8 +16,8 @@
                         <div>
                             <h3 class="mb-0">Półka {{ shelf.full_location }}</h3>
                             <p class="text-muted mb-0">
-                                <i class="fas fa-map-marker-alt me-1"></i> {{ shelf.rack.room.name }} / 
-                                <i class="fas fa-grip-vertical me-1"></i> {{ shelf.rack.name }} / 
+                                <i class="fas fa-map-marker-alt me-1"></i> {{ shelf.rack.room.name }} /
+                                <i class="fas fa-grip-vertical me-1"></i> {{ shelf.rack.name }} /
                                 <i class="fas fa-layer-group me-1"></i> {{ shelf.number }}
                             </p>
                         </div>
@@ -37,16 +37,25 @@
     <!-- Main content - Items on Shelf -->
     <div class="col-md-8 mb-4">
         <div class="card shadow h-100">
-            <div class="card-header bg-white border-bottom border-primary">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-box me-2"></i> Przedmioty na półce
-                    </h5>
-                    <span class="badge bg-primary rounded-pill">{{ assignments.count }}</span>
-                </div>
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Przedmioty na półce</h5>
+                <!-- Item counter badge -->
+                {% if total_count > 0 %}
+                <span class="badge bg-primary rounded-pill">
+                    {{ total_count }} przedmiotów
+                </span>
+                {% endif %}
             </div>
             <div class="card-body">
                 {% if assignments %}
+                <!-- Pagination Info -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <div class="pagination-info mb-3 text-muted">
+                    Pokazuję {{ assignments|length }} z {{ total_count }} przedmiotów
+                    (Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }})
+                </div>
+                {% endif %}
+                
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-light">
@@ -55,7 +64,7 @@
                                 <th>Kategoria</th>
                                 <th>Producent</th>
                                 <th>Data ważności</th>
-                                <th>Akcje</th>
+                                <th>Czynności</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,38 +73,39 @@
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">
                                         <div class="me-2">
-                                            {% if assignment.item.category.name == "Elektronika" %}
-                                                <i class="fas fa-laptop text-info"></i>
-                                            {% elif assignment.item.category.name == "Żywność" %}
-                                                <i class="fas fa-utensils text-success"></i>
-                                            {% elif assignment.item.category.name == "Meble" %}
-                                                <i class="fas fa-chair text-warning"></i>
+                                            {% if assignment.item.category and assignment.item.category.name == "Elektronika" %}
+                                            <i class="fas fa-laptop text-info"></i>
+                                            {% elif assignment.item.category and assignment.item.category.name == "Żywność" %}
+                                            <i class="fas fa-utensils text-success"></i>
+                                            {% elif assignment.item.category and assignment.item.category.name == "Meble" %}
+                                            <i class="fas fa-chair text-warning"></i>
                                             {% else %}
-                                                <i class="fas fa-box text-secondary"></i>
+                                            <i class="fas fa-box text-secondary"></i>
                                             {% endif %}
                                         </div>
                                         <strong>{{ assignment.item.name }}</strong>
                                     </div>
                                 </td>
                                 <td class="align-middle">
-                                    <span class="badge bg-light text-dark rounded-pill">{{ assignment.item.category.name }}</span>
+                                    <span class="badge bg-light text-dark rounded-pill">{{ assignment.item.category.name|default:"Brak kategorii" }}</span>
                                 </td>
                                 <td class="align-middle">{{ assignment.item.manufacturer|default:"-" }}</td>
                                 <td class="align-middle">
                                     {% if assignment.item.expiration_date %}
-                                        {% if assignment.item.expiration_date|date:"Y-m-d" <= today_date|date:"Y-m-d" %}
-                                            <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
-                                        {% elif assignment.item.expiration_date|date:"Y-m-d" <= thirty_days_from_now|date:"Y-m-d" %}
-                                            <span class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
-                                        {% else %}
-                                            <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
-                                        {% endif %}
+                                    {% if assignment.item.expiration_date <= today_date %}
+                                        <span class="badge bg-danger">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                    {% elif assignment.item.expiration_date <= thirty_days_from_now %}
+                                        <span class="badge bg-warning">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
                                     {% else %}
-                                        <span class="text-muted">-</span>
+                                        <span class="badge bg-success">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
                                 <td class="align-middle">
-                                    <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-outline-danger">
+                                    <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
+                                        class="btn btn-sm btn-outline-danger">
                                         <i class="fas fa-minus"></i> Weź z półki
                                     </a>
                                 </td>
@@ -104,6 +114,58 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Pagination Controls -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">&laquo; First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">&laquo; First</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Next</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Last &raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
                 {% else %}
                 <div class="text-center py-5">
                     <div class="empty-shelf-icon mb-3">
@@ -119,7 +181,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Sidebar - Shelf details and QR code -->
     <div class="col-md-4 mb-4">
         <!-- Location Information Card -->
@@ -140,7 +202,7 @@
                             <div class="fw-bold">{{ shelf.rack.room.name }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex mb-3">
                         <div class="shelf-detail-icon me-3">
                             <i class="fas fa-grip-vertical text-primary"></i>
@@ -150,7 +212,7 @@
                             <div class="fw-bold">{{ shelf.rack.name }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex">
                         <div class="shelf-detail-icon me-3">
                             <i class="fas fa-layer-group text-primary"></i>
@@ -163,7 +225,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- QR Code Card -->
         <div class="card shadow">
             <div class="card-header bg-white border-bottom border-primary">
@@ -173,9 +235,8 @@
             </div>
             <div class="card-body text-center">
                 <div class="qr-container p-3 mb-3">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.build_absolute_uri }}" 
-                         alt="QR Code for this shelf" 
-                         class="img-fluid">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.build_absolute_uri }}"
+                        alt="QR Code for this shelf" class="img-fluid">
                 </div>
                 <p class="text-muted">
                     <i class="fas fa-mobile-alt me-1"></i>
@@ -186,8 +247,6 @@
                 </button>
             </div>
         </div>
-    </div>
-</div>
     </div>
 </div>
 {% endblock %}

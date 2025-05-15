@@ -16,7 +16,7 @@
                 <thead>
                     <tr>
                         <th>Nazwa kategorii</th>
-                        <th>Akcje</th>
+                        <th>Czynności</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,19 +25,24 @@
                         <td>{{ category.name }}</td>
                         <td>
                             <div class="btn-group">
-                                <a href="{% url 'warehouse:category_update' category.pk %}" class="btn btn-sm btn-outline-primary">
+                                <a href="{% url 'warehouse:category_update' category.pk %}"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i> Edytuj
                                 </a>
-                                <a href="{% url 'warehouse:category_delete' category.pk %}" class="btn btn-sm btn-outline-danger">
+                                <a href="{% url 'warehouse:category_delete' category.pk %}"
+                                    class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-trash"></i> Usuń
                                 </a>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
-                    <tr>
-                        <td colspan="2" class="text-center">Brak kategorii. Dodaj pierwszą kategorię.</td>
-                    </tr>
+                    <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        Brak kategorii.
+                        <a href="{% url 'warehouse:category_create' %}" class="alert-link">Dodaj pierwszą
+                            kategorię.</a>.
+                    </div>
                     {% endfor %}
                 </tbody>
             </table>

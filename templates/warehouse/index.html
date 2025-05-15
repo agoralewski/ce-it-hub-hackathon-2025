@@ -3,40 +3,68 @@
 {% block title %}Strona główna - KSP{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
+<!-- Scan QR Button (visible on mobile and tablets) -->
+<div class="row mb-3 scan-qr-btn-row" style="display: flex; justify-content: center;">
+    <div class="col-12 d-flex justify-content-center">
+        <button id="scan-qr-btn" class="scan-qr-btn" aria-label="Skanuj kod QR">
+            <span class="d-flex flex-column align-items-center justify-content-center">
+                <i class="fas fa-qrcode mb-2"></i>
+                <span class="scan-qr-label">Skanuj kod QR</span>
+            </span>
+        </button>
+    </div>
+</div>
+<!-- QR Scanner Modal -->
+<div class="modal fade" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="qrScannerModalLabel">Skanuj kod QR</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="qr-reader" style="width:100%"></div>
+        <div id="qr-reader-results" class="mt-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4 landing-page">
     <div class="col-md-12">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Witaj w Krwinkowym Systemie Prezentowym</h5>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card text-center mb-3">
-                            <div class="card-body">
-                                <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
-                                <h5>Aktywne przedmioty</h5>
-                                <p class="display-6">{{ active_items }}</p>
-                            </div>
-                        </div>
+                <div class="row d-flex flex-wrap justify-content-between">
+                    <div class="col-md-3 col-12 mb-2">
+                        <a href="{% url 'warehouse:item_list' %}"
+                            class="btn btn-primary d-flex align-items-center py-2">
+                            <i class="fas fa-box-open me-2"></i>
+                            <span>Aktywne przedmioty</span>
+                        </a>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card text-center mb-3">
-                            <div class="card-body">
-                                <i class="fas fa-warehouse fa-3x text-primary mb-3"></i>
-                                <h5>Pokoje</h5>
-                                <p class="display-6">{{ rooms.count }}</p>
-                            </div>
-                        </div>
+                    <div class="col-md-3 col-12 mb-2">
+                        <a href="{% url 'warehouse:item_list' %}?filter=expiring_soon"
+                            class="btn btn-primary d-flex align-items-center py-2">
+                            <i class="fas fa-hourglass-half me-2"></i>
+                            <span>Wkrótce przeterminowane</span>
+                        </a>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card text-center mb-3">
-                            <div class="card-body">
-                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                                <h5>Wkrótce przeterminowane</h5>
-                                <p class="display-6">{{ expiring_soon }}</p>
-                            </div>
-                        </div>
+                    <div class="col-md-3 col-12 mb-2">
+                        <a href="{% url 'warehouse:item_list' %}?filter=expired"
+                            class="btn btn-primary d-flex align-items-center py-2">
+                            <i class="fas fa-calendar-times me-2"></i>
+                            <span>Przeterminowane</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-12 mb-2">
+                        <a href="{% url 'warehouse:low_stock' %}"
+                            class="btn btn-primary d-flex align-items-center py-2">
+                            <i class="fas fa-boxes me-2"></i>
+                            <span>Niski stan magazynowy</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -51,28 +79,41 @@
                 <h5 class="mb-0">Pokoje i regały</h5>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row row-cols-1 row-cols-md-3 g-4">
                     {% for room in rooms %}
-                    <div class="col-md-6 mb-4">
+                    <div class="col">
                         <div class="card h-100">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">{{ room.name }}</h5>
+                                <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}"
+                                    class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-search"></i> Zobacz przedmioty
+                                </a>
                             </div>
                             <div class="card-body">
-                                <p><strong>Regały:</strong> {{ room.rack_count }}</p>
-                                <p><strong>Półki:</strong> {{ room.shelf_count }}</p>
-                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-search"></i> Zobacz przedmioty
-                                    </a>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="text-center">
+                                        <h6 class="text-muted">Regały</h6>
+                                        <p class="fs-4 mb-0">{{ room.rack_count }}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <h6 class="text-muted">Półki</h6>
+                                        <p class="fs-4 mb-0">{{ room.shelf_count }}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <h6 class="text-muted">Przedmioty</h6>
+                                        <p class="fs-4 mb-0">{{ room.active_items }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     {% empty %}
                     <div class="col-12">
-                        <div class="alert alert-info">
-                            Brak pokoi w systemie. {% if user.is_superuser %}<a href="{% url 'warehouse:room_create' %}">Dodaj pierwszy pokój</a>{% endif %}
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            Brak pokoi w systemie. {% if user.is_superuser %}<a
+                                href="{% url 'warehouse:room_create' %}">Dodaj pierwszy pokój</a>{% endif %}
                         </div>
                     </div>
                     {% endfor %}
@@ -81,39 +122,46 @@
         </div>
     </div>
 </div>
+</div>
 
 {% if user.is_superuser %}
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Panel administratora</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'warehouse:room_list' %}" class="btn btn-outline-primary d-block py-3">
-                            <i class="fas fa-warehouse fa-2x mb-2 d-block"></i>
-                            Zarządzaj pokojami
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'warehouse:category_list' %}" class="btn btn-outline-primary d-block py-3">
-                            <i class="fas fa-tags fa-2x mb-2 d-block"></i>
-                            Zarządzaj kategoriami
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'warehouse:export_inventory' %}" class="btn btn-outline-primary d-block py-3">
-                            <i class="fas fa-file-excel fa-2x mb-2 d-block"></i>
-                            Eksport do Excela
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'warehouse:generate_qr_codes' %}" class="btn btn-outline-primary d-block py-3">
-                            <i class="fas fa-qrcode fa-2x mb-2 d-block"></i>
-                            Generuj kody QR
-                        </a>
+<div class="container">
+    <div class="row mt-4 admin-buttons">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Panel administratora</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row d-flex flex-wrap justify-content-between">
+                        <div class="col-md-3 col-12 mb-2">
+                            <a href="{% url 'warehouse:room_list' %}"
+                                class="btn btn-outline-primary d-flex align-items-center py-2">
+                                <i class="fas fa-door-open me-2"></i>
+                                <span>Zarządzaj lokalizacjami</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-12 mb-2">
+                            <a href="{% url 'warehouse:category_list' %}"
+                                class="btn btn-outline-primary d-flex align-items-center py-2">
+                                <i class="fas fa-tags me-2"></i>
+                                <span>Zarządzaj kategoriami</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-12 mb-2">
+                            <a href="{% url 'warehouse:export_inventory' %}"
+                                class="btn btn-outline-primary d-flex align-items-center py-2">
+                                <i class="fas fa-file-excel me-2"></i>
+                                <span>Eksport do Excela</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-12 mb-2">
+                            <a href="{% url 'warehouse:generate_qr_codes' %}"
+                                class="btn btn-outline-primary d-flex align-items-center py-2">
+                                <i class="fas fa-qrcode me-2"></i>
+                                <span>Generuj kody QR</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -121,4 +169,45 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- html5-qrcode library -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var scanBtn = document.getElementById('scan-qr-btn');
+        if (scanBtn) {
+            scanBtn.addEventListener('click', function() {
+                var qrModal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
+                qrModal.show();
+                startQRScanner();
+            });
+        }
+    });
+
+    function startQRScanner() {
+        const qrReader = document.getElementById('qr-reader');
+        qrReader.innerHTML = '';
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            qrCodeMessage => {
+                // Assume QR code contains shelf/item URL or ID
+                window.location.href = qrCodeMessage;
+                html5QrCode.stop();
+            },
+            errorMessage => {
+                // Optionally show scan errors
+            }
+        ).catch(err => {
+            document.getElementById('qr-reader-results').innerText = 'Błąd kamery: ' + err;
+        });
+        // Stop scanner on modal close
+        document.getElementById('qrScannerModal').addEventListener('hidden.bs.modal', function() {
+            html5QrCode.stop().catch(() => {});
+        }, { once: true });
+    }
+</script>
 {% endblock %}
