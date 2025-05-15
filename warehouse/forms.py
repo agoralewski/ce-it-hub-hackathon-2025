@@ -18,7 +18,11 @@ class RoomForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name', '')
-        return name.capitalize()
+        # Check for case-insensitive duplicates
+        if Room.objects.filter(name__iexact=name).exists():
+            if not self.instance.pk or name.lower() != self.instance.name.lower():
+                raise forms.ValidationError('Pokój o tej nazwie już istnieje. Proszę wybrać inną nazwę.')
+        return name.title()
 
 
 class RackForm(forms.ModelForm):
@@ -37,10 +41,11 @@ class RackForm(forms.ModelForm):
         }
 
     def clean_name(self):
-        name = self.cleaned_data.get('name').capitalize()
-        if self.room and Rack.objects.filter(name=name, room=self.room).exists():
+        name = self.cleaned_data.get('name')
+        # Remove forced capitalization to preserve user's original input
+        if self.room and Rack.objects.filter(name__iexact=name, room=self.room).exists():
             raise forms.ValidationError('Regał o tej nazwie już istnieje w tym pokoju.')
-        return name
+        return name.title()
 
 
 class ShelfForm(forms.ModelForm):
@@ -80,7 +85,12 @@ class CategoryForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name', '')
-        return name.capitalize()
+        # Case-insensitive uniqueness check
+        if Category.objects.filter(name__iexact=name).exists():
+            if not self.instance.pk or name.lower() != self.instance.name.lower():
+                raise forms.ValidationError('Kategoria o tej nazwie już istnieje. Proszę wybrać inną nazwę.')
+        # Preserve user's original input
+        return name.title()
 
 
 class ItemForm(forms.ModelForm):
@@ -99,7 +109,8 @@ class ItemForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name', '')
-        return name.capitalize()
+        # Remove forced capitalization to preserve user's original input
+        return name.title()
 
 
 class ItemShelfAssignmentForm(forms.Form):

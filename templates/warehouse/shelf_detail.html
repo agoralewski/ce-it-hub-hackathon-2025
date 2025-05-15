@@ -93,9 +93,9 @@
                                 <td class="align-middle">
                                     {% if assignment.item.expiration_date %}
                                     {% if assignment.item.expiration_date <= today_date %}
-                                        <span class="badge bg-danger">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                        <span class="badge bg-danger expired">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
                                     {% elif assignment.item.expiration_date <= thirty_days_from_now %}
-                                        <span class="badge bg-warning">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
+                                        <span class="badge bg-warning expiring-soon">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
                                     {% else %}
                                         <span class="badge bg-success">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
                                     {% endif %}

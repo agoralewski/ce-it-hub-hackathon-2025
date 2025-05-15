@@ -27,7 +27,9 @@ def category_create(request):
         form = CategoryForm(request.POST)
         if form.is_valid():
             try:
-                form.save()
+                # Save the form with preserved capitalization
+                category = form.save(commit=False)
+                category.save()
                 messages.success(request, 'Kategoria została pomyślnie utworzona.')
                 return redirect('warehouse:category_list')
             except IntegrityError:

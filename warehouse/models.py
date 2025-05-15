@@ -10,6 +10,13 @@ class Room(models.Model):
     def save(self, *args, **kwargs):
         if not self.qr_code_uuid:
             self.qr_code_uuid = uuid.uuid4()
+            
+        # Case-insensitive uniqueness check
+        if self.pk is None:  # Only check on new room creation
+            if Room.objects.filter(name__iexact=self.name).exists():
+                from django.db import IntegrityError
+                raise IntegrityError("Room with this name already exists (case insensitive).")
+                
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -69,6 +76,15 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
+
+    def save(self, *args, **kwargs):
+        # Case-insensitive uniqueness check
+        if self.pk is None:  # Only check on new category creation
+            if Category.objects.filter(name__iexact=self.name).exists():
+                from django.db import IntegrityError
+                raise IntegrityError("Category with this name already exists (case insensitive).")
+                
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
