@@ -60,6 +60,33 @@
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+/* Progress bar container */
+.progress-container {
+    width: 300px;
+    margin-top: 10px;
+}
+
+.progress {
+    height: 20px;
+    background-color: #f3f3f3;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) inset;
+}
+
+.progress-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
 }
 
 @keyframes spin {

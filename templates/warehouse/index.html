@@ -39,21 +39,21 @@
             <div class="card-body">
                 <div class="row d-flex flex-wrap justify-content-between">
                     <div class="col-md-3 col-12 mb-2">
-                        <a href="{% url 'warehouse:item_list' %}"
+                        <a href="{% url 'warehouse:item_list' %}" onclick="return window.navigateWithLoading(this.href, 'Przygotowywanie listy przedmiotów...', true);"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-box-open me-2"></i>
                             <span>Aktywne przedmioty</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-12 mb-2">
-                        <a href="{% url 'warehouse:item_list' %}?filter=expiring_soon"
+                        <a href="{% url 'warehouse:item_list' %}?filter=expiring_soon" onclick="return window.navigateWithLoading(this.href, 'Wyszukiwanie przedmiotów wkrótce przeterminowanych...', true);"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-hourglass-half me-2"></i>
                             <span>Wkrótce przeterminowane</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-12 mb-2">
-                        <a href="{% url 'warehouse:item_list' %}?filter=expired"
+                        <a href="{% url 'warehouse:item_list' %}?filter=expired" onclick="return window.navigateWithLoading(this.href, 'Wyszukiwanie przeterminowanych przedmiotów...', true);"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-calendar-times me-2"></i>
                             <span>Przeterminowane</span>
@@ -85,7 +85,7 @@
                         <div class="card h-100">
                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">{{ room.name }}</h5>
-                                <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}"
+                                <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}" onclick="return window.navigateWithLoading(this.href, 'Wyświetlanie przedmiotów w pokoju {{ room.name }}...', true);"
                                     class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-search"></i> Zobacz przedmioty
                                 </a>
