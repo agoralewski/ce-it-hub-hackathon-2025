@@ -243,6 +243,17 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Set loading message for item list
+        const loadingText = document.querySelector('#loading-overlay .loading-text');
+        if (loadingText) {
+            loadingText.textContent = 'Przygotowywanie listy przedmiotów...';
+        }
+        
+        // Set a delay before hiding the loading screen to show the animation
+        setTimeout(function() {
+            window.hideLoading();
+        }, 300);
+        
         // Store all options for reverting later
         const allRacks = [];
         const allShelves = [];
@@ -605,6 +616,24 @@
         
         // Submit form
         function submitForm() {
+            // Show loading overlay with contextual messages based on filter activity
+            let loadingMessage = 'Filtrowanie przedmiotów...';
+            
+            // Check which filters are active to provide more specific message
+            if ($('#room-select').val() || $('#rack-select').val() || $('#shelf-select').val()) {
+                loadingMessage = 'Filtrowanie przedmiotów według lokalizacji...';
+            } 
+            else if ($('#category-select').val()) {
+                loadingMessage = 'Filtrowanie przedmiotów według kategorii...';
+            }
+            else if ($('#product-search').val()) {
+                loadingMessage = 'Wyszukiwanie przedmiotów...';
+            }
+            else if ($('#expired-filter').hasClass('active')) {
+                loadingMessage = 'Wyszukiwanie przeterminowanych przedmiotów...';
+            }
+            
+            window.showLoading(loadingMessage);
             $('body').removeClass('fade-in').addClass('fade-out');
             $(form).submit();
         }
@@ -612,6 +641,8 @@
         // Clear all filters
         $('#clear-filters').on('click', function(e) {
             e.preventDefault();
+            // Show loading overlay with custom message
+            window.showLoading('Resetowanie filtrów...');
             $('body').removeClass('fade-in').addClass('fade-out');
             
             // Reset all selects
