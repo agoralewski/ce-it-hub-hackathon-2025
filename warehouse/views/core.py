@@ -94,36 +94,72 @@ def item_list(request):
     if filter_values:
         assignments = assignments.filter(filters_q)
     
-    # Group assignments by item name, shelf, category and other properties
-    grouped_assignments = {}
-    for assignment in assignments:
-        # Create a unique key for each group based on name, location and other relevant properties
-        key = (
-            assignment.item.name,
-            assignment.shelf.pk,
-            assignment.item.category.pk,
-            assignment.item.manufacturer or '',
-            str(assignment.item.expiration_date or ''),
-            assignment.item.note or ''
+    # Group assignments by item name, shelf, category and other properties using database aggregation
+    from django.db.models import Count, F
+    
+    # We use values() to group by the relevant fields and annotate to count and collect assignments
+    grouped_items_query = (
+        assignments
+        .values(
+            'item__name',
+            'shelf',
+            'item__category',
+            'item__manufacturer',
+            'item__expiration_date',
+            'item__note',
+            'shelf__id',
+            'item__category__id',
         )
+        .annotate(
+            item_name=F('item__name'),
+            count=Count('id'),
+            shelf_id=F('shelf__id'),
+            category_id=F('item__category__id'),
+            manufacturer=F('item__manufacturer'),
+            expiration_date=F('item__expiration_date'),
+            note=F('item__note'),
+        )
+    )
+    
+    # Fetch related objects in bulk to avoid N+1 queries
+    shelf_ids = {item['shelf_id'] for item in grouped_items_query}
+    shelves = {shelf.id: shelf for shelf in Shelf.objects.filter(id__in=shelf_ids).select_related('rack', 'rack__room')}
+    
+    category_ids = {item['category_id'] for item in grouped_items_query}
+    categories = {category.id: category for category in Category.objects.filter(id__in=category_ids)}
+    
+    # Convert query results to the expected format for the template
+    grouped_items = []
+    for group in grouped_items_query:
+        # Get the related objects from our prefetched dictionaries
+        shelf = shelves.get(group['shelf_id'])
+        category = categories.get(group['category_id'])
         
-        if key not in grouped_assignments:
-            grouped_assignments[key] = {
-                'item_name': assignment.item.name,
-                'shelf': assignment.shelf,
-                'category': assignment.item.category,
-                'manufacturer': assignment.item.manufacturer,
-                'expiration_date': assignment.item.expiration_date,
-                'note': assignment.item.note,
-                'assignments': [],
-                'count': 0
-            }
+        # For each group, also fetch the actual assignment records
+        group_assignments = assignments.filter(
+            item__name=group['item_name'],
+            shelf_id=group['shelf_id'],
+            item__category_id=group['category_id'],
+            item__manufacturer=group['manufacturer'],
+            item__expiration_date=group['expiration_date'],
+            item__note=group['note']
+        )[:1]  # Limit to one assignment for display purposes
         
-        grouped_assignments[key]['assignments'].append(assignment)
-        grouped_assignments[key]['count'] += 1
+        grouped_items.append({
+            'item_name': group['item_name'],
+            'shelf': shelf,
+            'category': category,
+            'manufacturer': group['manufacturer'],
+            'expiration_date': group['expiration_date'],
+            'note': group['note'],
+            'assignments': list(group_assignments),
+            'count': group['count']
+        })
 
-    # Convert dictionary to list for the template
-    grouped_items = list(grouped_assignments.values())
+    # Add pagination to handle large number of items
+    paginator = Paginator(grouped_items, 50)  # Show 50 items per page
+    page_number = request.GET.get('page')
+    items_page = paginator.get_page(page_number)
 
     # Get filter options
     rooms = Room.objects.all()
@@ -148,7 +184,7 @@ def item_list(request):
         'warehouse/item_list.html',
         {
             'assignments': assignments,  # Keep original for backward compatibility
-            'grouped_items': grouped_items,  # New grouped items for display
+            'grouped_items': items_page,  # Paginated grouped items for display
             'rooms': rooms,
             'racks': racks,
             'shelves': shelves,
@@ -162,6 +198,8 @@ def item_list(request):
             'has_note': has_note,
             'today_date': today_date,
             'thirty_days_from_now': thirty_days_from_now,
+            'page_obj': items_page,  # Add page object for pagination controls
+            'total_count': len(grouped_items),  # Add total count for info display
         },
     )
 
