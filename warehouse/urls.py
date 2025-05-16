@@ -10,7 +10,8 @@ from warehouse.views.category import (
     category_list, category_create, category_update, category_delete
 )
 from warehouse.views.item import (
-    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items
+    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items,
+    add_new_item
 )
 from warehouse.views.export import (
     generate_qr_codes, export_inventory
@@ -55,6 +56,11 @@ urlpatterns = [
         'shelves/<int:shelf_id>/add_item/',
         add_item_to_shelf,
         name='add_item_to_shelf',
+    ),
+    path(
+        'items/add/',
+        add_new_item,
+        name='add_new_item',
     ),
     path(
         'assignments/<int:pk>/remove/',

@@ -7,9 +7,10 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
 from django.http import JsonResponse
+from django.urls import reverse
 
-from warehouse.models import Shelf, Category, Item, ItemShelfAssignment
-from warehouse.forms import ItemShelfAssignmentForm
+from warehouse.models import Shelf, Category, Item, ItemShelfAssignment, Room, Rack
+from warehouse.forms import ItemShelfAssignmentForm, ItemLocationForm
 
 
 @login_required
@@ -435,3 +436,66 @@ def ajax_bulk_remove_items(request):
         return JsonResponse(
             {'error': f'Error processing items: {str(e)}', 'offset': offset}, status=500
         )
+
+
+@login_required
+def add_new_item(request):
+    """Add a new item with location selection"""
+    if request.method == 'POST':
+        form = ItemLocationForm(request.POST)
+
+        if form.is_valid():
+            # Get form data
+            item_name = form.cleaned_data['item_name'].strip()
+            category = form.cleaned_data['category']
+            manufacturer = (
+                form.cleaned_data['manufacturer'].strip()
+                if form.cleaned_data['manufacturer']
+                else None
+            )
+            expiration_date = form.cleaned_data['expiration_date']
+            note = form.cleaned_data['notes']
+            quantity = form.cleaned_data['quantity']
+            shelf = form.cleaned_data['shelf']
+            
+            # If a specific shelf was chosen, redirect to the standard add item view
+            # with the shelf pre-selected and form data passed as query parameters
+            if form.cleaned_data.get('shelf'):
+                query_params = {
+                    'item_name': item_name,
+                    'category': category.id,
+                }
+                
+                # Only add optional parameters if they exist
+                if manufacturer:
+                    query_params['manufacturer'] = manufacturer
+                if expiration_date:
+                    query_params['expiration_date'] = expiration_date.isoformat()
+                if note:
+                    query_params['notes'] = note
+                if quantity:
+                    query_params['quantity'] = quantity
+                
+                # Create the redirect URL with query parameters
+                redirect_url = reverse('warehouse:add_item_to_shelf', kwargs={'shelf_id': shelf.id})
+                return redirect(f"{redirect_url}?{'&'.join([f'{k}={v}' for k, v in query_params.items()])}")
+    
+    else:
+        # Pre-populate form fields from query parameters if present
+        initial = {}
+        if 'item_name' in request.GET:
+            initial['item_name'] = request.GET.get('item_name', '')
+        if 'category' in request.GET:
+            initial['category'] = request.GET.get('category')
+        if 'manufacturer' in request.GET:
+            initial['manufacturer'] = request.GET.get('manufacturer', '')
+        if 'notes' in request.GET:
+            initial['notes'] = request.GET.get('notes', '')
+        if 'expiration_date' in request.GET:
+            initial['expiration_date'] = request.GET.get('expiration_date')
+        if 'quantity' in request.GET:
+            initial['quantity'] = request.GET.get('quantity', 1)
+            
+        form = ItemLocationForm(initial=initial)
+    
+    return render(request, 'warehouse/add_new_item.html', {'form': form})
