@@ -1,0 +1,675 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Lista przedmiotów - KSP{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="{% static 'css/filters.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/item-list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Lista przedmiotów w magazynie</h5>
+    </div>
+    <div class="card-body">
+        <!-- Filters -->
+        <div class="filters-card">
+            <form method="get" action="{% url 'warehouse:item_list' %}" class="filter-form" id="item-filter-form">
+                <!-- Keep the current page when changing filters -->
+                {% if page_obj.number > 1 %}
+                <input type="hidden" name="page" value="{{ page_obj.number }}">
+                {% endif %}
+                
+                <!-- Advanced filters (new) -->
+                <div class="advanced-filters-container">
+                    <div class="search-input-container">
+                        <span class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control" id="product-search" 
+                               placeholder="Szukaj"
+                               value="{{ search_query|default:'' }}">
+                    </div>
+                    
+                    <button type="button" class="filter-button" id="expired-filter" 
+                            data-filter="expired" 
+                            {% if 'expired' in filter_values %}aria-pressed="true"{% endif %}>
+                        <i class="fas fa-clock"></i> Przeterminowane
+                    </button>
+                    
+                    <button type="button" class="filter-button" id="expiring-filter" 
+                            data-filter="expiring_soon"
+                            {% if 'expiring_soon' in filter_values %}aria-pressed="true"{% endif %}>
+                        <i class="fas fa-exclamation-triangle"></i> Wkrótce przeterminowane
+                    </button>
+                    
+                    <button type="button" class="filter-button" id="has-note-filter" 
+                            data-filter="has_note"
+                            {% if has_note %}aria-pressed="true"{% endif %}>
+                        <i class="fas fa-sticky-note"></i> Z notatką
+                    </button>
+                    
+                    <!-- Hidden inputs to store filter values -->
+                    <input type="hidden" id="expired-input" name="filter" value="expired" disabled>
+                    <input type="hidden" id="expiring-input" name="filter" value="expiring_soon" disabled>
+                    <input type="hidden" id="has-note-input" name="has_note" value="1" disabled>
+                    
+                    <button type="button" class="clear-filters-btn" title="Wyczyść filtry" id="clear-filters">
+                        <i class="fas fa-times"></i> Wyczyść filtry
+                    </button>
+                </div>
+                
+                <!-- Dropdown filters (existing) -->
+                <div class="dropdown-filters-container">
+                    <select name="room" class="form-select" data-placeholder="Pokój" id="room-select">
+                        <option value="">Pokój</option>
+                        {% for room in rooms %}
+                        <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="rack" class="form-select" data-placeholder="Regał" id="rack-select">
+                        <option value="">Regał</option>
+                        {% for rack in racks %}
+                        <option value="{{ rack.id }}" 
+                                data-room="{{ rack.room.id }}"
+                                {% if selected_rack == rack.id|slugify %}selected{% endif %}>
+                            {{ rack.room.name }}.{{ rack.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="shelf" class="form-select" data-placeholder="Półka" id="shelf-select">
+                        <option value="">Półka</option>
+                        {% for shelf in shelves %}
+                        <option value="{{ shelf.id }}" 
+                                data-rack="{{ shelf.rack.id }}"
+                                data-room="{{ shelf.rack.room.id }}"
+                                {% if selected_shelf == shelf.id|slugify %}selected{% endif %}>
+                            {{ shelf.rack.room.name }}.{{ shelf.rack.name }}.{{ shelf.number }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="category" class="form-select" data-placeholder="Kategoria" id="category-select">
+                        <option value="">Kategoria</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|slugify %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Pagination Info -->
+        <div class="pagination-info">
+            {% if total_count > 0 %}
+                Showing {{ assignments|length }} of {{ total_count }} items
+                {% if page_obj.paginator.num_pages > 1 %}
+                    (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+                {% endif %}
+            {% endif %}
+        </div>
+        
+        <!-- Items table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Kategoria</th>
+                        <th>Producent</th>
+                        <th>Notatka</th>
+                        <th>Data ważności</th>
+                        <th>Lokalizacja</th>
+                        <th>Czynności</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in grouped_items %}
+                    <tr>
+                        <td>{{ group.item_name }}</td>
+                        <td>{{ group.category.name }}</td>
+                        <td>{{ group.manufacturer|default:"-" }}</td>
+                        <td>{{ group.note|default:"-" }}</td>
+                        <td>
+                            {% if group.expiration_date %}
+                                {% with today_date|date:"Y-m-d" as today %}
+                                {% with thirty_days_from_now|date:"Y-m-d" as soon %}
+                                    {% if group.expiration_date|date:"Y-m-d" < today %}
+                                        <span class="badge bg-danger">{{ group.expiration_date }}</span>
+                                    {% elif group.expiration_date|date:"Y-m-d" <= soon %}
+                                        <span class="badge bg-warning">{{ group.expiration_date }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">{{ group.expiration_date }}</span>
+                                    {% endif %}
+                                {% endwith %}
+                                {% endwith %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'warehouse:shelf_detail' group.shelf.pk %}">
+                                {{ group.shelf.full_location }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
+                            <div>
+                                <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-add-item me-1">
+                                    <i class="fas fa-plus"></i> Dodaj kolejny
+                                </a>
+                                <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}" class="btn btn-sm btn-remove-item">
+                                    <i class="fas fa-minus"></i> Wez z polki
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Brak przedmiotów spełniających kryteria.</td>
+                    </tr>
+                    {% endfor %}
+                    {% if grouped_items %}
+                    <tr class="table-secondary">
+                        <td colspan="6" class="text-end fw-bold">Suma:</td>
+                        <td class="fw-bold">{{ assignments|length }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination Controls -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1">&laquo; First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">&laquo; First</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Next</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Last &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // We're now on the page, so update loading progress to 
+        // signify that the page has loaded
+        setTimeout(function() {
+            window.updateLoadingProgress(80);
+            
+            // After a short delay, hide the loading screen
+            setTimeout(function() {
+                window.updateLoadingProgress(100);
+            }, 200);
+        }, 100);
+        
+        // Store all options for reverting later
+        const allRacks = [];
+        const allShelves = [];
+        let form = $('#item-filter-form');
+        let roomSelect = $('#room-select');
+        let rackSelect = $('#rack-select');
+        let shelfSelect = $('#shelf-select');
+        let categorySelect = $('#category-select');
+        let productSearch = $('#product-search');
+        
+        // Hidden inputs for filters
+        let expiredInput = $('#expired-input');
+        let expiringInput = $('#expiring-input');
+        let hasNoteInput = $('#has-note-input');
+        
+        // Filter buttons
+        let expiredFilterBtn = $('#expired-filter');
+        let expiringFilterBtn = $('#expiring-filter');
+        let hasNoteFilterBtn = $('#has-note-filter');
+        
+        // Initialize filter buttons based on URL parameters
+        if (expiredFilterBtn.attr('aria-pressed') === 'true') {
+            expiredFilterBtn.addClass('active');
+            expiredInput.prop('disabled', false);
+        }
+        
+        if (expiringFilterBtn.attr('aria-pressed') === 'true') {
+            expiringFilterBtn.addClass('active');
+            expiringInput.prop('disabled', false);
+        }
+        
+        if (hasNoteFilterBtn.attr('aria-pressed') === 'true') {
+            hasNoteFilterBtn.addClass('active');
+            hasNoteInput.prop('disabled', false);
+        }
+        
+        // Initialize Select2
+        $('.form-select').select2({
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
+            allowClear: true,
+            templateResult: formatOption
+        });
+        
+        // Initialize product search with Select2 for autocomplete
+        productSearch.select2({
+            placeholder: "Szukaj",
+            allowClear: true,
+            minimumInputLength: 2,
+            ajax: {
+                url: "{% url 'warehouse:autocomplete_items' %}",
+                dataType: 'json',
+                delay: 300, // Wait 300ms before triggering the request
+                data: function (params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            },
+            templateResult: formatItem
+        }).on('select2:select', function(e) {
+            // Set the value in the input field and submit the form
+            $(this).val(e.params.data.text);
+            // Reset page parameter when searching
+            $('input[name="page"]').remove();
+            submitForm();
+        }).on('select2:clear', function() {
+            // Handle clear button click
+            $(this).val('');
+            // Reset page parameter when clearing search
+            $('input[name="page"]').remove();
+            submitForm();
+        });
+        
+        // Initialize the search field with existing value
+        if (productSearch.val()) {
+            const existingSearchText = productSearch.val();
+            // Create a placeholder option and append it to make Select2 show the text
+            const placeholderOption = new Option(existingSearchText, existingSearchText, true, true);
+            productSearch.append(placeholderOption).trigger('change');
+        }
+        
+        // Handle manual input in search field - debounce to reduce request frequency
+        let searchTimeout;
+        productSearch.on('keyup', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                // Reset page parameter when searching
+                $('input[name="page"]').remove();
+                submitForm();
+            }, 500); // 500ms delay
+        });
+        
+        // Formatting function for Select2 options
+        function formatOption(option) {
+            if (!option.id) {
+                return option.text;
+            }
+            
+            const $option = $(option.element);
+            
+            if ($option.hasClass('invalidated-option')) {
+                const $result = $('<span></span>');
+                $result.text(option.text);
+                $result.addClass('select2-results__option--invalidated');
+                return $result;
+            }
+            
+            return option.text;
+        }
+        
+        // Formatting function for item search results
+        function formatItem(item) {
+            if (!item.id) {
+                return item.text;
+            }
+            
+            const $result = $('<div></div>');
+            $result.text(item.text);
+            return $result;
+        }
+        
+        // Store initial rack options
+        rackSelect.find('option').each(function() {
+            allRacks.push({
+                id: $(this).val(),
+                text: $(this).text(),
+                roomId: $(this).data('room')
+            });
+        });
+        
+        // Store initial shelf options
+        shelfSelect.find('option').each(function() {
+            allShelves.push({
+                id: $(this).val(),
+                text: $(this).text(),
+                rackId: $(this).data('rack'),
+                roomId: $(this).data('room')
+            });
+        });
+        
+        // Handle room selection change
+        roomSelect.on('change', function(e, skipUpdate) {
+            if (skipUpdate) return;
+            
+            const selectedRoomId = $(this).val();
+            
+            // If room is selected, it should invalidate incompatible lower-level selections
+            if (selectedRoomId) {
+                // Clear rack selection if it doesn't belong to selected room
+                const selectedRackId = rackSelect.val();
+                if (selectedRackId) {
+                    const rackRoomId = rackSelect.find(`option[value="${selectedRackId}"]`).data('room');
+                    if (rackRoomId != selectedRoomId) {
+                        rackSelect.val(null).trigger('change', [true]);
+                    }
+                }
+                
+                // Clear shelf selection if it doesn't belong to selected room
+                const selectedShelfId = shelfSelect.val();
+                if (selectedShelfId) {
+                    const shelfRoomId = shelfSelect.find(`option[value="${selectedShelfId}"]`).data('room');
+                    if (shelfRoomId != selectedRoomId) {
+                        shelfSelect.val(null).trigger('change', [true]);
+                    }
+                }
+            }
+            
+            updateFilterOptions();
+            
+            if (!skipUpdate) {
+                // Reset page parameter when changing filters
+                $('input[name="page"]').remove();
+                submitForm();
+            }
+        });
+        
+        // Handle rack selection change
+        rackSelect.on('change', function(e, skipUpdate) {
+            if (skipUpdate) return;
+            
+            const selectedRackId = $(this).val();
+            
+            // If rack is selected, it should invalidate incompatible shelf selections
+            if (selectedRackId) {
+                // Clear shelf selection if it doesn't belong to selected rack
+                const selectedShelfId = shelfSelect.val();
+                if (selectedShelfId) {
+                    const shelfRackId = shelfSelect.find(`option[value="${selectedShelfId}"]`).data('rack');
+                    if (shelfRackId != selectedRackId) {
+                        shelfSelect.val(null).trigger('change', [true]);
+                    }
+                }
+            }
+            
+            updateFilterOptions();
+            
+            if (!skipUpdate) {
+                // Reset page parameter when changing filters
+                $('input[name="page"]').remove();
+                submitForm();
+            }
+        });
+        
+        // Handle shelf selection change
+        shelfSelect.on('change', function(e, skipUpdate) {
+            if (skipUpdate) return;
+            updateFilterOptions();
+            
+            if (!skipUpdate) {
+                // Reset page parameter when changing filters
+                $('input[name="page"]').remove();
+                submitForm();
+            }
+        });
+        
+        // Category select change
+        categorySelect.on('change', function(e, skipUpdate) {
+            if (skipUpdate) return;
+            
+            if (!skipUpdate) {
+                // Reset page parameter when changing filters
+                $('input[name="page"]').remove();
+                submitForm();
+            }
+        });
+        
+        // Handle filter button clicks
+        $('.filter-button').on('click', function() {
+            const $this = $(this);
+            const filterType = $this.data('filter');
+            
+            // Toggle active state
+            $this.toggleClass('active');
+            
+            // Handle corresponding hidden input
+            if (filterType === 'expired') {
+                expiredInput.prop('disabled', !$this.hasClass('active'));
+            } else if (filterType === 'expiring_soon') {
+                expiringInput.prop('disabled', !$this.hasClass('active'));
+            } else if (filterType === 'has_note') {
+                hasNoteInput.prop('disabled', !$this.hasClass('active'));
+            }
+            
+            // Reset page parameter when changing filters
+            $('input[name="page"]').remove();
+            // Submit the form
+            submitForm();
+        });
+        
+        // Update all filter options based on current selections
+        function updateFilterOptions() {
+            const selectedRoomId = roomSelect.val();
+            const selectedRackId = rackSelect.val();
+            const selectedShelfId = shelfSelect.val();
+            
+            // Reset all options first
+            resetOptions();
+            
+            // If a room is selected
+            if (selectedRoomId) {
+                // Mark racks from other rooms as invalidated
+                rackSelect.find('option').each(function() {
+                    if ($(this).val() === '') return; // Skip the empty option
+                    
+                    const rackRoomId = $(this).data('room');
+                    if (rackRoomId != selectedRoomId) {
+                        $(this).addClass('invalidated-option');
+                    }
+                });
+                
+                // Mark shelves from other rooms as invalidated
+                shelfSelect.find('option').each(function() {
+                    if ($(this).val() === '') return; // Skip the empty option
+                    
+                    const shelfRoomId = $(this).data('room');
+                    if (shelfRoomId != selectedRoomId) {
+                        $(this).addClass('invalidated-option');
+                    }
+                });
+            }
+            
+            // If a rack is selected
+            if (selectedRackId) {
+                // Mark shelves from other racks as invalidated
+                shelfSelect.find('option').each(function() {
+                    if ($(this).val() === '') return; // Skip the empty option
+                    
+                    const shelfRackId = $(this).data('rack');
+                    if (shelfRackId != selectedRackId) {
+                        $(this).addClass('invalidated-option');
+                    }
+                });
+                
+                // Mark rooms that don't contain this rack as invalidated
+                if (!selectedRoomId) {
+                    const rackRoomId = rackSelect.find(`option[value="${selectedRackId}"]`).data('room');
+                    roomSelect.find('option').each(function() {
+                        if ($(this).val() === '') return; // Skip the empty option
+                        
+                        if ($(this).val() != rackRoomId) {
+                            $(this).addClass('invalidated-option');
+                        }
+                    });
+                }
+            }
+            
+            // If a shelf is selected
+            if (selectedShelfId) {
+                const shelfOption = shelfSelect.find(`option[value="${selectedShelfId}"]`);
+                const shelfRackId = shelfOption.data('rack');
+                const shelfRoomId = shelfOption.data('room');
+                
+                // If no rack is selected, mark racks that don't contain this shelf as invalidated
+                if (!selectedRackId) {
+                    rackSelect.find('option').each(function() {
+                        if ($(this).val() === '') return; // Skip the empty option
+                        
+                        if ($(this).val() != shelfRackId) {
+                            $(this).addClass('invalidated-option');
+                        }
+                    });
+                }
+                
+                // If no room is selected, mark rooms that don't contain this shelf as invalidated
+                if (!selectedRoomId) {
+                    roomSelect.find('option').each(function() {
+                        if ($(this).val() === '') return; // Skip the empty option
+                        
+                        if ($(this).val() != shelfRoomId) {
+                            $(this).addClass('invalidated-option');
+                        }
+                    });
+                }
+            }
+            
+            // Refresh Select2 to show new option states
+            $('.form-select').select2({
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true,
+                templateResult: formatOption
+            });
+        }
+        
+        // Reset all options to original state
+        function resetOptions() {
+            roomSelect.find('option').removeClass('invalidated-option');
+            rackSelect.find('option').removeClass('invalidated-option');
+            shelfSelect.find('option').removeClass('invalidated-option');
+        }
+        
+        // Submit form
+        function submitForm() {
+            // Show loading overlay with contextual messages based on filter activity
+            let loadingMessage = 'Filtrowanie przedmiotów...';
+            
+            // Check which filters are active to provide more specific message
+            if ($('#room-select').val() || $('#rack-select').val() || $('#shelf-select').val()) {
+                loadingMessage = 'Filtrowanie przedmiotów według lokalizacji...';
+            } 
+            else if ($('#category-select').val()) {
+                loadingMessage = 'Filtrowanie przedmiotów według kategorii...';
+            }
+            else if ($('#product-search').val()) {
+                loadingMessage = 'Wyszukiwanie przedmiotów...';
+            }
+            else if ($('#expired-filter').hasClass('active')) {
+                loadingMessage = 'Wyszukiwanie przeterminowanych przedmiotów...';
+            }
+            
+            // Store the form data as a serialized string
+            var formData = $(form).serialize();
+            var url = "{% url 'warehouse:item_list' %}?" + formData;
+            
+            // Navigate with loading screen
+            return window.navigateWithLoading(url, loadingMessage, true);
+        }
+        
+        // Clear all filters
+        $('#clear-filters').on('click', function(e) {
+            e.preventDefault();
+            // Show loading overlay with custom message
+            window.showLoading('Resetowanie filtrów...', true);
+            window.updateLoadingProgress(30);
+            $('body').removeClass('fade-in').addClass('fade-out');
+            
+            // Reset all selects
+            $('.form-select').val(null).trigger('change', [true]);
+            
+            // Reset filter buttons
+            $('.filter-button').removeClass('active');
+            expiredInput.prop('disabled', true);
+            expiringInput.prop('disabled', true);
+            hasNoteInput.prop('disabled', true);
+            
+            // Reset search
+            productSearch.val('').trigger('change');
+            
+            // Clear URL parameters and reload
+            window.location.href = '{% url "warehouse:item_list" %}';
+        });
+        
+        // Add fade-in class on page load
+        $('body').addClass('fade-in');
+        
+        // Initialize filters on page load
+        updateFilterOptions();
+    });
+</script>
+{% endblock %}

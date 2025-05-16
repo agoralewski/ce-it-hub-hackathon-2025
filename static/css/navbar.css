@@ -1,0 +1,55 @@
+/* Custom navbar styling for KSP */
+
+/* Reset navbar styles to fix dropdown arrow issue */
+.navbar-dark .dropdown-toggle::after {
+    display: inline-block !important;
+    width: 0;
+    height: 0;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+}
+
+/* Remove animations on pseudo-elements */
+.navbar-nav .nav-link::after {
+    display: none !important;
+}
+
+/* Ensure proper contrast for navbar links */
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--dark) !important;
+    /* Use dark color for better visibility */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+/* Hover and active styles */
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: var(--primary) !important;
+    /* Use primary color for hover/active states */
+    border-bottom: 1px solid var(--primary);
+}
+
+/* Dropdown menu styling */
+.navbar-dark .dropdown-menu {
+    border: 1px solid var(--primary-light);
+    box-shadow: 0 0.5rem 1rem var(--shadow-light);
+}
+
+.navbar-dark .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: var(--dark);
+}
+
+.navbar-dark .dropdown-item:hover,
+.navbar-dark .dropdown-item:focus {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}

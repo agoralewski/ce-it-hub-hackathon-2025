@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Logowanie - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>Logowanie</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+                        {% if field.name == 'username' %}
+                        <label for="{{ field.id_for_label }}" class="form-label">Nazwa użytkownika lub email</label>
+                        {% else %}
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {% endif %}
+                        {{ field|add_class:"form-control" }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in field.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Zaloguj się</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <div class="mb-2"><a href="{% url 'password_reset' %}">Zapomniałeś hasła?</a></div>
+                <div>Nie masz konta? <a href="{% url 'register' %}">Zarejestruj się</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

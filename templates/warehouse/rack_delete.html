@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Usuń regał - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Usuń regał</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Czy na pewno chcesz usunąć regał "{{ rack }}"?</h5>
+                
+                {% if has_items %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Uwaga!</strong> Ten regał zawiera przedmioty. Usunięcie go spowoduje również usunięcie wszystkich półek i przedmiotów na tym regale.
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'warehouse:room_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Anuluj
+                        </a>
+                        <button type="submit" name="confirm" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Usuń
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

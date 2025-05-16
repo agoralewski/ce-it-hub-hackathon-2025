@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Zarządzanie pokojami - KSP{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Zarządzanie pokojami, regałami i półkami</h5>
+        <a href="{% url 'warehouse:room_create' %}" class="btn btn-light">
+            <i class="fas fa-plus"></i> Dodaj nowy pokój
+        </a>
+    </div>
+    <div class="card-body">
+        {% if rooms %}
+        <div class="accordion" id="roomsAccordion">
+            {% for room in rooms %}
+            <div class="accordion-item">
+                <h2 class="accordion-header position-relative" id="heading{{ room.id }}">
+                    <button
+                        class="accordion-button {% if not request.GET.new_room|slugify == room.id|slugify %}collapsed{% endif %}"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ room.id }}"
+                        aria-expanded="{% if request.GET.new_room|slugify == room.id|slugify %}true{% else %}false{% endif %}"
+                        aria-controls="collapse{{ room.id }}">
+                        <span class="me-3"><i class="fas fa-warehouse"></i></span>
+                        <strong>{{ room.name }}</strong>
+                    </button>
+                    <div class="btn-group room-buttons" style="position: absolute; right: 50px; top: 50%; transform: translateY(-50%); z-index: 100; opacity: 0; transition: opacity 0.2s;"
+                         id="roomButtons{{ room.id }}">
+                        <a href="{% url 'warehouse:room_update' room.pk %}"
+                            class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edytuj
+                        </a>
+                        <a href="{% url 'warehouse:room_delete' room.pk %}"
+                            class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i> Usuń
+                        </a>
+                        <a href="{% url 'warehouse:rack_create' room.pk %}"
+                            class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-plus"></i> Dodaj regał
+                        </a>
+                    </div>
+                </h2>
+                <div id="collapse{{ room.id }}"
+                    class="accordion-collapse collapse {% if request.GET.new_room|slugify == room.id|slugify %}show{% endif %}"
+                    aria-labelledby="heading{{ room.id }}" data-bs-parent="#roomsAccordion">
+                    <div class="accordion-body">
+                        {% for rack in room.racks.all|dictsort:"name" %}
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-archive me-2"></i>
+                                        Regał {{ rack.name }}
+                                    </h6>
+                                    <div class="btn-group">
+                                        <a href="{% url 'warehouse:rack_update' rack.pk %}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'warehouse:rack_delete' rack.pk %}"
+                                            class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        <a href="{% url 'warehouse:shelf_create' rack.pk %}"
+                                            class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-plus"></i> Dodaj półkę
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Numer półki</th>
+                                                <th>Pełna lokalizacja</th>
+                                                <th>Czynności</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for shelf in rack.shelves.all|dictsort:"number" %}
+                                            <tr>
+                                                <td>{{ shelf.number }}</td>
+                                                <td>{{ shelf.full_location }}</td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="{% url 'warehouse:shelf_detail' shelf.pk %}"
+                                                            class="btn btn-sm btn-outline-info">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{% url 'warehouse:shelf_update' shelf.pk %}"
+                                                            class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'warehouse:shelf_delete' shelf.pk %}"
+                                                            class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">Brak półek w tym regale.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            Brak regałów w tym pokoju.
+                            <a href="{% url 'warehouse:rack_create' room.pk %}" class="alert-link">Dodaj pierwszy
+                                regał</a>.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <tr>
+            Brak pokoi w systemie.
+            <a href="{% url 'warehouse:room_create' %}" class="alert-link">Dodaj pierwszy pokój</a>.
+        </tr>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show/hide room buttons based on accordion state
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        
+        accordionButtons.forEach(button => {
+            const roomId = button.getAttribute('aria-controls').replace('collapse', '');
+            const buttonGroup = document.getElementById('roomButtons' + roomId);
+            
+            // Initialize buttons visibility based on accordion state
+            if (button.getAttribute('aria-expanded') === 'true') {
+                buttonGroup.style.opacity = '1';
+            } else {
+                buttonGroup.style.opacity = '0';
+            }
+            
+            // Toggle buttons visibility when accordion is toggled
+            button.addEventListener('click', function() {
+                // We use a small timeout to match the accordion animation
+                setTimeout(() => {
+                    if (button.getAttribute('aria-expanded') === 'true') {
+                        buttonGroup.style.opacity = '1';
+                    } else {
+                        buttonGroup.style.opacity = '0';
+                    }
+                }, 10);
+            });
+        });
+        
+        // Make room buttons always visible on hover
+        const accordionItems = document.querySelectorAll('.accordion-item');
+        accordionItems.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            const buttonGroup = item.querySelector('.room-buttons');
+            
+            header.addEventListener('mouseenter', function() {
+                buttonGroup.style.opacity = '1';
+            });
+            
+            header.addEventListener('mouseleave', function() {
+                const button = header.querySelector('.accordion-button');
+                if (button.getAttribute('aria-expanded') !== 'true') {
+                    buttonGroup.style.opacity = '0';
+                }
+            });
+        });
+        
+        // Prevent accordion toggle when clicking room buttons
+        const roomButtons = document.querySelectorAll('.room-buttons a');
+        roomButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    });
+</script>
+{% endblock %}

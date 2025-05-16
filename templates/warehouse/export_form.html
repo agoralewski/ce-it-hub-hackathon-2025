@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Eksport inwentarza - KSP{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Eksport inwentarza do Excela</h5>
+    </div>
+    <div class="card-body">
+        <!-- Add a message container for the download success message -->
+        <div id="download-message" class="alert alert-success" style="display: none;">
+            <i class="fas fa-check-circle"></i> Inwentarz został pomyślnie wyeksportowany.
+        </div>
+        
+        <form method="post" id="export-form">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.room.id_for_label }}" class="form-label">{{ form.room.label }}</label>
+                    {{ form.room }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranego pokoju.</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.rack.id_for_label }}" class="form-label">{{ form.rack.label }}</label>
+                    {{ form.rack }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranego regału.</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.shelf.id_for_label }}" class="form-label">{{ form.shelf.label }}</label>
+                    {{ form.shelf }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranej półki.</small>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                    {{ form.category }}
+                    <small class="form-text text-muted">Wybierz, aby eksportować tylko przedmioty z wybranej kategorii.</small>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.include_expired }}
+                        <label class="form-check-label" for="{{ form.include_expired.id_for_label }}">
+                            {{ form.include_expired.label }}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        {{ form.include_removed }}
+                        <label class="form-check-label" for="{{ form.include_removed.id_for_label }}">
+                            {{ form.include_removed.label }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-file-excel"></i> Eksportuj do Excela
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Handle form submission with JavaScript
+        $('#export-form').on('submit', function(e) {
+            // Show loading state on the button
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalText = submitBtn.html();
+            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Generowanie pliku...');
+            submitBtn.prop('disabled', true);
+            
+            // Use Ajax to submit the form in the background to get the file
+            $.ajax({
+                url: window.location.href,
+                type: 'POST',
+                data: $(this).serialize(),
+                xhrFields: {
+                    responseType: 'blob' // Important for binary data like Excel files
+                },
+                success: function(data, status, xhr) {
+                    // Create a download link and trigger it
+                    const blob = new Blob([data], {type: xhr.getResponseHeader('Content-Type')});
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    
+                    // Get filename from Content-Disposition header if available
+                    let filename = 'inventory.xlsx';
+                    const disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        const matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) { 
+                            filename = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+                    
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    
+                    // Show success message
+                    $('#download-message').fadeIn();
+                    
+                    // Automatically hide the message after 5 seconds
+                    setTimeout(function() {
+                        $('#download-message').fadeOut();
+                    }, 5000);
+                    
+                    // Reset button
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    alert('Wystąpił błąd podczas eksportu. Spróbuj ponownie.');
+                    console.error(error);
+                    
+                    // Reset button
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                }
+            });
+            
+            // Prevent the traditional form submission
+            e.preventDefault();
+        });
+        
+        // Initialize select elements
+        const roomSelect = $('select[name="room"]');
+        const rackSelect = $('select[name="rack"]');
+        const shelfSelect = $('select[name="shelf"]');
+        
+        // Add loading indicator function
+        function showLoading(selectElement) {
+            selectElement.prop('disabled', true);
+            selectElement.html('<option value="">Ładowanie...</option>');
+        }
+        
+        // Handle error in AJAX requests
+        function handleAjaxError(selectElement, errorMsg) {
+            console.error(errorMsg);
+            selectElement.html('<option value="">Błąd ładowania danych</option>');
+            selectElement.prop('disabled', false);
+        }
+        
+        // Dynamic filtering for racks based on room selection
+        roomSelect.on('change', function() {
+            const roomId = $(this).val();
+            
+            // Reset and disable dependent selects
+            rackSelect.html('<option value="">---------</option>');
+            shelfSelect.html('<option value="">---------</option>');
+            
+            if (!roomId) {
+                // If no room selected, just leave both selects empty
+                return;
+            }
+            
+            // Show loading indicator
+            showLoading(rackSelect);
+            
+            // Get racks via AJAX
+            $.ajax({
+                url: '{% url "warehouse:get_racks" %}',
+                data: {
+                    'room': roomId
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Reset rack select
+                    rackSelect.html('<option value="">---------</option>');
+                    rackSelect.prop('disabled', false);
+                    
+                    // Populate rack options
+                    if (data && data.length > 0) {
+                        $.each(data, function(i, rack) {
+                            rackSelect.append($('<option></option>').attr('value', rack.id).text(rack.name));
+                        });
+                    } else {
+                        rackSelect.html('<option value="">Brak regałów</option>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleAjaxError(rackSelect, "Error loading racks: " + error);
+                }
+            });
+        });
+        
+        // Dynamic filtering for shelves based on rack selection
+        rackSelect.on('change', function() {
+            const rackId = $(this).val();
+            
+            // Reset shelf select
+            shelfSelect.html('<option value="">---------</option>');
+            
+            if (!rackId) {
+                // If no rack selected, just leave shelf select empty
+                return;
+            }
+            
+            // Show loading indicator
+            showLoading(shelfSelect);
+            
+            // Get shelves via AJAX
+            $.ajax({
+                url: '{% url "warehouse:get_shelves" %}',
+                data: {
+                    'rack': rackId
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Reset shelf select
+                    shelfSelect.html('<option value="">---------</option>');
+                    shelfSelect.prop('disabled', false);
+                    
+                    // Populate shelf options
+                    if (data && data.length > 0) {
+                        $.each(data, function(i, shelf) {
+                            shelfSelect.append($('<option></option>').attr('value', shelf.id).text(shelf.number));
+                        });
+                    } else {
+                        shelfSelect.html('<option value="">Brak półek</option>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleAjaxError(shelfSelect, "Error loading shelves: " + error);
+                }
+            });
+        });
+        
+        // Initial load - if room is preselected, load its racks
+        if (roomSelect.val()) {
+            roomSelect.trigger('change');
+            
+            // If rack is also preselected, load its shelves
+            if (rackSelect.val()) {
+                rackSelect.trigger('change');
+            }
+        }
+    });
+</script>
+{% endblock %}
