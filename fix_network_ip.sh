@@ -78,8 +78,10 @@ if [[ "$response" =~ ^[Yy]$ ]]; then
     
     if [[ "$restart" =~ ^[Yy]$ ]]; then
         echo "Restarting Docker containers..."
-        docker-compose down
-        docker-compose up -d
+        docker-compose down -v
+        docker-compose up --build -d
+        docker compose exec web uv run manage.py migrate
+        docker compose exec web uv run manage.py createsuperuser
         echo "Docker containers restarted."
     else
         echo "Remember to restart Docker containers manually with:"
