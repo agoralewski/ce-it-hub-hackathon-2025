@@ -27,7 +27,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_ENGINE=django.db.backends.postgresql
-      - NETWORK_HOST=192.168.172.75  # Explicitly setting detected network IP
+      - NETWORK_HOST=143.28.45.143  # Auto-detected by fix_network_ip.sh
     # No need to publish port 8000 as Nginx will handle external connections
     # ports:
     #   - "8000:8000"

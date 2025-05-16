@@ -155,22 +155,15 @@ For production deployment:
 
 **Issue**: QR codes may generate URLs using "localhost" instead of the network IP address, making them inaccessible on mobile devices.
 
-**Solution**: Use the provided utility script to fix this issue:
+**Solution**: The application now automatically detects your network IP during container startup! This happens through:
 
+1. An `auto_detect_ip.sh` script that runs automatically when the container starts
+2. The script detects your network IP and sets the `NETWORK_HOST` environment variable
+3. No manual intervention required!
+
+If you still experience issues, check the Docker logs:
 ```bash
-./fix_network_ip.sh
-```
-
-This script will:
-1. Detect your network IP address
-2. Update docker-compose.yaml with the correct IP
-3. Restart the containers if requested
-
-Alternatively, you can manually set the IP in docker-compose.yaml:
-```yaml
-environment:
-  # Other environment variables...
-  - NETWORK_HOST=192.168.x.x  # Replace with your actual network IP
+docker-compose logs web | grep "Network IP"
 ```
 
 ### Docker Compose Version Warning
