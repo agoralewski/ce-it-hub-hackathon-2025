@@ -20,7 +20,8 @@ def autocomplete_categories(request):
 @login_required
 def get_racks(request):
     """AJAX view for getting racks by room"""
-    room_id = request.GET.get('room')
+    # Accept both 'room' and 'room_id' parameter names for backwards compatibility
+    room_id = request.GET.get('room_id') or request.GET.get('room')
 
     # Use select_related to reduce database queries
     racks = Rack.objects.select_related('room')
@@ -43,8 +44,10 @@ def get_racks(request):
 @login_required
 def get_shelves(request):
     """AJAX view for getting shelves by rack"""
-    rack_id = request.GET.get('rack')
-    room_id = request.GET.get('room')
+    # Accept both 'rack' and 'rack_id' parameter names for backwards compatibility
+    rack_id = request.GET.get('rack_id') or request.GET.get('rack')
+    # Accept both 'room' and 'room_id' parameter names for backwards compatibility
+    room_id = request.GET.get('room_id') or request.GET.get('room')
 
     # Start with all shelves, select_related to reduce db queries
     shelves = Shelf.objects.select_related('rack', 'rack__room')

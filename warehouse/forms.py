@@ -151,6 +151,64 @@ class ItemShelfAssignmentForm(forms.Form):
     )
 
 
+class ItemLocationForm(ItemShelfAssignmentForm):
+    """Form for adding items with location selection"""
+    
+    room = forms.ModelChoiceField(
+        label='Pokój',
+        queryset=Room.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control room-select'}),
+        required=True,
+    )
+    
+    rack = forms.ModelChoiceField(
+        label='Regał',
+        queryset=Rack.objects.none(),  # Initially empty, will be populated by JavaScript
+        widget=forms.Select(attrs={'class': 'form-control rack-select'}),
+        required=True,
+    )
+    
+    shelf = forms.ModelChoiceField(
+        label='Półka',
+        queryset=Shelf.objects.none(),  # Initially empty, will be populated by JavaScript
+        widget=forms.Select(attrs={'class': 'form-control shelf-select'}),
+        required=True,
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # If room is provided in POST data, populate rack queryset
+        if 'room' in self.data:
+            try:
+                room_id = int(self.data.get('room'))
+                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        # If room is provided in initial data, also populate rack queryset
+        elif self.initial.get('room'):
+            try:
+                room_id = int(self.initial.get('room'))
+                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        
+        # If rack is provided in POST data, populate shelf queryset
+        if 'rack' in self.data:
+            try:
+                rack_id = int(self.data.get('rack'))
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
+            except (ValueError, TypeError):
+                pass
+        # If rack is provided in initial data, also populate shelf queryset
+        elif self.initial.get('rack'):
+            try:
+                rack_id = int(self.initial.get('rack'))
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
+            except (ValueError, TypeError):
+                pass
+
+
 class ExportForm(forms.Form):
     """Form for exporting inventory"""
 
