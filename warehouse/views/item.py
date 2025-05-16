@@ -440,40 +440,21 @@ def ajax_bulk_remove_items(request):
 
 @login_required
 def add_new_item(request):
-    """Add a new item with shelf selection"""
+    """Add a new item with shelf selection - first step: select location"""
     if request.method == 'POST':
         # Get the selected shelf ID from POST data
         shelf_id = request.POST.get('shelf')
         
         if not shelf_id:
             messages.error(request, 'Proszę wybrać półkę.')
-            form = ItemShelfAssignmentForm(request.POST)
             return render(request, 'warehouse/add_new_item.html', {
-                'form': form,
                 'rooms': Room.objects.all().order_by('name')
             })
-            
-        # Redirect to the standard add_item_to_shelf view with the selected shelf
+        
+        # Redirect to add_item_to_shelf with the selected shelf
         return redirect('warehouse:add_item_to_shelf', shelf_id=shelf_id)
     else:
-        # Pre-populate form fields from query parameters if present
-        initial = {}
-        if 'item_name' in request.GET:
-            initial['item_name'] = request.GET.get('item_name', '')
-        if 'category' in request.GET:
-            initial['category'] = request.GET.get('category')
-        if 'manufacturer' in request.GET:
-            initial['manufacturer'] = request.GET.get('manufacturer', '')
-        if 'notes' in request.GET:
-            initial['notes'] = request.GET.get('notes', '')
-        if 'expiration_date' in request.GET:
-            initial['expiration_date'] = request.GET.get('expiration_date')
-        if 'quantity' in request.GET:
-            initial['quantity'] = request.GET.get('quantity', 1)
-            
-        form = ItemShelfAssignmentForm(initial=initial)
-    
-    return render(request, 'warehouse/add_new_item.html', {
-        'form': form,
-        'rooms': Room.objects.all().order_by('name')
-    })
+        # Just show the room/rack/shelf selection form
+        return render(request, 'warehouse/add_new_item.html', {
+            'rooms': Room.objects.all().order_by('name')
+        })
