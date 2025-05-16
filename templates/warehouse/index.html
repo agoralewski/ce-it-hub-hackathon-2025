@@ -19,12 +19,18 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="qrScannerModalLabel">Skanuj kod QR</h5>
+        <h5 class="modal-title" id="qrScannerModalLabel"><i class="fas fa-qrcode me-2"></i>Skanuj kod QR</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info mb-3">
+            <small><i class="fas fa-info-circle me-1"></i>Jeśli pojawi się prośba o dostęp do kamery, wybierz opcję "Zezwól"</small>
+        </div>
         <div id="qr-reader" style="width:100%"></div>
-        <div id="qr-reader-results" class="mt-2"></div>
+        <div id="qr-reader-results" class="mt-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
       </div>
     </div>
   </div>
@@ -173,7 +179,7 @@
 
 {% block extra_js %}
 <!-- html5-qrcode library -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var scanBtn = document.getElementById('scan-qr-btn');
@@ -181,33 +187,210 @@
             scanBtn.addEventListener('click', function() {
                 var qrModal = new bootstrap.Modal(document.getElementById('qrScannerModal'));
                 qrModal.show();
-                startQRScanner();
+                
+                // Add a slight delay to ensure modal is fully shown before starting camera
+                setTimeout(() => {
+                    startQRScanner();
+                }, 300);
             });
         }
     });
 
     function startQRScanner() {
         const qrReader = document.getElementById('qr-reader');
+        const resultsContainer = document.getElementById('qr-reader-results');
+        
+        // Clear previous content
         qrReader.innerHTML = '';
+        resultsContainer.innerHTML = '';
+        
+        // Show loading message
+        resultsContainer.innerHTML = '<div class="alert alert-info">Uruchamianie kamery...</div>';
+    
+        
+        // Create QR scanner with config
         const html5QrCode = new Html5Qrcode("qr-reader");
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 250 },
-            qrCodeMessage => {
-                // Assume QR code contains shelf/item URL or ID
-                window.location.href = qrCodeMessage;
-                html5QrCode.stop();
-            },
-            errorMessage => {
-                // Optionally show scan errors
+        
+        // Check for available cameras first
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                // Cameras available - try to start scanning
+                
+                // Configure for better mobile experience
+                const config = {
+                    fps: 10,                // Lower FPS for better performance
+                    qrbox: {                // Responsive QR box
+                        width: 250,
+                        height: 250
+                    },
+                    aspectRatio: 1.0,       // Square aspect ratio
+                    showTorchButtonIfSupported: true,  // Show flashlight button if available
+                    showZoomSliderIfSupported: true    // Show zoom slider if available
+                };
+                
+                // Try to use the back camera first (more likely to be used for scanning)
+                const cameraId = devices.length > 1 ? devices[1].id : devices[0].id;
+                
+                // Start scanning with explicit camera ID and improved error handling
+                html5QrCode.start(
+                    {deviceId: {exact: cameraId}},  // Try specific camera
+                    config,
+                    (decodedText) => {
+                        // On successful scan
+                        resultsContainer.innerHTML = '<div class="alert alert-success">Kod QR odczytany pomyślnie! Przekierowywanie...</div>';
+                        
+                        // Wait a moment to show success before redirecting
+                        setTimeout(() => {
+                            window.location.href = decodedText;
+                            html5QrCode.stop();
+                        }, 500);
+                    },
+                    (errorMessage) => {
+                        // We don't need to show scanning errors
+                    }
+                ).catch(err => {
+                    console.error("Camera start failed with device ID, trying environment mode", err);
+                    
+                    // If specific camera fails, try "environment" mode as fallback
+                    html5QrCode.start(
+                        {facingMode: "environment"},
+                        config,
+                        (decodedText) => {
+                            // On successful scan
+                            resultsContainer.innerHTML = '<div class="alert alert-success">Kod QR odczytany pomyślnie! Przekierowywanie...</div>';
+                            
+                            // Wait a moment to show success before redirecting
+                            setTimeout(() => {
+                                window.location.href = decodedText;
+                                html5QrCode.stop();
+                            }, 500);
+                        },
+                        (errorMessage) => {
+                            // We don't need to show scanning errors
+                        }
+                    ).catch(cameraErr => {
+                        // Both methods failed - show informative error
+                        console.error("Both camera methods failed", cameraErr);
+                        
+                        // Create a user-friendly error message with browser-specific instructions
+                        let browserSpecificHelp = '';
+                        const userAgent = navigator.userAgent.toLowerCase();
+                        
+                        if (userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1) {
+                            // Safari
+                            browserSpecificHelp = '<p><strong>Instrukcje dla Safari:</strong></p>' +
+                                '<ol>' +
+                                '<li>Otwórz Ustawienia > Safari</li>' +
+                                '<li>Przejdź do "Ustawienia stron"</li>' +
+                                '<li>Wybierz "Aparat" i zezwól na dostęp dla tej strony</li>' +
+                                '<li>Wrócić i odświeżyć stronę</li>' +
+                                '</ol>';
+                        } else if (userAgent.indexOf('chrome') !== -1) {
+                            // Chrome
+                            browserSpecificHelp = '<p><strong>Instrukcje dla Chrome:</strong></p>' +
+                                '<ol>' +
+                                '<li>Dotknij ikony 🔒 (kłódka) obok adresu URL</li>' +
+                                '<li>Upewnij się, że "Kamera" ma status "Zezwól"</li>' +
+                                '<li>Jeśli nie, zmień ustawienie i odśwież stronę</li>' +
+                                '</ol>';
+                        } else if (userAgent.indexOf('firefox') !== -1) {
+                            // Firefox
+                            browserSpecificHelp = '<p><strong>Instrukcje dla Firefox:</strong></p>' +
+                                '<ol>' +
+                                '<li>Dotknij ikony ⋮ (menu) w prawym górnym rogu</li>' +
+                                '<li>Wybierz "Ustawienia witryny"</li>' +
+                                '<li>Znajdź "Kamera" i zezwól na dostęp</li>' +
+                                '<li>Odśwież stronę</li>' +
+                                '</ol>';
+                        }
+                        
+                        resultsContainer.innerHTML = 
+                            '<div class="alert alert-danger">' +
+                            '<p><strong>Nie można uzyskać dostępu do kamery:</strong> ' + cameraErr + '</p>' +
+                            '<p>Możliwe rozwiązania:</p>' +
+                            '<ul>' +
+                            '<li>Przyznaj uprawnienia do kamery w ustawieniach przeglądarki</li>' +
+                            '<li>Sprawdź, czy kamera nie jest używana przez inną aplikację</li>' +
+                            '<li>Spróbuj użyć innej przeglądarki (Chrome, Safari lub Firefox)</li>' +
+                            '<li>Jeśli korzystasz z trybu prywatnego/incognito, przejdź do trybu normalnego</li>' +
+                            '</ul>' +
+                            browserSpecificHelp +
+                            '<p class="mt-3"><button class="btn btn-sm btn-primary" onclick="startQRScanner()">Spróbuj ponownie</button></p>' +
+                            '</div>';
+                    });
+                });
+            } else {
+                // No cameras detected
+                resultsContainer.innerHTML = '<div class="alert alert-danger">Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i przyznaj aplikacji uprawnienia do jej używania.</div>';
             }
-        ).catch(err => {
-            document.getElementById('qr-reader-results').innerText = 'Błąd kamery: ' + err;
+        }).catch(err => {
+            // Error getting camera list
+            resultsContainer.innerHTML = '<div class="alert alert-danger">Nie można uzyskać dostępu do listy kamer: ' + err + '. Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki.</div>';
         });
+        
         // Stop scanner on modal close
         document.getElementById('qrScannerModal').addEventListener('hidden.bs.modal', function() {
             html5QrCode.stop().catch(() => {});
         }, { once: true });
     }
 </script>
+
+<!-- Styles for the QR reader -->
+<style>
+    /* Custom styles for html5-qrcode scanner */
+    #qr-reader {
+        width: 100% !important;
+        min-height: 300px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        margin: 0 auto !important;
+    }
+
+    /* Make sure the video fits properly */
+    #qr-reader video {
+        object-fit: cover !important;
+    }
+
+    /* Improve scanning box visibility */
+    #qr-reader__scan_region {
+        min-height: 300px !important;
+    }
+
+    /* Make the QR box more visible */
+    #qr-reader__scan_region img {
+        display: none !important;
+    }
+
+    /* Better camera selection UI */
+    #qr-reader select {
+        width: 100% !important;
+        padding: 8px !important;
+        margin: 8px 0 !important;
+        border-radius: 4px !important;
+        background-color: #f8f9fa !important;
+        border: 1px solid #ced4da !important;
+    }
+
+    /* Fix the header size */
+    #qr-reader__header_message {
+        font-size: 14px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Improve button styling */
+    #qr-reader__dashboard button {
+        border-radius: 4px !important;
+        padding: 6px 12px !important;
+        margin: 4px !important;
+        background-color: #0d6efd !important;
+        color: white !important;
+        border: none !important;
+        font-size: 14px !important;
+    }
+    
+    /* Hide unnecessary elements */
+    #qr-reader__dashboard_section_csr div:first-child span {
+        display: none !important;
+    }
+</style>
 {% endblock %}

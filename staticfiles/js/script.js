@@ -7,6 +7,16 @@ document.addEventListener('DOMContentLoaded', function() {
         $('.select2').select2({
             theme: 'bootstrap-5'
         });
+        
+        // Global setting to focus search field when any Select2 dropdown opens
+        $(document).on('select2:open', function() {
+            setTimeout(function() {
+                var searchField = document.querySelector('.select2-container--open .select2-search__field');
+                if (searchField) {
+                    searchField.focus();
+                }
+            }, 10);
+        });
     }
     
     // Initialize category autocomplete
@@ -27,80 +37,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Initialize item name autocomplete with free text entry
-    const itemAutocomplete = $('.item-autocomplete').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Wpisz nazwę przedmiotu',
-        minimumInputLength: 1,
-        tags: true,
-        createTag: function(params) {
-            return {
-                id: params.term,
-                text: params.term,
-                newOption: true
-            };
+    // Initialize item name autocomplete
+    $('.item-autocomplete').autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: '/warehouse/api/autocomplete/items/',
+                dataType: 'json',
+                data: { term: request.term },
+                success: function(data) {
+                    // Map the results to the format jQuery UI autocomplete expects
+                    response($.map(data.results, function(item) {
+                        return {
+                            label: item.text,
+                            value: item.text
+                        };
+                    }));
+                }
+            });
         },
-        selectOnClose: true,
-        allowClear: true,
-        ajax: {
-            url: '/warehouse/api/autocomplete/items/',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    term: params.term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.results
-                };
-            },
-            cache: true
+        minLength: 1,
+        delay: 250,
+        autoFocus: true,
+        classes: {
+            "ui-autocomplete": "dropdown-menu"
         }
-    });
+    }).autocomplete("instance")._renderItem = function(ul, item) {
+        // Custom rendering for Bootstrap styling
+        return $("<li>")
+            .append("<div class='dropdown-item'>" + item.label + "</div>")
+            .appendTo(ul);
+    };
     
-    // Get initial value from the data attribute
-    const itemField = $('.item-autocomplete');
-    const initialItemName = itemField.data('initial-value');
-    if (initialItemName) {
-        // Create the option and append it
-        const newOption = new Option(initialItemName, initialItemName, true, true);
-        itemField.append(newOption).trigger('change');
-    }
-    
-    // Initialize manufacturer autocomplete with free text entry
-    $('.manufacturer-autocomplete').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Wpisz producenta',
-        minimumInputLength: 1,
-        tags: true,
-        createTag: function(params) {
-            return {
-                id: params.term,
-                text: params.term,
-                newOption: true
-            };
+    // Initialize manufacturer autocomplete
+    $('.manufacturer-autocomplete').autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: '/warehouse/api/autocomplete/manufacturers/',
+                dataType: 'json',
+                data: { term: request.term },
+                success: function(data) {
+                    // Map the results to the format jQuery UI autocomplete expects
+                    response($.map(data.results, function(item) {
+                        return {
+                            label: item.text,
+                            value: item.text
+                        };
+                    }));
+                }
+            });
         },
-        selectOnClose: true,
-        allowClear: true,
-        ajax: {
-            url: '/warehouse/api/autocomplete/manufacturers/',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    term: params.term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.results
-                };
-            },
-            cache: true
+        minLength: 1,
+        delay: 250,
+        autoFocus: true,
+        classes: {
+            "ui-autocomplete": "dropdown-menu"
         }
-    });
+    }).autocomplete("instance")._renderItem = function(ul, item) {
+        // Custom rendering for Bootstrap styling
+        return $("<li>")
+            .append("<div class='dropdown-item'>" + item.label + "</div>")
+            .appendTo(ul);
+    };
     
     // Get initial value from the data attribute
     const manufacturerField = $('.manufacturer-autocomplete');
@@ -125,9 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         const alerts = document.querySelectorAll('.alert:not(.alert-danger)');
         alerts.forEach(function(alert) {
-            if (alert.querySelector('.btn-close')) {
-                alert.querySelector('.btn-close').click();
-            }
+            // Create a Bootstrap dismiss instance and hide the alert
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
         });
     }, 5000);
 

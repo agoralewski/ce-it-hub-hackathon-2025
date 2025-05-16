@@ -34,7 +34,7 @@ ALLOWED_HOSTS = ['*']  # Allow all hosts for development
 
 # Network host to use for QR codes and external URLs (optional)
 # If not set, the system will try to detect the network IP automatically
-NETWORK_HOST = get_env_variable('NETWORK_HOST', '192.168.172.75')  # Current detected IP
+NETWORK_HOST = get_env_variable('NETWORK_HOST', None)  # Will be auto-detected if not specified
 
 
 # Application definition

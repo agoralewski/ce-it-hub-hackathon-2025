@@ -1,0 +1,26 @@
+/* Item list page styles */
+.btn-add-item, .btn-remove-item {
+    border: 1px solid #adb5bd; /* grey outline */
+    background: #fff;
+    color: #212529;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-add-item:hover, .btn-add-item:focus {
+    background: #198754; /* Bootstrap green */
+    color: #fff;
+    border-color: #198754;
+}
+
+.btn-remove-item:hover, .btn-remove-item:focus {
+    background: #dc3545; /* Bootstrap red */
+    color: #fff;
+    border-color: #dc3545;
+}
+
+.pagination-info {
+    margin-bottom: 15px;
+    color: #6c757d;
+}
+
+/* This vertical alignment styling has been moved to tables.css for better centralization */
