@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 
 from warehouse.forms import CustomUserCreationForm, UserProfileForm
 
@@ -23,10 +24,10 @@ def edit_profile(request):
         form = UserProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Twój profil został pomyślnie zaktualizowany!')
+            messages.success(request, _('Your profile has been successfully updated!'))
             return redirect('warehouse:profile')
         else:
-            messages.error(request, 'Proszę poprawić błędy w formularzu.')
+            messages.error(request, _('Please correct the errors in the form.'))
     else:
         form = UserProfileForm(instance=request.user)
     
@@ -43,10 +44,10 @@ def change_password(request):
             update_session_auth_hash(
                 request, user
             )  # Important to keep the user logged in
-            messages.success(request, 'Twoje hasło zostało pomyślnie zmienione!')
+            messages.success(request, _('Your password has been successfully changed!'))
             return redirect('warehouse:profile')
         else:
-            messages.error(request, 'Proszę poprawić błędy w formularzu.')
+            messages.error(request, _('Please correct the errors in the form.'))
     else:
         form = PasswordChangeForm(request.user)
 
@@ -56,7 +57,7 @@ def change_password(request):
 def custom_logout(request):
     """Custom logout view to ensure proper redirection"""
     logout(request)
-    messages.success(request, 'Zostałeś pomyślnie wylogowany.')
+    messages.success(request, _('You have been successfully logged out.'))
     return redirect('login')
 
 
@@ -68,7 +69,7 @@ def register(request):
             form.save()
             messages.success(
                 request,
-                'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.',
+                _('Account has been successfully created! You can now log in.'),
             )
             return redirect('login')
     else:

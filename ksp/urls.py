@@ -20,15 +20,23 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from django.conf.urls.i18n import i18n_patterns
 from warehouse.views.account import register
 
+# Non-translated URLs
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),  # Add URL to change the language
+]
+
+# Translated URLs
+urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     path('accounts/register/', register, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('warehouse/', include('warehouse.urls')),
     path('', RedirectView.as_view(url='/warehouse/', permanent=True)),
-]
+    prefix_default_language=False,  # Don't include prefix for default language
+)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,27 @@
+{% load i18n %}
+<div class="language-switcher dropdown">
+    <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        {% if LANGUAGE_CODE == 'pl' %}
+            <i class="fas fa-globe"></i> Polski
+        {% else %}
+            <i class="fas fa-globe"></i> English
+        {% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+        <form action="{% url 'set_language' %}" method="post" id="language-form">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.path }}">
+            
+            <li>
+                <button type="submit" name="language" value="pl" class="dropdown-item {% if LANGUAGE_CODE == 'pl' %}active{% endif %}">
+                    Polski
+                </button>
+            </li>
+            <li>
+                <button type="submit" name="language" value="en" class="dropdown-item {% if LANGUAGE_CODE == 'en' %}active{% endif %}">
+                    English
+                </button>
+            </li>
+        </form>
+    </ul>
+</div>

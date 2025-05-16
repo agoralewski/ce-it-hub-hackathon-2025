@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
 from .models import Room, Rack, Shelf, Category, Item
 
@@ -251,13 +252,13 @@ class CustomUserCreationForm(UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError('Użytkownik o tej nazwie już istnieje.')
+            raise forms.ValidationError(_('A user with this username already exists.'))
         return username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email and User.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
+            raise forms.ValidationError(_('A user with this email already exists.'))
         return email
 
 
@@ -283,12 +284,12 @@ class UserProfileForm(forms.ModelForm):
         username = self.cleaned_data.get('username')
         # Check if username exists but isn't the current user's username
         if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError('Użytkownik o tej nazwie już istnieje.')
+            raise forms.ValidationError(_('A user with this username already exists.'))
         return username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         # Check if email exists but isn't the current user's email
         if email and User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
+            raise forms.ValidationError(_('A user with this email already exists.'))
         return email
