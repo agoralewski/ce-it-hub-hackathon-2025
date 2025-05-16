@@ -243,16 +243,16 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Set loading message for item list
-        const loadingText = document.querySelector('#loading-overlay .loading-text');
-        if (loadingText) {
-            loadingText.textContent = 'Przygotowywanie listy przedmiotów...';
-        }
-        
-        // Set a delay before hiding the loading screen to show the animation
+        // We're now on the page, so update loading progress to 
+        // signify that the page has loaded
         setTimeout(function() {
-            window.hideLoading();
-        }, 300);
+            window.updateLoadingProgress(80);
+            
+            // After a short delay, hide the loading screen
+            setTimeout(function() {
+                window.updateLoadingProgress(100);
+            }, 200);
+        }, 100);
         
         // Store all options for reverting later
         const allRacks = [];
@@ -633,16 +633,20 @@
                 loadingMessage = 'Wyszukiwanie przeterminowanych przedmiotów...';
             }
             
-            window.showLoading(loadingMessage);
-            $('body').removeClass('fade-in').addClass('fade-out');
-            $(form).submit();
+            // Store the form data as a serialized string
+            var formData = $(form).serialize();
+            var url = "{% url 'warehouse:item_list' %}?" + formData;
+            
+            // Navigate with loading screen
+            return window.navigateWithLoading(url, loadingMessage, true);
         }
         
         // Clear all filters
         $('#clear-filters').on('click', function(e) {
             e.preventDefault();
             // Show loading overlay with custom message
-            window.showLoading('Resetowanie filtrów...');
+            window.showLoading('Resetowanie filtrów...', true);
+            window.updateLoadingProgress(30);
             $('body').removeClass('fade-in').addClass('fade-out');
             
             // Reset all selects
