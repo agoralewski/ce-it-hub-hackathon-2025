@@ -247,6 +247,11 @@ def shelf_detail(request, pk):
     today_date = timezone.now().date()
     thirty_days_from_now = today_date + timedelta(days=30)
 
+    # Create a network-aware absolute URL for this shelf
+    from django.urls import reverse
+    from warehouse.views.utils import build_network_absolute_uri
+    shelf_url = build_network_absolute_uri(request, reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk}))
+
     return render(
         request,
         'warehouse/shelf_detail.html',
@@ -257,5 +262,6 @@ def shelf_detail(request, pk):
             'total_count': assignments.count(),
             'today_date': today_date,
             'thirty_days_from_now': thirty_days_from_now,
+            'shelf_url': shelf_url,  # Add the network-aware URL to the context
         },
     )

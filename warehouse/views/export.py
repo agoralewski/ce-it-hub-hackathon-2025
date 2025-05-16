@@ -90,8 +90,10 @@ def generate_qr_codes(request):
                 if not shelf.qr_code_uuid:
                     shelf.save()  # This will trigger the UUID generation
 
-                # Create the URL for the shelf detail page
-                shelf_url = request.build_absolute_uri(
+                # Create the URL for the shelf detail page with the network IP
+                from warehouse.views.utils import build_network_absolute_uri
+                shelf_url = build_network_absolute_uri(
+                    request, 
                     reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
                 )
 

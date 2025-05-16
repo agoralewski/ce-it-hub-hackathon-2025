@@ -28,10 +28,12 @@ SECRET_KEY = get_env_variable(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool_env_variable('DEBUG', True)
 
-# Updated to include local network IP for mobile access
-ALLOWED_HOSTS = get_env_variable(
-    'ALLOWED_HOSTS', 'localhost,127.0.0.1,192.168.0.94'
-).split(',')
+# Updated to include all IPs for development convenience
+ALLOWED_HOSTS = ['*']  # Allow all hosts for development
+
+# Network host to use for QR codes and external URLs (optional)
+# If not set, the system will try to detect the network IP automatically
+NETWORK_HOST = get_env_variable('NETWORK_HOST', '192.168.172.75')  # Current detected IP
 
 
 # Application definition
