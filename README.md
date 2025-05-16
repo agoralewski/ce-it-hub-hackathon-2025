@@ -39,9 +39,7 @@ uv sync
 ### 2.B (alternative if not using uv) Create venv and install dependencies
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows, use: venv\Scripts\activate
-pip install -r requirements.txt
+source .venv/bin/activate  # On Windows, use: venv\Scripts\activate
 ```
 
 ### 3. Configure environment variables
