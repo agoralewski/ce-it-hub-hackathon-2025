@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: ksp
-      POSTGRES_USER: kspuser
-      POSTGRES_PASSWORD: ksppassword
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
@@ -22,11 +22,17 @@ services:
     depends_on:
       - db
     environment:
-      - DEBUG=1
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - DJANGO_DB_HOST=db
-      - DJANGO_DB_NAME=ksp
-      - DJANGO_DB_USER=kspuser
-      - DJANGO_DB_PASSWORD=ksppassword
+      - DJANGO_DB_NAME=${DB_NAME}
+      - DJANGO_DB_USER=${DB_USER}
+      - DJANGO_DB_PASSWORD=${DB_PASSWORD}
+      - DB_ENGINE=django.db.backends.postgresql
 
 volumes:
   postgres_data:
+
+# Load environment variables from .env file
+# Docker Compose automatically reads from .env in the same directory

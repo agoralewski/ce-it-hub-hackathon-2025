@@ -86,17 +86,25 @@ WSGI_APPLICATION = 'ksp.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Default SQLite database
-DB_ENGINE = 'django.db.backends.postgresql'
-DATABASES = {
-    'default': {
-        'ENGINE': DB_ENGINE,
-        'NAME': os.environ.get('DJANGO_DB_NAME', 'ksp'),
-        'USER': os.environ.get('DJANGO_DB_USER', 'kspuser'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'ksppassword'),
-        'HOST': os.environ.get('DJANGO_DB_HOST', 'db'),
-        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+DB_ENGINE = get_env_variable('DB_ENGINE', 'django.db.backends.sqlite3')
+if DB_ENGINE == 'django.db.backends.sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': get_env_variable('DB_NAME', 'ksp_db'),
+            'USER': get_env_variable('DB_USER', 'postgres'),
+            'PASSWORD': get_env_variable('DB_PASSWORD', 'changethis'),
+            'HOST': get_env_variable('DB_HOST', 'localhost'),
+            'PORT': get_env_variable('DB_PORT', '5432'),
+        }
+    }
 
 
 # Password validation
