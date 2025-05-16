@@ -1,0 +1,38 @@
+/* Table styling for all warehouse tables */
+
+/* Vertical centering for table cells - maximum specificity and importance */
+.table td, .table th,
+table.table td, table.table th,
+.table tbody tr td, .table thead tr th,
+.card-body .table-responsive table.table td,
+.card-body .table-responsive table.table th {
+    vertical-align: middle !important;
+}
+
+/* Make sure table rows have consistent height and padding */
+.table tbody tr,
+table.table tbody tr {
+    height: 1.5rem !important; /* Consistent height for all rows */
+}
+
+/* Ensure buttons and content are aligned centrally in cells */
+.table td .btn-group, .table td .btn,
+table.table td .btn-group, table.table td .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* Improve responsive tables */
+.table-responsive {
+    margin-bottom: 1rem;
+}
+
+/* Additional hover effect to improve UX */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Fix button alignment in table cells */
+.table td .btn-group {
+    white-space: nowrap;
+}

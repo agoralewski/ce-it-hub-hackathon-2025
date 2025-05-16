@@ -40,7 +40,11 @@ def index(request):
 @login_required
 def item_list(request):
     """List of all active items in warehouse"""
-    # Get filter parameters
+    assignments = ItemShelfAssignment.objects.filter(
+        remove_date__isnull=True
+    ).select_related('item', 'shelf', 'shelf__rack', 'shelf__rack__room')
+
+    # Apply filters if provided
     room_id = request.GET.get('room')
     rack_id = request.GET.get('rack')
     shelf_id = request.GET.get('shelf')
@@ -49,19 +53,6 @@ def item_list(request):
     filter_values = request.GET.getlist('filter')  # Get all filter values as a list
     has_note = request.GET.get('has_note')
 
-    # Use select_related to fetch related objects in a single query
-    assignments = ItemShelfAssignment.objects.filter(
-        remove_date__isnull=True
-    ).select_related(
-        'item',
-        'shelf',
-        'shelf__rack',
-        'shelf__rack__room',
-        'item__category',
-        'added_by',
-    )
-
-    # Apply filters if provided
     if room_id:
         assignments = assignments.filter(shelf__rack__room_id=room_id)
     if rack_id:
@@ -70,20 +61,18 @@ def item_list(request):
         assignments = assignments.filter(shelf_id=shelf_id)
     if category_id:
         assignments = assignments.filter(item__category_id=category_id)
-
+    
     # Apply search filter if provided
     if search_query:
         assignments = assignments.filter(item__name__icontains=search_query)
-
+    
     # Apply 'has_note' filter if provided
     if has_note:
-        assignments = assignments.filter(item__note__isnull=False).exclude(
-            item__note=''
-        )
+        assignments = assignments.filter(item__note__isnull=False).exclude(item__note='')
 
     # Create a Q object to collect multiple filter conditions
     filters_q = Q()
-
+    
     # Apply 'expiring_soon' filter if provided
     if 'expiring_soon' in filter_values:
         expiring_soon_q = Q(
@@ -100,18 +89,41 @@ def item_list(request):
             item__expiration_date__lt=timezone.now().date(),
         )
         filters_q |= expired_q
-
+    
     # Apply combined filters if any were selected
     if filter_values:
         assignments = assignments.filter(filters_q)
+    
+    # Group assignments by item name, shelf, category and other properties
+    grouped_assignments = {}
+    for assignment in assignments:
+        # Create a unique key for each group based on name, location and other relevant properties
+        key = (
+            assignment.item.name,
+            assignment.shelf.pk,
+            assignment.item.category.pk,
+            assignment.item.manufacturer or '',
+            str(assignment.item.expiration_date or ''),
+            assignment.item.note or ''
+        )
+        
+        if key not in grouped_assignments:
+            grouped_assignments[key] = {
+                'item_name': assignment.item.name,
+                'shelf': assignment.shelf,
+                'category': assignment.item.category,
+                'manufacturer': assignment.item.manufacturer,
+                'expiration_date': assignment.item.expiration_date,
+                'note': assignment.item.note,
+                'assignments': [],
+                'count': 0
+            }
+        
+        grouped_assignments[key]['assignments'].append(assignment)
+        grouped_assignments[key]['count'] += 1
 
-    # Get total count for stats (before pagination)
-    total_count = assignments.count()
-
-    # Add pagination
-    paginator = Paginator(assignments, 100)  # Show 100 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Convert dictionary to list for the template
+    grouped_items = list(grouped_assignments.values())
 
     # Get filter options
     rooms = Room.objects.all()
@@ -135,9 +147,8 @@ def item_list(request):
         request,
         'warehouse/item_list.html',
         {
-            'assignments': page_obj,  # Use paginated assignments
-            'page_obj': page_obj,  # Add page object for pagination controls
-            'total_count': total_count,
+            'assignments': assignments,  # Keep original for backward compatibility
+            'grouped_items': grouped_items,  # New grouped items for display
             'rooms': rooms,
             'racks': racks,
             'shelves': shelves,

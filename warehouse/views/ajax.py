@@ -119,3 +119,24 @@ def autocomplete_manufacturers(request):
 
     results = [{'id': m, 'text': m} for m in manufacturers]
     return JsonResponse({'results': results})
+
+
+@login_required
+def autocomplete_users(request):
+    """AJAX view for user autocomplete"""
+    from django.contrib.auth.models import User
+    query = request.GET.get('term', '')
+
+    if query:
+        # If there's a search query, filter and limit results
+        users = User.objects.filter(
+            username__icontains=query
+        )[:10]
+        
+        # Format results with username and email
+        results = [{'id': user.username, 'text': f"{user.username} ({user.email})"} for user in users]
+    else:
+        # For empty queries, don't return anything to avoid loading the entire dataset
+        results = []
+
+    return JsonResponse({'results': results})

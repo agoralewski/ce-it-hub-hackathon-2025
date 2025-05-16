@@ -23,7 +23,7 @@ from warehouse.views.category import (
 
 # Import item management views
 from warehouse.views.item import (
-    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items
+    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items
 )
 
 # Import export and QR code views
@@ -59,7 +59,7 @@ __all__ = [
     'category_list', 'category_create', 'category_update', 'category_delete',
     
     # Item management
-    'add_item_to_shelf', 'remove_item_from_shelf', 'ajax_bulk_add_items',
+    'add_item_to_shelf', 'remove_item_from_shelf', 'ajax_bulk_add_items', 'ajax_bulk_remove_items',
     
     # Export and QR codes
     'generate_qr_codes', 'export_inventory',

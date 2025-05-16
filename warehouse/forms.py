@@ -123,7 +123,7 @@ class ItemShelfAssignmentForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control category-select'}),
     )
     quantity = forms.IntegerField(
-        label='Ilość',
+        label='Liczba',
         min_value=1,
         initial=1,
         widget=forms.NumberInput(attrs={'class': 'form-control'}),

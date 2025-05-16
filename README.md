@@ -39,9 +39,7 @@ uv sync
 ### 2.B (alternative if not using uv) Create venv and install dependencies
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows, use: venv\Scripts\activate
-pip install -r requirements.txt
+source .venv/bin/activate  # On Windows, use: venv\Scripts\activate
 ```
 
 ### 3. Configure environment variables
@@ -91,6 +89,36 @@ The application will be available at http://127.0.0.1:8000/
 ### 7. Access the admin interface
 
 Visit http://127.0.0.1:8000/admin/ and log in with the superuser credentials.
+
+## Running with Docker
+
+### 1. Build and start the containers
+
+```bash
+docker compose up --build
+```
+
+This will start both the Django application and a PostgreSQL database.
+
+### 2. Run database migrations
+
+In a separate terminal, run:
+
+```bash
+docker compose exec web uv run manage.py migrate
+```
+
+### 3. Create a superuser (admin account)
+
+```bash
+docker compose exec web uv run manage.py createsuperuser
+```
+
+### 4. Access the application
+
+Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
+
+- The admin interface is at [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ## Project Structure
 
