@@ -149,9 +149,50 @@ For production deployment:
 3. Use a production-grade web server (e.g., Gunicorn, uWSGI)
 4. Set up a reverse proxy (e.g., Nginx)
 
+## Known Issues and Solutions
+
+### QR Codes with Localhost URLs
+
+**Issue**: QR codes may generate URLs using "localhost" instead of the network IP address, making them inaccessible on mobile devices.
+
+**Solution**: Use the provided utility script to fix this issue:
+
+```bash
+./fix_network_ip.sh
+```
+
+This script will:
+1. Detect your network IP address
+2. Update docker-compose.yaml with the correct IP
+3. Restart the containers if requested
+
+Alternatively, you can manually set the IP in docker-compose.yaml:
+```yaml
+environment:
+  # Other environment variables...
+  - NETWORK_HOST=192.168.x.x  # Replace with your actual network IP
+```
+
+### Docker Compose Version Warning
+
+**Issue**: You may see a warning about an obsolete version directive in docker-compose.yaml.
+
+**Solution**: Run the provided script to fix this issue:
+
+```bash
+./fix_docker_compose_version.sh
+```
+
+## Additional Documentation
+
+- [DEPLOY.md](DEPLOY.md) - Detailed deployment instructions
+- [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup and troubleshooting
+- [STATIC_FILES_TROUBLESHOOTING.md](STATIC_FILES_TROUBLESHOOTING.md) - Help with static files issues
+- [QR_CODE_TESTING.md](QR_CODE_TESTING.md) - Guide for testing QR code functionality
+
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 

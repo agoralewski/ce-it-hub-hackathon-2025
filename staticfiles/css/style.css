@@ -1,21 +1,22 @@
 /* Main CSS file for KSP (Krwinkowy System Prezentowy) */
 
-:root {
-    --primary: #d0242c;
-    --secondary: #6c757d;
-    --success: #198754;
-    --danger: #dc3545;
-    --warning: #ffc107;
-    --info: #0dcaf0;
-    --light: #f8f9fa;
-    --dark: #212529;
-}
+/* Import component styles */
+@import url('components/variables.css');
+@import url('components/buttons.css');
+@import url('components/cards.css');
+@import url('components/select2.css');
+@import url('components/form-elements.css');
+@import url('components/utilities.css');
+@import url('components/tables.css');
 
-/* Use white as main color with red accents (updated) */
+/* ========== Navbar Styling (kept in main file for clarity) ========== */
+
+/* Override Bootstrap's navbar colors */
 .bg-primary {
-    background-color: white !important;
+    background-color: var(--light) !important;
+    color: var(--dark) !important;
     border-bottom: 3px solid var(--primary) !important;
-    box-shadow: 0 4px 12px rgba(208, 36, 44, 0.15) !important;
+    box-shadow: 0 4px 12px var(--primary-shadow) !important;
 }
 
 .navbar-dark .navbar-nav .nav-link,
@@ -32,41 +33,13 @@
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28208, 36, 44, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
-.btn-primary {
-    background-color: var(--primary) !important;
-    border-color: var(--primary) !important;
-}
-
-.btn-outline-primary {
-    color: var(--primary) !important;
-    border-color: var(--primary) !important;
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--primary) !important;
-    color: white !important;
-}
-
-.text-primary {
-    color: var(--primary) !important;
-}
-
-.border-primary {
-    border-color: var(--primary) !important;
-}
-
-.nav-link.active {
-    color: var(--primary) !important;
-    font-weight: bold;
-}
-
 /* Navbar logo styling */
 .navbar-logo {
     height: 30px;
     width: auto;
 }
 
-/* Simple navbar styling with 90% border width */
+/* Simple navbar styling with underline */
 .navbar-nav .nav-item .nav-link {
     color: var(--dark) !important;
     position: relative;
@@ -79,7 +52,7 @@
     display: none !important;
 }
 
-/* Fixing the hover transition with a different approach - using ::before for underline */
+/* Underline effect for navbar links */
 .navbar-nav .nav-item .nav-link::before {
     content: '';
     position: absolute;
@@ -101,7 +74,7 @@
     color: var(--primary) !important;
 }
 
-/* Properly styled dropdown arrow - completely separate from the underline */
+/* Properly styled dropdown arrow */
 .dropdown-toggle::after {
     display: inline-block !important;
     margin-left: 0.255em;
@@ -114,31 +87,6 @@
     width: auto !important;
     height: auto !important;
     background-color: transparent !important;
-}
-
-.navbar-nav .nav-item.active .nav-link, 
-.navbar-nav .nav-link.active {
-    color: var(--primary) !important;
-    font-weight: bold;
-}
-
-/* Dropdown styling with ultra-thin border */
-.dropdown-menu {
-    border-radius: 0.25rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border-width: 0.5px !important;
-    border-color: rgba(208, 36, 44, 0.05) !important;
-    padding: 0.25rem;
-}
-
-.dropdown-item:active, .dropdown-item:hover {
-    background-color: rgba(208, 36, 44, 0.05) !important;
-    color: var(--primary) !important;
-}
-
-/* Fix for dropdown items */
-.dropdown-item {
-    border: none !important;
 }
 
 /* Override Bootstrap's dropdown arrow styling */
@@ -156,106 +104,21 @@
     background: none !important;
 }
 
-body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.footer {
-    margin-top: auto;
-}
-
-/* Custom styling for cards */
-.card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border: none;
-    margin-bottom: 1rem;
-}
-
-.card-header {
-    font-weight: 500;
-    border-bottom: 2px solid var(--primary);
-    background-color: white;
-}
-
-/* Responsive tables */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Select2 customizations */
-.select2-container--bootstrap-5 .select2-selection {
-    min-height: calc(1.5em + 0.75rem + 2px);
-}
-
-/* Free text select2 input styling */
-.select2-container--bootstrap-5 .select2-search--inline .select2-search__field {
-    height: calc(1.5em + 0.5rem);
-    padding: 0.25rem 0.5rem;
-    margin-top: 0;
-}
-
-.select2-container--bootstrap-5 .select2-selection--single {
-    padding: 0.375rem 0.75rem;
-}
-
-.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 0.25rem;
-}
-
-/* QR code container */
-.qr-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    background-color: white;
+/* Dropdown menu styling */
+.dropdown-menu {
     border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-width: 0.5px !important;
+    border-color: var(--primary-light) !important;
+    padding: 0.25rem;
 }
 
-/* Badges for expiration dates */
-.badge.bg-danger, .badge.bg-warning, .badge.bg-success {
-    font-size: 0.875em;
-    font-weight: 600;
-    padding: 0.35em 0.65em;
+.dropdown-item:active,
+.dropdown-item:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--primary) !important;
 }
 
-/* Custom admin buttons */
-.admin-button {
-    text-align: center;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 0.5rem;
-    transition: transform 0.2s ease;
-}
-
-.admin-button:hover {
-    transform: translateY(-5px);
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-    .card-title {
-        font-size: 1.25rem;
-    }
-    
-    .table-responsive {
-        font-size: 0.875rem;
-    }
-}
-
-/* Print styles for QR codes */
-@media print {
-    .no-print {
-        display: none;
-    }
-    
-    .qr-code-print {
-        page-break-inside: avoid;
-        margin-bottom: 2cm;
-    }
+.dropdown-item {
+    border: none !important;
 }

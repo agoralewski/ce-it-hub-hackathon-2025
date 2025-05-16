@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   db:
     image: postgres:15
@@ -14,11 +12,10 @@ services:
 
   web:
     build: .
+    # Use Django development server initially for debugging
     command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - .:/app
-    ports:
-      - "8000:8000"
     depends_on:
       - db
     environment:
@@ -27,6 +24,22 @@ services:
       - DJANGO_DB_NAME=ksp
       - DJANGO_DB_USER=kspuser
       - DJANGO_DB_PASSWORD=ksppassword
+      - NETWORK_HOST=192.168.172.75  # Explicitly setting detected network IP
+    # No need to publish port 8000 as Nginx will handle external connections
+    # ports:
+    #   - "8000:8000"
+
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./static:/app/static
+      - ./media:/app/media
+    ports:
+      - "80:80"
+    depends_on:
+      - web
 
 volumes:
   postgres_data:

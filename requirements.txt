@@ -6,3 +6,4 @@ Pillow>=10.0.0
 python-dotenv>=1.0.0
 reportlab>=4.0.0
 psycopg2-binary
+gunicorn>=21.0.0
