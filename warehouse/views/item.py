@@ -7,9 +7,10 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
 from django.http import JsonResponse
+from django.urls import reverse
 
-from warehouse.models import Shelf, Category, Item, ItemShelfAssignment
-from warehouse.forms import ItemShelfAssignmentForm
+from warehouse.models import Shelf, Category, Item, ItemShelfAssignment, Room, Rack
+from warehouse.forms import ItemShelfAssignmentForm, ItemLocationForm
 
 
 @login_required
@@ -435,3 +436,25 @@ def ajax_bulk_remove_items(request):
         return JsonResponse(
             {'error': f'Error processing items: {str(e)}', 'offset': offset}, status=500
         )
+
+
+@login_required
+def add_new_item(request):
+    """Add a new item with shelf selection - first step: select location"""
+    if request.method == 'POST':
+        # Get the selected shelf ID from POST data
+        shelf_id = request.POST.get('shelf')
+        
+        if not shelf_id:
+            messages.error(request, 'Proszę wybrać półkę.')
+            return render(request, 'warehouse/add_new_item.html', {
+                'rooms': Room.objects.all().order_by('name')
+            })
+        
+        # Redirect to add_item_to_shelf with the selected shelf
+        return redirect('warehouse:add_item_to_shelf', shelf_id=shelf_id)
+    else:
+        # Just show the room/rack/shelf selection form
+        return render(request, 'warehouse/add_new_item.html', {
+            'rooms': Room.objects.all().order_by('name')
+        })
