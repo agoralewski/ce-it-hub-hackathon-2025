@@ -19,11 +19,14 @@ services:
     depends_on:
       - db
     environment:
-      - DEBUG=1
-      - DJANGO_DB_HOST=db
-      - DJANGO_DB_NAME=ksp
-      - DJANGO_DB_USER=kspuser
-      - DJANGO_DB_PASSWORD=ksppassword
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_ENGINE=django.db.backends.postgresql
       - NETWORK_HOST=192.168.172.75  # Explicitly setting detected network IP
     # No need to publish port 8000 as Nginx will handle external connections
     # ports:
