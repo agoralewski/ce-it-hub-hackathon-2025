@@ -259,3 +259,36 @@ class CustomUserCreationForm(UserCreationForm):
         if email and User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
         return email
+
+
+class UserProfileForm(forms.ModelForm):
+    """Form for editing user profile information"""
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make fields that might be null required in the form
+        self.fields['email'].required = True
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        # Check if username exists but isn't the current user's username
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('Użytkownik o tej nazwie już istnieje.')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Check if email exists but isn't the current user's email
+        if email and User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
+        return email
