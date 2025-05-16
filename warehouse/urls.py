@@ -4,7 +4,7 @@ from warehouse.views.core import index, item_list, low_stock
 from warehouse.views.location import (
     room_list, room_create, room_update, room_delete, clean_room,
     rack_create, rack_update, rack_delete,
-    shelf_create, shelf_update, shelf_delete, shelf_detail
+    shelf_create, shelf_update, shelf_delete, shelf_detail, move_items_to_shelf
 )
 from warehouse.views.category import (
     category_list, category_create, category_update, category_delete
@@ -17,7 +17,7 @@ from warehouse.views.export import (
     generate_qr_codes, export_inventory
 )
 from warehouse.views.ajax import (
-    autocomplete_categories, get_racks, get_shelves,
+    autocomplete_categories, get_racks, get_shelves, get_shelf_items,
     autocomplete_items, autocomplete_manufacturers, autocomplete_users
 )
 from warehouse.views.account import (
@@ -59,6 +59,11 @@ urlpatterns = [
         name='add_item_to_shelf',
     ),
     path(
+        'shelves/<int:shelf_id>/move_items/',
+        move_items_to_shelf,
+        name='move_items_to_shelf',
+    ),
+    path(
         'items/add/',
         add_new_item,
         name='add_new_item',
@@ -94,6 +99,7 @@ urlpatterns = [
     # AJAX endpoints for dynamic filtering
     path('api/racks/', get_racks, name='get_racks'),
     path('api/shelves/', get_shelves, name='get_shelves'),
+    path('api/shelf_items/', get_shelf_items, name='get_shelf_items'),
     path('ajax/bulk-add-items/', ajax_bulk_add_items, name='ajax_bulk_add_items'),
     path('ajax/bulk-remove-items/', ajax_bulk_remove_items, name='ajax_bulk_remove_items'),
     # User profile and password management
