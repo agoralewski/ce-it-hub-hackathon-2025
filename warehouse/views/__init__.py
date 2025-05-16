@@ -39,7 +39,7 @@ from warehouse.views.ajax import (
 
 # Import account views
 from warehouse.views.account import (
-    profile, change_password, custom_logout, register
+    profile, edit_profile, change_password, custom_logout, register
 )
 
 # Define __all__ to explicitly specify what's exported from this package
@@ -69,5 +69,5 @@ __all__ = [
     'autocomplete_items', 'autocomplete_manufacturers',
     
     # Account management
-    'profile', 'change_password', 'custom_logout', 'register',
+    'profile', 'edit_profile', 'change_password', 'custom_logout', 'register',
 ]

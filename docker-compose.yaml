@@ -5,6 +5,9 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
@@ -46,6 +49,9 @@ services:
 
 volumes:
   postgres_data:
+
+# Load environment variables from .env file
+# Docker Compose automatically reads from .env in the same directory
 
 # Load environment variables from .env file
 # Docker Compose automatically reads from .env in the same directory

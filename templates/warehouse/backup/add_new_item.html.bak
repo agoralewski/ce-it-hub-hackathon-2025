@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Dodaj nowy przedmiot - KSP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+    .section-title {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 5px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+    }
+    .form-section-header {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Dodaj nowy przedmiot</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Location section -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <i class="fas fa-map-marker-alt"></i> Lokalizacja
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="room" class="form-label">Pokój</label>
+                                    <select name="room" id="room" class="form-control room-select">
+                                        <option value="">Wybierz pokój</option>
+                                        {% for room in rooms %}
+                                        <option value="{{ room.id }}">{{ room.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="rack" class="form-label">Regał</label>
+                                    <select name="rack" id="rack" class="form-control rack-select">
+                                        <option value="">Wybierz najpierw pokój</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="shelf" class="form-label">Półka</label>
+                                    <select name="shelf" id="shelf" class="form-control shelf-select">
+                                        <option value="">Wybierz najpierw regał</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Item details section -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <i class="fas fa-box"></i> Szczegóły przedmiotu
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.item_name.id_for_label }}" class="form-label">{{ form.item_name.label }}</label>
+                                    <input type="text" name="item_name" id="{{ form.item_name.id_for_label }}" class="form-control item-autocomplete" value="{{ form.item_name.value|default:'' }}" required>
+                                    {% if form.item_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.item_name.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                                    {{ form.category|add_class:"form-control category-select" }}
+                                    {% if form.category.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.category.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.quantity.label }}</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary quantity-btn" id="decrease-quantity">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" name="quantity" id="{{ form.quantity.id_for_label }}" class="form-control" value="{{ form.quantity.value|default:'1' }}" min="1" required>
+                                        <button type="button" class="btn btn-outline-secondary quantity-btn" id="increase-quantity">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    {% if form.quantity.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.quantity.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                                    <input type="text" name="manufacturer" id="{{ form.manufacturer.id_for_label }}" class="form-control manufacturer-autocomplete" value="{{ form.manufacturer.value|default:'' }}">
+                                    {% if form.manufacturer.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.manufacturer.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.expiration_date.id_for_label }}" class="form-label">{{ form.expiration_date.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                                    <input type="date" name="expiration_date" id="{{ form.expiration_date.id_for_label }}" class="form-control" value="{{ form.expiration_date.value|default:'' }}">
+                                    {% if form.expiration_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.expiration_date.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                                    <textarea name="notes" id="{{ form.notes.id_for_label }}" class="form-control" rows="3">{{ form.notes.value|default:'' }}</textarea>
+                                    {% if form.notes.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.notes.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex justify-content-between">
+                        <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Dodaj przedmiot
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 only for actual dropdowns, not text inputs and other controls
+        $('.room-select, .rack-select, .shelf-select, .category-select').select2({
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
+            allowClear: true,
+            width: '100%'
+        });
+        
+        // Handle quantity buttons
+        $('#increase-quantity').on('click', function() {
+            var value = parseInt($('#{{ form.quantity.id_for_label }}').val()) || 0;
+            $('#{{ form.quantity.id_for_label }}').val(value + 1);
+        });
+        
+        $('#decrease-quantity').on('click', function() {
+            var value = parseInt($('#{{ form.quantity.id_for_label }}').val()) || 0;
+            if (value > 1) {
+                $('#{{ form.quantity.id_for_label }}').val(value - 1);
+            }
+        });
+        
+        // Remove any accidental Select2 initialization from non-dropdown fields
+        $('input[type="text"], input[type="number"], input[type="date"], textarea').each(function() {
+            try {
+                if ($(this).data('select2')) {
+                    $(this).select2('destroy');
+                }
+            } catch (e) {
+                // Ignore errors if select2 isn't initialized
+            }
+        });
+        
+        // Handle dynamic loading of racks when room changes
+        $('#room').on('change', function() {
+            var roomId = $(this).val();
+            if (roomId) {
+                // Clear rack and shelf selects
+                $('#rack').empty().trigger('change');
+                $('#shelf').empty().trigger('change');
+                
+                // Fetch racks for this room
+                $.ajax({
+                    url: "{% url 'warehouse:get_racks' %}",
+                    data: {
+                        'room_id': roomId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Add empty option
+                        $('#rack').append(new Option('Wybierz regał', '', true, true));
+                        
+                        // Add rack options
+                        $.each(data, function(index, item) {
+                            $('#rack').append(new Option(item.name, item.id, false, false));
+                        });
+                        
+                        // Trigger change to update Select2
+                        $('#rack').trigger('change');
+                    }
+                });
+            }
+        });
+        
+        // Handle dynamic loading of shelves when rack changes
+        $('#rack').on('change', function() {
+            var rackId = $(this).val();
+            if (rackId) {
+                // Clear shelf select
+                $('#shelf').empty().trigger('change');
+                
+                // Fetch shelves for this rack
+                $.ajax({
+                    url: "{% url 'warehouse:get_shelves' %}",
+                    data: {
+                        'rack_id': rackId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Add empty option
+                        $('#shelf').append(new Option('Wybierz półkę', '', true, true));
+                        
+                        // Add shelf options
+                        $.each(data, function(index, item) {
+                            $('#shelf').append(new Option(item.number, item.id, false, false));
+                        });
+                        
+                        // Trigger change to update Select2
+                        $('#shelf').trigger('change');
+                    }
+                });
+            }
+        });
+        
+        // Initialize autocomplete for item names with a custom configuration
+        $('.item-autocomplete').select2({
+            placeholder: 'Wpisz nazwę przedmiotu',
+            allowClear: true,
+            tags: true,
+            minimumInputLength: 1,
+            ajax: {
+                url: "{% url 'warehouse:autocomplete_items' %}",
+                dataType: 'json',
+                delay: 300,
+                data: function(params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                id: item.name,
+                                text: item.name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            // Allow the user to enter their own text that's not in the list
+            createTag: function(params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                };
+            }
+        });
+        
+        // Initialize autocomplete for manufacturers
+        $('.manufacturer-autocomplete').select2({
+            placeholder: 'Wpisz producenta',
+            allowClear: true,
+            tags: true,
+            minimumInputLength: 1,
+            ajax: {
+                url: "{% url 'warehouse:autocomplete_manufacturers' %}",
+                dataType: 'json',
+                delay: 300,
+                data: function(params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                id: item.name,
+                                text: item.name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script>
+{% endblock %}

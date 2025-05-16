@@ -151,6 +151,64 @@ class ItemShelfAssignmentForm(forms.Form):
     )
 
 
+class ItemLocationForm(ItemShelfAssignmentForm):
+    """Form for adding items with location selection"""
+    
+    room = forms.ModelChoiceField(
+        label='Pokój',
+        queryset=Room.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control room-select'}),
+        required=True,
+    )
+    
+    rack = forms.ModelChoiceField(
+        label='Regał',
+        queryset=Rack.objects.none(),  # Initially empty, will be populated by JavaScript
+        widget=forms.Select(attrs={'class': 'form-control rack-select'}),
+        required=True,
+    )
+    
+    shelf = forms.ModelChoiceField(
+        label='Półka',
+        queryset=Shelf.objects.none(),  # Initially empty, will be populated by JavaScript
+        widget=forms.Select(attrs={'class': 'form-control shelf-select'}),
+        required=True,
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # If room is provided in POST data, populate rack queryset
+        if 'room' in self.data:
+            try:
+                room_id = int(self.data.get('room'))
+                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        # If room is provided in initial data, also populate rack queryset
+        elif self.initial.get('room'):
+            try:
+                room_id = int(self.initial.get('room'))
+                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        
+        # If rack is provided in POST data, populate shelf queryset
+        if 'rack' in self.data:
+            try:
+                rack_id = int(self.data.get('rack'))
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
+            except (ValueError, TypeError):
+                pass
+        # If rack is provided in initial data, also populate shelf queryset
+        elif self.initial.get('rack'):
+            try:
+                rack_id = int(self.initial.get('rack'))
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
+            except (ValueError, TypeError):
+                pass
+
+
 class ExportForm(forms.Form):
     """Form for exporting inventory"""
 
@@ -257,5 +315,38 @@ class CustomUserCreationForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
+        return email
+
+
+class UserProfileForm(forms.ModelForm):
+    """Form for editing user profile information"""
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make fields that might be null required in the form
+        self.fields['email'].required = True
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        # Check if username exists but isn't the current user's username
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('Użytkownik o tej nazwie już istnieje.')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Check if email exists but isn't the current user's email
+        if email and User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
         return email

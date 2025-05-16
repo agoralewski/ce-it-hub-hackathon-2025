@@ -13,6 +13,9 @@
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Lista przedmiotów w magazynie</h5>
+        <a href="{% url 'warehouse:add_new_item' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-plus-circle"></i> Dodaj przedmiot
+        </a>
     </div>
     <div class="card-body">
         <!-- Filters -->
@@ -107,7 +110,7 @@
         <!-- Pagination Info -->
         <div class="pagination-info">
             {% if total_count > 0 %}
-                Showing {{ assignments|length }} of {{ total_count }} items
+                Showing {{ grouped_items|length }} of {{ total_count }} items
                 {% if page_obj.paginator.num_pages > 1 %}
                     (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
                 {% endif %}
@@ -246,12 +249,7 @@
         // We're now on the page, so update loading progress to 
         // signify that the page has loaded
         setTimeout(function() {
-            window.updateLoadingProgress(80);
-            
-            // After a short delay, hide the loading screen
-            setTimeout(function() {
-                window.updateLoadingProgress(100);
-            }, 200);
+            window.updateLoadingProgress(100);
         }, 100);
         
         // Store all options for reverting later
@@ -616,38 +614,17 @@
         
         // Submit form
         function submitForm() {
-            // Show loading overlay with contextual messages based on filter activity
-            let loadingMessage = 'Filtrowanie przedmiotów...';
-            
-            // Check which filters are active to provide more specific message
-            if ($('#room-select').val() || $('#rack-select').val() || $('#shelf-select').val()) {
-                loadingMessage = 'Filtrowanie przedmiotów według lokalizacji...';
-            } 
-            else if ($('#category-select').val()) {
-                loadingMessage = 'Filtrowanie przedmiotów według kategorii...';
-            }
-            else if ($('#product-search').val()) {
-                loadingMessage = 'Wyszukiwanie przedmiotów...';
-            }
-            else if ($('#expired-filter').hasClass('active')) {
-                loadingMessage = 'Wyszukiwanie przeterminowanych przedmiotów...';
-            }
-            
             // Store the form data as a serialized string
             var formData = $(form).serialize();
             var url = "{% url 'warehouse:item_list' %}?" + formData;
             
-            // Navigate with loading screen
-            return window.navigateWithLoading(url, loadingMessage, true);
+            // Use navigateWithLoading but with a delay to only show loading for slow loads
+            return window.navigateWithLoading(url, 'Przygotowywanie listy przedmiotów...', true, 300);
         }
         
         // Clear all filters
         $('#clear-filters').on('click', function(e) {
             e.preventDefault();
-            // Show loading overlay with custom message
-            window.showLoading('Resetowanie filtrów...', true);
-            window.updateLoadingProgress(30);
-            $('body').removeClass('fade-in').addClass('fade-out');
             
             // Reset all selects
             $('.form-select').val(null).trigger('change', [true]);
@@ -661,8 +638,8 @@
             // Reset search
             productSearch.val('').trigger('change');
             
-            // Clear URL parameters and reload
-            window.location.href = '{% url "warehouse:item_list" %}';
+            // Navigate with loading screen, but using a delay so it only shows for slow loads
+            window.navigateWithLoading('{% url "warehouse:item_list" %}', 'Przygotowywanie listy przedmiotów...', true, 300);
         });
         
         // Add fade-in class on page load

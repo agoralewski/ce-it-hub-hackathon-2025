@@ -10,7 +10,8 @@ from warehouse.views.category import (
     category_list, category_create, category_update, category_delete
 )
 from warehouse.views.item import (
-    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items
+    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items,
+    add_new_item
 )
 from warehouse.views.export import (
     generate_qr_codes, export_inventory
@@ -20,7 +21,7 @@ from warehouse.views.ajax import (
     autocomplete_items, autocomplete_manufacturers, autocomplete_users
 )
 from warehouse.views.account import (
-    profile, change_password, custom_logout
+    profile, edit_profile, change_password, custom_logout
 )
 from warehouse.views.history import history_list
 
@@ -57,6 +58,11 @@ urlpatterns = [
         name='add_item_to_shelf',
     ),
     path(
+        'items/add/',
+        add_new_item,
+        name='add_new_item',
+    ),
+    path(
         'assignments/<int:pk>/remove/',
         remove_item_from_shelf,
         name='remove_item_from_shelf',
@@ -91,6 +97,7 @@ urlpatterns = [
     path('ajax/bulk-remove-items/', ajax_bulk_remove_items, name='ajax_bulk_remove_items'),
     # User profile and password management
     path('profile/', profile, name='profile'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
     path('profile/change-password/', change_password, name='change_password'),
     path('logout/', custom_logout, name='custom_logout'),
     # Low stock view
