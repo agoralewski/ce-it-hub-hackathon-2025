@@ -2,7 +2,7 @@ from django.urls import path
 # Import views from their specific modules
 from warehouse.views.core import index, item_list, low_stock
 from warehouse.views.location import (
-    room_list, room_create, room_update, room_delete,
+    room_list, room_create, room_update, room_delete, clean_room,
     rack_create, rack_update, rack_delete,
     shelf_create, shelf_update, shelf_delete, shelf_detail
 )
@@ -37,6 +37,7 @@ urlpatterns = [
     path('rooms/create/', room_create, name='room_create'),
     path('rooms/<int:pk>/update/', room_update, name='room_update'),
     path('rooms/<int:pk>/delete/', room_delete, name='room_delete'),
+    path('rooms/<int:pk>/clean/', clean_room, name='room_clean'),
     path('rooms/<int:room_id>/racks/create/', rack_create, name='rack_create'),
     path('racks/<int:pk>/update/', rack_update, name='rack_update'),
     path('racks/<int:pk>/delete/', rack_delete, name='rack_delete'),

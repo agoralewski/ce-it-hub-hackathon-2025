@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.urls import reverse
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.core.paginator import Paginator
 from django.utils import timezone
 
@@ -87,6 +87,74 @@ def room_delete(request, pk):
 
     return render(
         request, 'warehouse/room_delete.html', {'room': room, 'has_items': has_items}
+    )
+
+
+@login_required
+@user_passes_test(is_admin)
+def clean_room(request, pk):
+    """Move all items from a room to an 'Unassigned' room with rack A and shelf 1"""
+    room = get_object_or_404(Room, pk=pk)
+    
+    # Check if room has any items
+    active_assignments = ItemShelfAssignment.objects.filter(
+        shelf__rack__room=room, remove_date__isnull=True
+    ).select_related('item', 'shelf', 'shelf__rack')
+    
+    items_count = active_assignments.count()
+    
+    if request.method == 'POST' and 'confirm' in request.POST and items_count > 0:
+        with transaction.atomic():
+            # Ensure the "Unassigned" room exists
+            unassigned_room, _ = Room.objects.get_or_create(
+                name="Unassigned",
+                defaults={"name": "Unassigned"}
+            )
+            
+            # Ensure rack "A" exists in the unassigned room
+            unassigned_rack, _ = Rack.objects.get_or_create(
+                name="A", 
+                room=unassigned_room,
+                defaults={"name": "A", "room": unassigned_room}
+            )
+
+            
+            # Ensure shelf "1" exists in the unassigned rack
+            unassigned_shelf, _ = Shelf.objects.get_or_create(
+                number=1, 
+                rack=unassigned_rack,
+                defaults={"number": 1, "rack": unassigned_rack}
+            )
+            
+            # Create new assignments for all items to the unassigned shelf
+            new_assignments = []
+            for assignment in active_assignments:
+                new_assignment = ItemShelfAssignment.objects.create(
+                    item=assignment.item,
+                    shelf=unassigned_shelf,
+                    added_by=request.user
+                )
+                new_assignments.append(new_assignment)
+
+            # Mark old assignments as removed
+            for assignment in active_assignments:
+                assignment.remove_date = timezone.now()
+                assignment.save()
+            
+            messages.success(
+                request, 
+                f'Pokój "{room.name}" został wyczyszczony. {items_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".'
+            )
+            return redirect('warehouse:room_list')
+    
+    return render(
+        request, 
+        'warehouse/room_clean.html', 
+        {
+            'room': room, 
+            'has_items': items_count > 0,
+            'items_count': items_count
+        }
     )
 
 
