@@ -235,7 +235,7 @@
             </div>
             <div class="card-body text-center">
                 <div class="qr-container p-3 mb-3">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ request.build_absolute_uri }}"
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ shelf_url|urlencode }}"
                         alt="QR Code for this shelf" class="img-fluid">
                 </div>
                 <p class="text-muted">
