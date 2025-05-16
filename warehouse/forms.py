@@ -178,19 +178,33 @@ class ItemLocationForm(ItemShelfAssignmentForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # If room is provided, populate rack queryset
+        # If room is provided in POST data, populate rack queryset
         if 'room' in self.data:
             try:
                 room_id = int(self.data.get('room'))
-                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id)
+                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        # If room is provided in initial data, also populate rack queryset
+        elif self.initial.get('room'):
+            try:
+                room_id = int(self.initial.get('room'))
+                self.fields['rack'].queryset = Rack.objects.filter(room_id=room_id).order_by('name')
             except (ValueError, TypeError):
                 pass
         
-        # If rack is provided, populate shelf queryset
+        # If rack is provided in POST data, populate shelf queryset
         if 'rack' in self.data:
             try:
                 rack_id = int(self.data.get('rack'))
-                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id)
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
+            except (ValueError, TypeError):
+                pass
+        # If rack is provided in initial data, also populate shelf queryset
+        elif self.initial.get('rack'):
+            try:
+                rack_id = int(self.initial.get('rack'))
+                self.fields['shelf'].queryset = Shelf.objects.filter(rack_id=rack_id).order_by('number')
             except (ValueError, TypeError):
                 pass
 

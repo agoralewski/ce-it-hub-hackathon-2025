@@ -57,41 +57,29 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.room.id_for_label }}" class="form-label">{{ form.room.label }}</label>
-                                    {{ form.room|add_class:"form-control room-select" }}
-                                    {% if form.room.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.room.errors %}
-                                        {{ error }}
+                                    <label for="room" class="form-label">Pokój</label>
+                                    <select name="room" id="room" class="form-control room-select">
+                                        <option value="">Wybierz pokój</option>
+                                        {% for room in rooms %}
+                                        <option value="{{ room.id }}">{{ room.name }}</option>
                                         {% endfor %}
-                                    </div>
-                                    {% endif %}
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.rack.id_for_label }}" class="form-label">{{ form.rack.label }}</label>
-                                    {{ form.rack|add_class:"form-control rack-select" }}
-                                    {% if form.rack.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.rack.errors %}
-                                        {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                    {% endif %}
+                                    <label for="rack" class="form-label">Regał</label>
+                                    <select name="rack" id="rack" class="form-control rack-select">
+                                        <option value="">Wybierz najpierw pokój</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.shelf.id_for_label }}" class="form-label">{{ form.shelf.label }}</label>
-                                    {{ form.shelf|add_class:"form-control shelf-select" }}
-                                    {% if form.shelf.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.shelf.errors %}
-                                        {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                    {% endif %}
+                                    <label for="shelf" class="form-label">Półka</label>
+                                    <select name="shelf" id="shelf" class="form-control shelf-select">
+                                        <option value="">Wybierz najpierw regał</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -242,12 +230,12 @@
         });
         
         // Handle dynamic loading of racks when room changes
-        $('#{{ form.room.id_for_label }}').on('change', function() {
+        $('#room').on('change', function() {
             var roomId = $(this).val();
             if (roomId) {
                 // Clear rack and shelf selects
-                $('#{{ form.rack.id_for_label }}').empty().trigger('change');
-                $('#{{ form.shelf.id_for_label }}').empty().trigger('change');
+                $('#rack').empty().trigger('change');
+                $('#shelf').empty().trigger('change');
                 
                 // Fetch racks for this room
                 $.ajax({
@@ -258,26 +246,26 @@
                     dataType: 'json',
                     success: function(data) {
                         // Add empty option
-                        $('#{{ form.rack.id_for_label }}').append(new Option('', '', true, true));
+                        $('#rack').append(new Option('Wybierz regał', '', true, true));
                         
                         // Add rack options
                         $.each(data, function(index, item) {
-                            $('#{{ form.rack.id_for_label }}').append(new Option(item.name, item.id, false, false));
+                            $('#rack').append(new Option(item.name, item.id, false, false));
                         });
                         
                         // Trigger change to update Select2
-                        $('#{{ form.rack.id_for_label }}').trigger('change');
+                        $('#rack').trigger('change');
                     }
                 });
             }
         });
         
         // Handle dynamic loading of shelves when rack changes
-        $('#{{ form.rack.id_for_label }}').on('change', function() {
+        $('#rack').on('change', function() {
             var rackId = $(this).val();
             if (rackId) {
                 // Clear shelf select
-                $('#{{ form.shelf.id_for_label }}').empty().trigger('change');
+                $('#shelf').empty().trigger('change');
                 
                 // Fetch shelves for this rack
                 $.ajax({
@@ -288,15 +276,15 @@
                     dataType: 'json',
                     success: function(data) {
                         // Add empty option
-                        $('#{{ form.shelf.id_for_label }}').append(new Option('', '', true, true));
+                        $('#shelf').append(new Option('Wybierz półkę', '', true, true));
                         
                         // Add shelf options
                         $.each(data, function(index, item) {
-                            $('#{{ form.shelf.id_for_label }}').append(new Option(item.name, item.id, false, false));
+                            $('#shelf').append(new Option(item.number, item.id, false, false));
                         });
                         
                         // Trigger change to update Select2
-                        $('#{{ form.shelf.id_for_label }}').trigger('change');
+                        $('#shelf').trigger('change');
                     }
                 });
             }

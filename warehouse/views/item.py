@@ -440,46 +440,21 @@ def ajax_bulk_remove_items(request):
 
 @login_required
 def add_new_item(request):
-    """Add a new item with location selection"""
+    """Add a new item with shelf selection"""
     if request.method == 'POST':
-        form = ItemLocationForm(request.POST)
-
-        if form.is_valid():
-            # Get form data
-            item_name = form.cleaned_data['item_name'].strip()
-            category = form.cleaned_data['category']
-            manufacturer = (
-                form.cleaned_data['manufacturer'].strip()
-                if form.cleaned_data['manufacturer']
-                else None
-            )
-            expiration_date = form.cleaned_data['expiration_date']
-            note = form.cleaned_data['notes']
-            quantity = form.cleaned_data['quantity']
-            shelf = form.cleaned_data['shelf']
+        # Get the selected shelf ID from POST data
+        shelf_id = request.POST.get('shelf')
+        
+        if not shelf_id:
+            messages.error(request, 'Proszę wybrać półkę.')
+            form = ItemShelfAssignmentForm(request.POST)
+            return render(request, 'warehouse/add_new_item.html', {
+                'form': form,
+                'rooms': Room.objects.all().order_by('name')
+            })
             
-            # If a specific shelf was chosen, redirect to the standard add item view
-            # with the shelf pre-selected and form data passed as query parameters
-            if form.cleaned_data.get('shelf'):
-                query_params = {
-                    'item_name': item_name,
-                    'category': category.id,
-                }
-                
-                # Only add optional parameters if they exist
-                if manufacturer:
-                    query_params['manufacturer'] = manufacturer
-                if expiration_date:
-                    query_params['expiration_date'] = expiration_date.isoformat()
-                if note:
-                    query_params['notes'] = note
-                if quantity:
-                    query_params['quantity'] = quantity
-                
-                # Create the redirect URL with query parameters
-                redirect_url = reverse('warehouse:add_item_to_shelf', kwargs={'shelf_id': shelf.id})
-                return redirect(f"{redirect_url}?{'&'.join([f'{k}={v}' for k, v in query_params.items()])}")
-    
+        # Redirect to the standard add_item_to_shelf view with the selected shelf
+        return redirect('warehouse:add_item_to_shelf', shelf_id=shelf_id)
     else:
         # Pre-populate form fields from query parameters if present
         initial = {}
@@ -496,6 +471,9 @@ def add_new_item(request):
         if 'quantity' in request.GET:
             initial['quantity'] = request.GET.get('quantity', 1)
             
-        form = ItemLocationForm(initial=initial)
+        form = ItemShelfAssignmentForm(initial=initial)
     
-    return render(request, 'warehouse/add_new_item.html', {'form': form})
+    return render(request, 'warehouse/add_new_item.html', {
+        'form': form,
+        'rooms': Room.objects.all().order_by('name')
+    })
