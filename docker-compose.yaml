@@ -2,9 +2,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: ksp
-      POSTGRES_USER: kspuser
-      POSTGRES_PASSWORD: ksppassword
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
@@ -43,3 +43,6 @@ services:
 
 volumes:
   postgres_data:
+
+# Load environment variables from .env file
+# Docker Compose automatically reads from .env in the same directory
