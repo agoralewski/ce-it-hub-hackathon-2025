@@ -17,11 +17,12 @@ from warehouse.views.export import (
 )
 from warehouse.views.ajax import (
     autocomplete_categories, get_racks, get_shelves,
-    autocomplete_items, autocomplete_manufacturers
+    autocomplete_items, autocomplete_manufacturers, autocomplete_users
 )
 from warehouse.views.account import (
     profile, change_password, custom_logout
 )
+from warehouse.views.history import history_list
 
 app_name = 'warehouse'
 
@@ -29,6 +30,7 @@ urlpatterns = [
     # Main views
     path('', index, name='index'),
     path('items/', item_list, name='item_list'),
+    path('history/', history_list, name='history_list'),
     # Room, rack, and shelf management (admin)
     path('rooms/', room_list, name='room_list'),
     path('rooms/create/', room_create, name='room_create'),
@@ -76,6 +78,11 @@ urlpatterns = [
         'api/autocomplete/manufacturers/',
         autocomplete_manufacturers,
         name='autocomplete_manufacturers',
+    ),
+    path(
+        'api/autocomplete/users/',
+        autocomplete_users,
+        name='autocomplete_users',
     ),
     # AJAX endpoints for dynamic filtering
     path('api/racks/', get_racks, name='get_racks'),

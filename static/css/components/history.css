@@ -1,0 +1,67 @@
+/* Date range styling for history view */
+.date-range-container {
+    display: flex;
+    gap: 10px;
+}
+
+.date-range-container .input-group {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Styling for invalidated options */
+.invalidated-option {
+    color: #999;
+    font-style: italic;
+}
+
+.select2-results__option--invalidated {
+    color: #999 !important;
+    font-style: italic !important;
+}
+
+.input-group .input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+/* Flatpickr calendar adjustments */
+.flatpickr-calendar {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ced4da;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
+.flatpickr-day.endRange.nextMonthDay {
+    background: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Active/Remove badge colors */
+.badge.bg-success {
+    padding: 5px 8px;
+}
+
+.badge.bg-danger {
+    padding: 5px 8px;
+}
