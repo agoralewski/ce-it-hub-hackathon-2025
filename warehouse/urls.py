@@ -10,7 +10,7 @@ from warehouse.views.category import (
     category_list, category_create, category_update, category_delete
 )
 from warehouse.views.item import (
-    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items
+    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items
 )
 from warehouse.views.export import (
     generate_qr_codes, export_inventory
@@ -81,6 +81,7 @@ urlpatterns = [
     path('api/racks/', get_racks, name='get_racks'),
     path('api/shelves/', get_shelves, name='get_shelves'),
     path('ajax/bulk-add-items/', ajax_bulk_add_items, name='ajax_bulk_add_items'),
+    path('ajax/bulk-remove-items/', ajax_bulk_remove_items, name='ajax_bulk_remove_items'),
     # User profile and password management
     path('profile/', profile, name='profile'),
     path('profile/change-password/', change_password, name='change_password'),

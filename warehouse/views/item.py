@@ -153,18 +153,54 @@ def add_item_to_shelf(request, shelf_id):
 def remove_item_from_shelf(request, pk):
     """Remove an item from a shelf"""
     assignment = get_object_or_404(ItemShelfAssignment, pk=pk, remove_date__isnull=True)
+    item_name = assignment.item.name
+    shelf_id = assignment.shelf.pk
+    
+    # Get all active assignments for this item on this shelf that match the same properties
+    matching_assignments = ItemShelfAssignment.objects.filter(
+        item__name=item_name,
+        shelf_id=shelf_id,
+        remove_date__isnull=True,
+        item__category=assignment.item.category,
+        item__manufacturer=assignment.item.manufacturer,
+        item__expiration_date=assignment.item.expiration_date,
+        item__note=assignment.item.note
+    ).select_related('item')
+    
+    total_available = matching_assignments.count()
 
     if request.method == 'POST':
-        request.POST.get('quantity', 1)
-        # Mark the assignment as removed
-        assignment.remove_date = timezone.now()
-        assignment.removed_by = request.user
-        assignment.save()
+        quantity = int(request.POST.get('quantity', 1))
+        # Ensure quantity doesn't exceed available items
+        quantity = min(quantity, total_available)
+        
+        # For very large quantities, use an AJAX approach to show progress
+        if quantity > 1000:  # More reasonable threshold for production
+            print(f"Assignment PK: {assignment.pk}")
+            context = {
+                'assignment': assignment,
+                'total_available': total_available,
+                'bulk_operation': True,
+                'quantity': quantity,
+                'assignment_id': assignment.pk,  # Add explicit assignment_id 
+            }
+            return render(request, 'warehouse/remove_item.html', context)
+            
+        # Mark the specified number of assignments as removed
+        assignments_to_remove = matching_assignments[:quantity]
+        for assignment_to_remove in assignments_to_remove:
+            assignment_to_remove.remove_date = timezone.now()
+            assignment_to_remove.removed_by = request.user
+            assignment_to_remove.save()
 
-        messages.success(request, 'Przedmiot został pomyślnie zdjęty z półki.')
-        return redirect('warehouse:shelf_detail', pk=assignment.shelf.pk)
+        messages.success(request, f'{quantity} przedmiot(ów) "{item_name}" zostało pomyślnie zdjętych z półki.')
+        return redirect('warehouse:shelf_detail', pk=shelf_id)
 
-    return render(request, 'warehouse/remove_item.html', {'assignment': assignment})
+    return render(request, 'warehouse/remove_item.html', {
+        'assignment': assignment,
+        'total_available': total_available,
+        'bulk_operation': False
+    })
 
 
 @login_required
@@ -247,6 +283,127 @@ def ajax_bulk_add_items(request):
 
             # Bulk create the assignments for this batch
             ItemShelfAssignment.objects.bulk_create(assignments_to_create)
+
+        end_time = timezone.now()
+        duration = (end_time - start_time).total_seconds()
+        items_per_second = items_to_process / duration if duration > 0 else 0
+
+        # Calculate progress
+        new_offset = offset + items_to_process
+        progress = (new_offset / quantity) * 100
+
+        # Check if we're done
+        is_complete = new_offset >= quantity
+
+        return JsonResponse(
+            {
+                'success': True,
+                'complete': is_complete,
+                'progress': progress,
+                'processed': items_to_process,
+                'total_processed': new_offset,
+                'remaining': quantity - new_offset,
+                'duration': duration,
+                'items_per_second': items_per_second,
+                'offset': new_offset,  # Pass the new offset for the next batch
+                'message': f'Processed {items_to_process} items in {duration:.2f} seconds ({items_per_second:.2f} items/s)',
+            }
+        )
+
+    except Exception as e:
+        return JsonResponse(
+            {'error': f'Error processing items: {str(e)}', 'offset': offset}, status=500
+        )
+
+
+@login_required
+def ajax_bulk_remove_items(request):
+    """AJAX endpoint for removing large quantities of items with progress tracking"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+    # Extract parameters from the request
+    try:
+        assignment_id = int(request.POST.get('assignment_id', 0))
+        quantity = int(request.POST.get('quantity', 0))
+        batch_size = int(request.POST.get('batch_size', 5000))
+        offset = int(request.POST.get('offset', 0))
+        
+        # Debug information
+        print(f"Request POST data: {request.POST}")
+        print(f"Assignment ID: {assignment_id}")
+    except (ValueError, TypeError) as e:
+        return JsonResponse({'error': f'Invalid parameters: {str(e)}'}, status=400)
+
+    # Validate parameters
+    if not all([assignment_id, quantity > 0]):
+        return JsonResponse({'error': 'Missing required parameters'}, status=400)
+
+    # Get the assignment
+    try:
+        # Try to get the assignment, first by looking for one that's not removed
+        try:
+            assignment = ItemShelfAssignment.objects.get(pk=assignment_id, remove_date__isnull=True)
+        except ItemShelfAssignment.DoesNotExist:
+            # If that fails, look for any assignment with this ID, even if it's already removed
+            assignment = ItemShelfAssignment.objects.get(pk=assignment_id)
+            print(f"Found assignment {assignment.pk} but it was already removed")
+    except ItemShelfAssignment.DoesNotExist:
+        return JsonResponse({'error': f'Invalid assignment ID: {assignment_id}'}, status=400)
+
+    # Get all matching assignments
+    try:
+        matching_assignments = ItemShelfAssignment.objects.filter(
+            item__name=assignment.item.name,
+            shelf_id=assignment.shelf.pk,
+            remove_date__isnull=True,
+            item__category=assignment.item.category,
+            item__manufacturer=assignment.item.manufacturer,
+            item__expiration_date=assignment.item.expiration_date,
+            item__note=assignment.item.note
+        ).select_related('item')
+        
+        total_available = matching_assignments.count()
+        
+        if total_available == 0:
+            return JsonResponse({'error': 'No matching items available for removal'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Error finding matching assignments: {str(e)}'}, status=400)
+    
+    # Ensure we don't remove more than available
+    if quantity > total_available:
+        quantity = total_available
+    
+    # Calculate how many items to process in this request
+    items_to_process = min(batch_size, quantity - offset)
+
+    if items_to_process <= 0:
+        # All items have been processed
+        return JsonResponse(
+            {
+                'success': True,
+                'complete': True,
+                'message': f'Successfully removed {quantity} items',
+                'total_processed': quantity,
+                'remaining': 0,
+                'progress': 100,
+            }
+        )
+
+    # Use transaction to ensure all database operations succeed or fail together
+    try:
+        start_time = timezone.now()
+
+        with transaction.atomic():
+            # Get the batch of assignments to remove
+            assignments_to_remove = list(matching_assignments[offset:offset + items_to_process])
+            
+            # Mark all assignments in this batch as removed
+            current_time = timezone.now()
+            for assignment_to_remove in assignments_to_remove:
+                assignment_to_remove.remove_date = current_time
+                assignment_to_remove.removed_by = request.user
+                assignment_to_remove.save(update_fields=['remove_date', 'removed_by'])
 
         end_time = timezone.now()
         duration = (end_time - start_time).total_seconds()

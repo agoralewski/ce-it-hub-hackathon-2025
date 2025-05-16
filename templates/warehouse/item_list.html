@@ -129,22 +129,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for assignment in assignments %}
+                    {% for group in grouped_items %}
                     <tr>
-                        <td>{{ assignment.item.name }}</td>
-                        <td>{{ assignment.item.category.name }}</td>
-                        <td>{{ assignment.item.manufacturer|default:"-" }}</td>
-                        <td>{{ assignment.item.note|default:"-" }}</td>
+                        <td>{{ group.item_name }}</td>
+                        <td>{{ group.category.name }}</td>
+                        <td>{{ group.manufacturer|default:"-" }}</td>
+                        <td>{{ group.note|default:"-" }}</td>
                         <td>
-                            {% if assignment.item.expiration_date %}
+                            {% if group.expiration_date %}
                                 {% with today_date|date:"Y-m-d" as today %}
                                 {% with thirty_days_from_now|date:"Y-m-d" as soon %}
-                                    {% if assignment.item.expiration_date|date:"Y-m-d" < today %}
-                                        <span class="badge bg-danger">{{ assignment.item.expiration_date }}</span>
-                                    {% elif assignment.item.expiration_date|date:"Y-m-d" <= soon %}
-                                        <span class="badge bg-warning">{{ assignment.item.expiration_date }}</span>
+                                    {% if group.expiration_date|date:"Y-m-d" < today %}
+                                        <span class="badge bg-danger">{{ group.expiration_date }}</span>
+                                    {% elif group.expiration_date|date:"Y-m-d" <= soon %}
+                                        <span class="badge bg-warning">{{ group.expiration_date }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">{{ assignment.item.expiration_date }}</span>
+                                        <span class="badge bg-success">{{ group.expiration_date }}</span>
                                     {% endif %}
                                 {% endwith %}
                                 {% endwith %}
@@ -153,17 +153,20 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'warehouse:shelf_detail' assignment.shelf.pk %}">
-                                {{ assignment.shelf.full_location }}
+                            <a href="{% url 'warehouse:shelf_detail' group.shelf.pk %}">
+                                {{ group.shelf.full_location }}
                             </a>
                         </td>
                         <td>
-                            <a href="{% url 'warehouse:add_item_to_shelf' assignment.shelf.pk %}?item_name={{ assignment.item.name|urlencode }}&category={{ assignment.item.category.pk }}&manufacturer={{ assignment.item.manufacturer|urlencode }}&notes={{ assignment.item.note|urlencode }}&expiration_date={{ assignment.item.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-add-item me-1">
-                                <i class="fas fa-plus"></i> Dodaj kolejny
-                            </a>
-                            <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}" class="btn btn-sm btn-remove-item">
-                                <i class="fas fa-minus"></i> Wez z polki
-                            </a>
+                            <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
+                            <div>
+                                <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-add-item me-1">
+                                    <i class="fas fa-plus"></i> Dodaj kolejny
+                                </a>
+                                <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}" class="btn btn-sm btn-remove-item">
+                                    <i class="fas fa-minus"></i> Wez z polki
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -171,6 +174,12 @@
                         <td colspan="7" class="text-center">Brak przedmiotów spełniających kryteria.</td>
                     </tr>
                     {% endfor %}
+                    {% if grouped_items %}
+                    <tr class="table-secondary">
+                        <td colspan="6" class="text-end fw-bold">Suma:</td>
+                        <td class="fw-bold">{{ assignments|length }}</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -234,6 +243,17 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
+        // We're now on the page, so update loading progress to 
+        // signify that the page has loaded
+        setTimeout(function() {
+            window.updateLoadingProgress(80);
+            
+            // After a short delay, hide the loading screen
+            setTimeout(function() {
+                window.updateLoadingProgress(100);
+            }, 200);
+        }, 100);
+        
         // Store all options for reverting later
         const allRacks = [];
         const allShelves = [];
@@ -596,13 +616,37 @@
         
         // Submit form
         function submitForm() {
-            $('body').removeClass('fade-in').addClass('fade-out');
-            $(form).submit();
+            // Show loading overlay with contextual messages based on filter activity
+            let loadingMessage = 'Filtrowanie przedmiotów...';
+            
+            // Check which filters are active to provide more specific message
+            if ($('#room-select').val() || $('#rack-select').val() || $('#shelf-select').val()) {
+                loadingMessage = 'Filtrowanie przedmiotów według lokalizacji...';
+            } 
+            else if ($('#category-select').val()) {
+                loadingMessage = 'Filtrowanie przedmiotów według kategorii...';
+            }
+            else if ($('#product-search').val()) {
+                loadingMessage = 'Wyszukiwanie przedmiotów...';
+            }
+            else if ($('#expired-filter').hasClass('active')) {
+                loadingMessage = 'Wyszukiwanie przeterminowanych przedmiotów...';
+            }
+            
+            // Store the form data as a serialized string
+            var formData = $(form).serialize();
+            var url = "{% url 'warehouse:item_list' %}?" + formData;
+            
+            // Navigate with loading screen
+            return window.navigateWithLoading(url, loadingMessage, true);
         }
         
         // Clear all filters
         $('#clear-filters').on('click', function(e) {
             e.preventDefault();
+            // Show loading overlay with custom message
+            window.showLoading('Resetowanie filtrów...', true);
+            window.updateLoadingProgress(30);
             $('body').removeClass('fade-in').addClass('fade-out');
             
             // Reset all selects
