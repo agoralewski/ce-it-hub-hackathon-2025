@@ -65,6 +65,10 @@
                                             class="btn btn-sm btn-outline-danger">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <a href="{% url 'warehouse:rack_clean' rack.pk %}"
+                                            class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-broom"></i>
+                                        </a>
                                         <a href="{% url 'warehouse:shelf_create' rack.pk %}"
                                             class="btn btn-sm btn-outline-success">
                                             <i class="fas fa-plus"></i> Dodaj półkę
@@ -100,6 +104,10 @@
                                                         <a href="{% url 'warehouse:shelf_delete' shelf.pk %}"
                                                             class="btn btn-sm btn-outline-danger">
                                                             <i class="fas fa-trash"></i>
+                                                        </a>
+                                                        <a href="{% url 'warehouse:shelf_clean' shelf.pk %}"
+                                                            class="btn btn-sm btn-outline-warning">
+                                                            <i class="fas fa-broom"></i>
                                                         </a>
                                                     </div>
                                                 </td>

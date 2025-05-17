@@ -3,8 +3,8 @@ from django.urls import path
 from warehouse.views.core import index, item_list, low_stock
 from warehouse.views.location import (
     room_list, room_create, room_update, room_delete, clean_room,
-    rack_create, rack_update, rack_delete,
-    shelf_create, shelf_update, shelf_delete, shelf_detail, move_items_to_shelf
+    rack_create, rack_update, rack_delete, clean_rack,
+    shelf_create, shelf_update, shelf_delete, shelf_detail, move_items_to_shelf, clean_shelf
 )
 from warehouse.views.category import (
     category_list, category_create, category_update, category_delete
@@ -41,11 +41,13 @@ urlpatterns = [
     path('rooms/<int:room_id>/racks/create/', rack_create, name='rack_create'),
     path('racks/<int:pk>/update/', rack_update, name='rack_update'),
     path('racks/<int:pk>/delete/', rack_delete, name='rack_delete'),
+    path('racks/<int:pk>/clean/', clean_rack, name='rack_clean'),
     path(
         'racks/<int:rack_id>/shelves/create/', shelf_create, name='shelf_create'
     ),
     path('shelves/<int:pk>/update/', shelf_update, name='shelf_update'),
     path('shelves/<int:pk>/delete/', shelf_delete, name='shelf_delete'),
+    path('shelves/<int:pk>/clean/', clean_shelf, name='shelf_clean'),
     # Category management (admin)
     path('categories/', category_list, name='category_list'),
     path('categories/create/', category_create, name='category_create'),

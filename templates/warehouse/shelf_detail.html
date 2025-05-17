@@ -30,6 +30,9 @@
                             <a href="{% url 'warehouse:move_items_to_shelf' shelf.pk %}" class="btn btn-outline-primary">
                                 <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
                             </a>
+                            <a href="{% url 'warehouse:shelf_clean' shelf.pk %}" class="btn btn-outline-warning">
+                                <i class="fas fa-broom"></i> Wyczyść półkę
+                            </a>
                         </div>
                     </div>
                 </div>
