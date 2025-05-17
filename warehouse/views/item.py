@@ -11,7 +11,7 @@ from django.urls import reverse
 
 from warehouse.models import Shelf, Category, Item, ItemShelfAssignment, Room, Rack
 from warehouse.forms import ItemShelfAssignmentForm, ItemLocationForm
-from warehouse.views.location import batch_move_items_between_shelves
+from warehouse.views.location import batch_move_items_between_shelves, move_item_between_shelves
 
 
 @login_required
@@ -504,7 +504,7 @@ def move_group_items(request):
             messages.error(request, 'Proszę wybrać półkę docelową.')
             # Get all rooms to repopulate the form
             rooms = Room.objects.all().order_by('name')
-            return render(request, 'warehouse/move_group_items.html', {
+            return render(request, 'warehouse/move_items.html', {
                 'rooms': rooms,
                 'source_shelf': source_shelf,
                 'item_name': item_name,
@@ -518,7 +518,7 @@ def move_group_items(request):
         if int(target_shelf_id) == int(source_shelf_id):
             messages.error(request, 'Nie można przenieść przedmiotów na tę samą półkę.')
             rooms = Room.objects.all().order_by('name')
-            return render(request, 'warehouse/move_group_items.html', {
+            return render(request, 'warehouse/move_items.html', {
                 'rooms': rooms,
                 'source_shelf': source_shelf,
                 'item_name': item_name,
@@ -559,7 +559,7 @@ def move_group_items(request):
     # GET request - show the form to select target location
     rooms = Room.objects.all().order_by('name')
     
-    return render(request, 'warehouse/move_group_items.html', {
+    return render(request, 'warehouse/move_items.html', {
         'rooms': rooms,
         'source_shelf': source_shelf,
         'item_name': item_name,
@@ -567,4 +567,85 @@ def move_group_items(request):
         'manufacturer': manufacturer,
         'expiration_date': expiration_date,
         'items_count': items_count
+    })
+
+
+@login_required
+def move_single_item(request, assignment_id):
+    """Move a single item to a different shelf."""
+    # Get the assignment
+    assignment = get_object_or_404(
+        ItemShelfAssignment.objects.select_related('item', 'shelf', 'shelf__rack', 'shelf__rack__room', 'item__category'),
+        pk=assignment_id,
+        remove_date__isnull=True
+    )
+    
+    source_shelf = assignment.shelf
+    item = assignment.item
+    
+    if request.method == 'POST':
+        # Process form submission - get the target shelf ID
+        target_shelf_id = request.POST.get('shelf')
+        
+        if not target_shelf_id:
+            messages.error(request, 'Proszę wybrać półkę docelową.')
+            # Get all rooms to repopulate the form
+            rooms = Room.objects.all().order_by('name')
+            return render(request, 'warehouse/move_items.html', {
+                'rooms': rooms,
+                'source_shelf': source_shelf,
+                'item_name': item.name,
+                'category': item.category,
+                'manufacturer': item.manufacturer,
+                'expiration_date': item.expiration_date,
+                'items_count': 1,
+                'assignment': assignment
+            })
+        
+        # Don't allow moving to the same shelf
+        if int(target_shelf_id) == source_shelf.id:
+            messages.error(request, 'Nie można przenieść przedmiotu na tę samą półkę.')
+            rooms = Room.objects.all().order_by('name')
+            return render(request, 'warehouse/move_items.html', {
+                'rooms': rooms,
+                'source_shelf': source_shelf,
+                'item_name': item.name,
+                'category': item.category,
+                'manufacturer': item.manufacturer,
+                'expiration_date': item.expiration_date,
+                'items_count': 1,
+                'assignment': assignment
+            })
+        
+        # Move the item
+        success, message, new_assignment = move_item_between_shelves(
+            item_id=item.id,
+            from_shelf_id=source_shelf.id,
+            to_shelf_id=target_shelf_id,
+            user=request.user
+        )
+        
+        if success:
+            target_shelf = get_object_or_404(Shelf, pk=target_shelf_id)
+            messages.success(
+                request, 
+                f'Przedmiot "{item.name}" został pomyślnie przeniesiony na półkę {target_shelf.full_location}.'
+            )
+            return redirect('warehouse:shelf_detail', pk=target_shelf_id)
+        else:
+            messages.error(request, f'Błąd podczas przenoszenia przedmiotu: {message}')
+            return redirect('warehouse:shelf_detail', pk=source_shelf.id)
+    
+    # GET request - show the form to select target location
+    rooms = Room.objects.all().order_by('name')
+    
+    return render(request, 'warehouse/move_items.html', {
+        'rooms': rooms,
+        'source_shelf': source_shelf,
+        'item_name': item.name,
+        'category': item.category,
+        'manufacturer': item.manufacturer,
+        'expiration_date': item.expiration_date,
+        'items_count': 1,
+        'assignment': assignment
     })

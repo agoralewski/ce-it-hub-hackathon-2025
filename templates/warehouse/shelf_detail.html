@@ -109,10 +109,16 @@
                                     {% endif %}
                                 </td>
                                 <td class="align-middle">
-                                    <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
-                                        class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-minus"></i> Weź z półki
-                                    </a>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'warehouse:move_single_item' assignment.pk %}"
+                                           class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-exchange-alt"></i> Przenieś
+                                        </a>
+                                        <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-minus"></i> Weź z półki
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}

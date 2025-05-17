@@ -11,7 +11,7 @@ from warehouse.views.category import (
 )
 from warehouse.views.item import (
     add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items,
-    add_new_item, move_group_items
+    add_new_item, move_group_items, move_single_item
 )
 from warehouse.views.export import (
     generate_qr_codes, export_inventory
@@ -69,6 +69,11 @@ urlpatterns = [
         'items/move-group/',
         move_group_items,
         name='move_group_items',
+    ),
+    path(
+        'assignments/<int:assignment_id>/move/',
+        move_single_item,
+        name='move_single_item',
     ),
     path(
         'assignments/<int:pk>/remove/',

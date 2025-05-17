@@ -1,109 +1,104 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Przenieś przedmioty - KSP{% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-section {
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Przenieś przedmioty na półkę {{ target_shelf.full_location }}</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h6 class="text-muted mb-3">Docelowa lokalizacja</h6>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="location-icon me-3">
-                                <i class="fas fa-map-marker-alt fa-fw text-primary"></i>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% if items_count == 1 %}Przenieś przedmiot{% else %}Przenieś przedmioty{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                <!-- Source info section -->
+                <div class="source-info mb-4">
+                    <h6 class="text-muted mb-3">Źródło</h6>
+                    <div class="alert alert-info">
+                        <div class="fw-bold mb-2">{{ item_name }}</div>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div><strong>Kategoria:</strong> {{ category.name }}</div>
+                                {% if manufacturer %}<div><strong>Producent:</strong> {{ manufacturer }}</div>{% endif %}
+                                {% if expiration_date %}<div><strong>Data ważności:</strong> {{ expiration_date }}</div>{% endif %}
                             </div>
-                            <span class="fw-bold">{{ target_shelf.rack.room.name }}</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="location-icon me-3">
-                                <i class="fas fa-grip-vertical fa-fw text-primary"></i>
+                            <div class="text-end">
+                                <div><strong>Lokalizacja:</strong> {{ source_shelf.full_location }}</div>
+                                <div><strong>Liczba przedmiotów:</strong> {{ items_count }}</div>
                             </div>
-                            <span class="fw-bold">Regał {{ target_shelf.rack.name }}</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="location-icon me-3">
-                                <i class="fas fa-layer-group fa-fw text-primary"></i>
-                            </div>
-                            <span class="fw-bold">Półka {{ target_shelf.number }}</span>
                         </div>
                     </div>
-
-                    <hr class="my-4">
-
-                    <form method="post" id="moveItemsForm">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <h6 class="text-muted mb-3">Wybierz lokalizację źródłową</h6>
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-4">
-                                    <label for="room" class="form-label">Pokój</label>
-                                    <select id="room" class="form-select room-select" data-placeholder="Wybierz pokój">
-                                        <option value="">Wybierz pokój</option>
-                                        {% for room in rooms %}
-                                        <option value="{{ room.id }}">{{ room.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="rack" class="form-label">Regał</label>
-                                    <select id="rack" class="form-select rack-select" disabled>
-                                        <option value="">Wybierz najpierw pokój</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="source_shelf" class="form-label">Półka</label>
-                                    <select name="source_shelf" id="source_shelf" class="form-select shelf-select" disabled>
-                                        <option value="">Wybierz najpierw regał</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="itemSelectionArea" class="d-none mb-4">
-                            <h6 class="text-muted mb-3">Wybierz przedmioty do przeniesienia</h6>
-                            <div class="alert alert-info mb-3">
-                                <i class="fas fa-info-circle"></i> Zaznacz przedmioty, które chcesz przenieść na półkę {{ target_shelf.full_location }}.
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover" id="itemsTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 50px;">
-                                                <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input" id="selectAll">
-                                                </div>
-                                            </th>
-                                            <th>Nazwa przedmiotu</th>
-                                            <th>Kategoria</th>
-                                            <th>Producent</th>
-                                            <th>Data ważności</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="itemsList">
-                                        <!-- Items will be loaded dynamically via JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div id="noItemsMessage" class="alert alert-warning d-none">
-                                <i class="fas fa-exclamation-triangle"></i> Brak przedmiotów na wybranej półce.
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'warehouse:shelf_detail' target_shelf.pk %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Wróć
-                            </a>
-                            <button type="submit" class="btn btn-primary" id="moveItemsBtn" disabled>
-                                <i class="fas fa-exchange-alt"></i> Przenieś zaznaczone przedmioty
-                            </button>
-                        </div>
-                    </form>
                 </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h6 class="text-muted mb-3">Wybierz docelową lokalizację</h6>
+                        
+                        <div class="form-group">
+                            <label for="room" class="form-label">Pokój</label>
+                            <select name="room" id="room" class="form-control room-select" required>
+                                <option value="">Wybierz pokój</option>
+                                {% for room in rooms %}
+                                <option value="{{ room.id }}">{{ room.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rack" class="form-label">Regał</label>
+                            <select name="rack" id="rack" class="form-control rack-select" required disabled>
+                                <option value="">Wybierz najpierw pokój</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shelf" class="form-label">Półka</label>
+                            <select name="shelf" id="shelf" class="form-control shelf-select" required disabled>
+                                <option value="">Wybierz najpierw regał</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex justify-content-between">
+                        {% if assignment %}
+                        <a href="{% url 'warehouse:shelf_detail' source_shelf.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Anuluj
+                        </a>
+                        {% else %}
+                        <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Anuluj
+                        </a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success" id="submit-btn" disabled>
+                            <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -130,11 +125,10 @@
             if (roomId) {
                 // Clear rack and shelf selects
                 $('#rack').empty().trigger('change');
-                $('#source_shelf').empty().trigger('change');
+                $('#shelf').empty().trigger('change');
                 $('#rack').prop('disabled', false);
-                $('#source_shelf').prop('disabled', true);
-                $('#itemSelectionArea').addClass('d-none');
-                $('#moveItemsBtn').prop('disabled', true);
+                $('#shelf').prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
                 
                 // Fetch racks for this room
                 $.ajax({
@@ -158,9 +152,8 @@
                 });
             } else {
                 $('#rack').prop('disabled', true);
-                $('#source_shelf').prop('disabled', true);
-                $('#itemSelectionArea').addClass('d-none');
-                $('#moveItemsBtn').prop('disabled', true);
+                $('#shelf').prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
             }
         });
         
@@ -169,10 +162,9 @@
             var rackId = $(this).val();
             if (rackId) {
                 // Clear shelf select
-                $('#source_shelf').empty().trigger('change');
-                $('#source_shelf').prop('disabled', false);
-                $('#itemSelectionArea').addClass('d-none');
-                $('#moveItemsBtn').prop('disabled', true);
+                $('#shelf').empty().trigger('change');
+                $('#shelf').prop('disabled', false);
+                $('#submit-btn').prop('disabled', true);
                 
                 // Fetch shelves for this rack
                 $.ajax({
@@ -183,96 +175,37 @@
                     dataType: 'json',
                     success: function(data) {
                         // Add empty option
-                        $('#source_shelf').append(new Option('Wybierz półkę', '', true, true));
+                        $('#shelf').append(new Option('Wybierz półkę', '', true, true));
                         
                         // Add shelf options
                         $.each(data, function(index, item) {
-                            $('#source_shelf').append(new Option(item.number, item.id, false, false));
+                            $('#shelf').append(new Option(item.number, item.id, false, false));
                         });
                         
                         // Trigger change to update Select2
-                        $('#source_shelf').trigger('change');
+                        $('#shelf').trigger('change');
                     }
                 });
             } else {
-                $('#source_shelf').prop('disabled', true);
-                $('#itemSelectionArea').addClass('d-none');
-                $('#moveItemsBtn').prop('disabled', true);
+                $('#shelf').prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
             }
         });
         
-        // Handle shelf selection
-        $('#source_shelf').on('change', function() {
-            var shelfId = $(this).val();
-            
-            $('#itemSelectionArea').addClass('d-none');
-            $('#moveItemsBtn').prop('disabled', true);
-            
-            if (shelfId) {
-                // Check if the selected shelf is the same as the target shelf
-                if (shelfId == {{ target_shelf.id }}) {
+        // Handle shelf selection - enable submit button when shelf is selected
+        $('#shelf').on('change', function() {
+            if ($(this).val()) {
+                // Check if selected shelf is the source shelf
+                if ($(this).val() == "{{ source_shelf.id }}") {
                     alert('Nie można przenieść przedmiotów na tę samą półkę.');
-                    return;
+                    $('#submit-btn').prop('disabled', true);
+                } else {
+                    $('#submit-btn').prop('disabled', false);
                 }
-                
-                // Show the item selection area and load items
-                $('#itemSelectionArea').removeClass('d-none');
-                loadShelfItems(shelfId);
+            } else {
+                $('#submit-btn').prop('disabled', true);
             }
         });
-        
-        // Load items from a shelf
-        function loadShelfItems(shelfId) {
-            $('#itemsList').empty();
-            $('#noItemsMessage').addClass('d-none');
-            
-            $.ajax({
-                url: '/warehouse/api/shelf_items/',  // You'll need to create this API endpoint
-                data: { 'shelf_id': shelfId },
-                dataType: 'json',
-                success: function(data) {
-                    if (data.length > 0) {
-                        $.each(data, function(i, item) {
-                            const row = `
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input item-checkbox" name="item_ids" value="${item.id}">
-                                        </div>
-                                    </td>
-                                    <td>${item.name}</td>
-                                    <td>${item.category || '-'}</td>
-                                    <td>${item.manufacturer || '-'}</td>
-                                    <td>${item.expiration_date || '-'}</td>
-                                </tr>
-                            `;
-                            $('#itemsList').append(row);
-                        });
-                        
-                        // Enable move button when at least one item is selected
-                        $('.item-checkbox').on('change', updateMoveButtonState);
-                    } else {
-                        $('#noItemsMessage').removeClass('d-none');
-                    }
-                },
-                error: function() {
-                    $('#noItemsMessage').removeClass('d-none');
-                }
-            });
-        }
-        
-        // Select/deselect all items
-        $('#selectAll').on('change', function() {
-            const isChecked = $(this).prop('checked');
-            $('.item-checkbox').prop('checked', isChecked);
-            updateMoveButtonState();
-        });
-        
-        // Update move button state
-        function updateMoveButtonState() {
-            const hasSelectedItems = $('.item-checkbox:checked').length > 0;
-            $('#moveItemsBtn').prop('disabled', !hasSelectedItems);
-        }
     });
 </script>
 {% endblock %}
