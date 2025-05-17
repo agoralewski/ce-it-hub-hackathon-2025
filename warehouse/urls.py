@@ -4,7 +4,7 @@ from warehouse.views.core import index, item_list, low_stock
 from warehouse.views.location import (
     room_list, room_create, room_update, room_delete, clean_room,
     rack_create, rack_update, rack_delete, clean_rack,
-    shelf_create, shelf_update, shelf_delete, shelf_detail, move_items_to_shelf, clean_shelf
+    shelf_create, shelf_update, shelf_delete, shelf_detail, clean_shelf
 )
 from warehouse.views.category import (
     category_list, category_create, category_update, category_delete
@@ -59,11 +59,6 @@ urlpatterns = [
         'shelves/<int:shelf_id>/add_item/',
         add_item_to_shelf,
         name='add_item_to_shelf',
-    ),
-    path(
-        'shelves/<int:shelf_id>/move_items/',
-        move_items_to_shelf,
-        name='move_items_to_shelf',
     ),
     path(
         'items/add/',

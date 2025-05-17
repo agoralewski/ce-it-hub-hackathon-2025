@@ -454,63 +454,6 @@ def shelf_detail(request, pk):
 
 
 @login_required
-def move_items_to_shelf(request, shelf_id):
-    """Move items from one shelf to another"""
-    target_shelf = get_object_or_404(Shelf.objects.select_related('rack', 'rack__room'), pk=shelf_id)
-    
-    if request.method == 'POST':
-        # Get the source shelf ID
-        source_shelf_id = request.POST.get('source_shelf')
-        if not source_shelf_id:
-            messages.error(request, 'Należy wybrać półkę źródłową.')
-            return redirect('warehouse:shelf_detail', pk=shelf_id)
-            
-        # Get the items to move (their IDs)
-        item_ids = request.POST.getlist('item_ids')
-        if not item_ids:
-            messages.error(request, 'Nie wybrano przedmiotów do przeniesienia.')
-            return redirect('warehouse:shelf_detail', pk=shelf_id)
-        
-        # Process the move using batch function for better performance
-        with transaction.atomic():
-            moved_count, new_assignments, errors = batch_move_items_between_shelves(
-                item_ids=item_ids,
-                from_shelf_id=source_shelf_id, 
-                to_shelf_id=shelf_id,
-                user=request.user
-            )
-            
-            # Display any errors
-            for error in errors:
-                messages.warning(request, error)
-            
-            successfully_moved = moved_count
-        
-        if successfully_moved > 0:
-            messages.success(
-                request, 
-                f'{successfully_moved} przedmiot(ów) zostało pomyślnie przeniesionych na półkę {target_shelf.full_location}.'
-            )
-        else:
-            messages.warning(request, 'Nie udało się przenieść żadnych przedmiotów.')
-            
-        return redirect('warehouse:shelf_detail', pk=shelf_id)
-    
-    # If GET request, show a form to select source shelf and items
-    # Get all rooms, racks and shelves to populate the dropdowns
-    rooms = Room.objects.all().order_by('name')
-    
-    return render(
-        request, 
-        'warehouse/move_items.html', 
-        {
-            'target_shelf': target_shelf,
-            'rooms': rooms,
-        }
-    )
-
-
-@login_required
 @user_passes_test(is_admin)
 def clean_rack(request, pk):
     """Move all items from a rack to an 'Unassigned' room with rack A and shelf 1"""
