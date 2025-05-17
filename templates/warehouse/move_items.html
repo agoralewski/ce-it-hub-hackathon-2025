@@ -110,87 +110,100 @@
 </div>
 {% endblock %}
 
-{% block extra_scripts %}
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Initialize Select2
+        // Initialize Select2 for dropdown fields
         $('.room-select, .rack-select, .shelf-select').select2({
-            placeholder: $(this).data('placeholder'),
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
             allowClear: true,
             width: '100%'
         });
         
-        // Handle room selection
+        // Handle dynamic loading of racks when room changes
         $('#room').on('change', function() {
-            const roomId = $(this).val();
-            const rackSelect = $('#rack');
-            const shelfSelect = $('#source_shelf');
-            
-            // Reset rack and shelf selects
-            rackSelect.empty().prop('disabled', true);
-            shelfSelect.empty().prop('disabled', true);
-            $('#itemSelectionArea').addClass('d-none');
-            $('#moveItemsBtn').prop('disabled', true);
-            
+            var roomId = $(this).val();
             if (roomId) {
-                // Enable rack select and populate it
-                rackSelect.prop('disabled', false);
-                rackSelect.append(new Option('Wybierz regał', '', true, true));
+                // Clear rack and shelf selects
+                $('#rack').empty().trigger('change');
+                $('#source_shelf').empty().trigger('change');
+                $('#rack').prop('disabled', false);
+                $('#source_shelf').prop('disabled', true);
+                $('#itemSelectionArea').addClass('d-none');
+                $('#moveItemsBtn').prop('disabled', true);
                 
+                // Fetch racks for this room
                 $.ajax({
                     url: "{% url 'warehouse:get_racks' %}",
-                    data: { 'room_id': roomId },
+                    data: {
+                        'room_id': roomId
+                    },
                     dataType: 'json',
                     success: function(data) {
-                        if (data.length > 0) {
-                            $.each(data, function(i, rack) {
-                                rackSelect.append(new Option(rack.name, rack.id));
-                            });
-                            rackSelect.trigger('change');
-                        } else {
-                            rackSelect.append(new Option('Brak regałów w tym pokoju', ''));
-                        }
+                        // Add empty option
+                        $('#rack').append(new Option('Wybierz regał', '', true, true));
+                        
+                        // Add rack options
+                        $.each(data, function(index, item) {
+                            $('#rack').append(new Option(item.name, item.id, false, false));
+                        });
+                        
+                        // Trigger change to update Select2
+                        $('#rack').trigger('change');
                     }
                 });
+            } else {
+                $('#rack').prop('disabled', true);
+                $('#source_shelf').prop('disabled', true);
+                $('#itemSelectionArea').addClass('d-none');
+                $('#moveItemsBtn').prop('disabled', true);
             }
         });
         
-        // Handle rack selection
+        // Handle dynamic loading of shelves when rack changes
         $('#rack').on('change', function() {
-            const rackId = $(this).val();
-            const shelfSelect = $('#source_shelf');
-            
-            // Reset shelf select
-            shelfSelect.empty().prop('disabled', true);
-            $('#itemSelectionArea').addClass('d-none');
-            $('#moveItemsBtn').prop('disabled', true);
-            
+            var rackId = $(this).val();
             if (rackId) {
-                // Enable shelf select and populate it
-                shelfSelect.prop('disabled', false);
-                shelfSelect.append(new Option('Wybierz półkę', '', true, true));
+                // Clear shelf select
+                $('#source_shelf').empty().trigger('change');
+                $('#source_shelf').prop('disabled', false);
+                $('#itemSelectionArea').addClass('d-none');
+                $('#moveItemsBtn').prop('disabled', true);
                 
+                // Fetch shelves for this rack
                 $.ajax({
                     url: "{% url 'warehouse:get_shelves' %}",
-                    data: { 'rack_id': rackId },
+                    data: {
+                        'rack_id': rackId
+                    },
                     dataType: 'json',
                     success: function(data) {
-                        if (data.length > 0) {
-                            $.each(data, function(i, shelf) {
-                                shelfSelect.append(new Option(shelf.number, shelf.id));
-                            });
-                            shelfSelect.trigger('change');
-                        } else {
-                            shelfSelect.append(new Option('Brak półek na tym regale', ''));
-                        }
+                        // Add empty option
+                        $('#source_shelf').append(new Option('Wybierz półkę', '', true, true));
+                        
+                        // Add shelf options
+                        $.each(data, function(index, item) {
+                            $('#source_shelf').append(new Option(item.number, item.id, false, false));
+                        });
+                        
+                        // Trigger change to update Select2
+                        $('#source_shelf').trigger('change');
                     }
                 });
+            } else {
+                $('#source_shelf').prop('disabled', true);
+                $('#itemSelectionArea').addClass('d-none');
+                $('#moveItemsBtn').prop('disabled', true);
             }
         });
         
         // Handle shelf selection
         $('#source_shelf').on('change', function() {
-            const shelfId = $(this).val();
+            var shelfId = $(this).val();
             
             $('#itemSelectionArea').addClass('d-none');
             $('#moveItemsBtn').prop('disabled', true);
