@@ -372,10 +372,6 @@ def ajax_bulk_remove_items(request):
     except Exception as e:
         return JsonResponse({'error': f'Error finding matching assignments: {str(e)}'}, status=400)
     
-    # Ensure we don't remove more than available
-    if quantity > total_available:
-        quantity = total_available
-    
     # Calculate how many items to process in this request
     items_to_process = min(batch_size, quantity - offset)
 
@@ -399,6 +395,8 @@ def ajax_bulk_remove_items(request):
         with transaction.atomic():
             # Get the batch of assignments to remove
             assignments_to_remove = list(matching_assignments[0:items_to_process])
+
+            print(f"Assignments to remove: {len(assignments_to_remove)}")
             
             # Mark all assignments in this batch as removed
             current_time = timezone.now()
