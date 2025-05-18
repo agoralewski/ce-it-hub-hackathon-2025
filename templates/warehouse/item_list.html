@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Lista przedmiotów - KSP{% endblock %}
+{% block title %}Przedmioty - KSP{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
@@ -12,7 +12,7 @@
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Lista przedmiotów w magazynie</h5>
+        <h5 class="mb-0">Przedmioty w magazynie</h5>
         <a href="{% url 'warehouse:add_new_item' %}" class="btn btn-light btn-sm">
             <i class="fas fa-plus-circle"></i> Dodaj przedmiot
         </a>
