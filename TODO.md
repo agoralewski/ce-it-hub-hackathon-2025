@@ -8,6 +8,6 @@
 - email notification for nearly expired - @martazielinska
 
 ## Fullstack
-- feature to stop current assignment without deleting items - @durczokj
+- fix item transfer (Nie udało się przenieść żadnych przedmiotów.) - @durczokj
 - fix reset password flow - @martazielinska
 - Fix bulk removal of item last batch not working - @durczokj

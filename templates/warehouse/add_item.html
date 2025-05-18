@@ -75,7 +75,7 @@
                     <input type="hidden" id="category-id" name="category_id" value="{{ category_id }}">
                     <input type="hidden" id="manufacturer" name="manufacturer" value="{{ manufacturer }}">
                     <input type="hidden" id="expiration-date" name="expiration_date" value="{{ expiration_date }}">
-                    <input type="hidden" id="note" name="note" value="{{ note }}">
+                    <input type="hidden" id="note" name="notes" value="{{ note }}">
                     <input type="hidden" id="quantity" name="quantity" value="{{ quantity }}">
                     {% if next %}
                     <input type="hidden" id="next" name="next" value="{{ next }}">
@@ -460,7 +460,8 @@
             processItemBatch(0);
         }, 500);
         
-        // Handle cancel button                $('#cancel-bulk-btn').click(function() {
+        // Handle cancel button
+        $('#cancel-bulk-btn').click(function() {
             if (isComplete) return;
             
             if (confirm('Czy na pewno chcesz anulować dodawanie przedmiotów? Dotychczas dodane przedmioty pozostaną na półce.')) {
