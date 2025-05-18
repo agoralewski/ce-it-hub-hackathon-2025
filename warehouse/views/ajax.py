@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
-from warehouse.models import Category, Rack, Shelf, Item
+from warehouse.models import Category, Rack, Shelf, Item, ItemShelfAssignment, ItemShelfAssignment
 
 
 @login_required
@@ -143,3 +143,33 @@ def autocomplete_users(request):
         results = []
 
     return JsonResponse({'results': results})
+
+
+@login_required
+def get_shelf_items(request):
+    """AJAX view for getting items on a shelf"""
+    shelf_id = request.GET.get('shelf_id')
+    
+    if not shelf_id:
+        return JsonResponse([], safe=False)
+    
+    # Get active items on this shelf with their details
+    items_on_shelf = (
+        ItemShelfAssignment.objects
+        .filter(shelf_id=shelf_id, remove_date__isnull=True)
+        .select_related('item', 'item__category')
+    )
+    
+    items_data = [
+        {
+            'id': assignment.item.id,
+            'name': assignment.item.name,
+            'category': assignment.item.category.name if assignment.item.category else None,
+            'manufacturer': assignment.item.manufacturer,
+            'expiration_date': assignment.item.expiration_date.strftime('%Y-%m-%d') if assignment.item.expiration_date else None,
+            'assignment_id': assignment.id
+        }
+        for assignment in items_on_shelf
+    ]
+    
+    return JsonResponse(items_data, safe=False)
