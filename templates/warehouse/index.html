@@ -45,7 +45,7 @@
             <div class="card-body">
                 <div class="row d-flex flex-wrap justify-content-between">
                     <div class="col-md-3 col-12 mb-2">
-                        <a href="{% url 'warehouse:add_new_item' %}"
+                        <a href="{% url 'warehouse:add_new_item' %}?next={{ request.get_full_path|urlencode }}"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-plus-circle me-2"></i>
                             <span>Dodaj przedmiot</span>

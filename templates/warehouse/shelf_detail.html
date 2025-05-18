@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="mt-2 mt-md-0">
-                        <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}" class="btn btn-primary add-item-btn">
+                        <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary add-item-btn">
                             <i class="fas fa-plus"></i> Dodaj przedmiot
                         </a>
                     </div>
@@ -104,7 +104,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="align-middle">
-                                    <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
+                                    <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}?next={{ request.get_full_path|urlencode }}"
                                         class="btn btn-sm btn-outline-danger">
                                         <i class="fas fa-minus"></i> Weź z półki
                                     </a>
