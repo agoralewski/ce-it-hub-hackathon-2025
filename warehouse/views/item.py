@@ -248,6 +248,8 @@ def ajax_bulk_add_items(request):
         category_id = int(request.POST.get('category_id'))
         manufacturer = request.POST.get('manufacturer', '').strip() or None
         expiration_date = request.POST.get('expiration_date')
+        # Get the next URL if provided
+        next_url = request.POST.get('next', '')
         if expiration_date and expiration_date != 'null':
             # Parse ISO format date
             from datetime import datetime
@@ -286,6 +288,7 @@ def ajax_bulk_add_items(request):
                 'complete': True,
                 'message': f'Successfully added {quantity} items',
                 'total_processed': quantity,
+                'next_url': next_url,
             }
         )
 
