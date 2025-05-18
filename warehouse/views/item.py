@@ -395,8 +395,6 @@ def ajax_bulk_remove_items(request):
         with transaction.atomic():
             # Get the batch of assignments to remove
             assignments_to_remove = list(matching_assignments[0:items_to_process])
-
-            print(f"Assignments to remove: {len(assignments_to_remove)}")
             
             # Mark all assignments in this batch as removed
             current_time = timezone.now()
