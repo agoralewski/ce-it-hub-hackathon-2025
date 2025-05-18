@@ -77,6 +77,20 @@
             $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
             $('#selectAll').prop('indeterminate', checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes);
         });
+
+        // Make table rows clickable for selecting checkboxes
+        $('table.table tbody tr').css('cursor', 'pointer').on('click', function (e) {
+            // Prevent toggling if the checkbox itself was clicked
+            if ($(e.target).is('input[type="checkbox"]')) return;
+            const checkbox = $(this).find('.shelf-check');
+            checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+        });
     });
 </script>
+<style>
+    /* Optional: highlight row on hover for better UX */
+    table.table tbody tr:hover {
+        background-color: #f2f2f2;
+    }
+</style>
 {% endblock %}

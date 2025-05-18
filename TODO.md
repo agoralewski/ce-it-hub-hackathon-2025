@@ -1,16 +1,14 @@
 ## Frontend
-- Various alignments (especially filters in item list view and history view)
-- Revamp mobile view entirely (filters hidden in filter pane, use badges/chips for item info, +- buttons)
-- english language support - Artur
-- qr code selection in generate qr codes page should allow for selection on row click
+- Various alignments (especially filters in item list view and history view) - @Path-Finder-00
+- Mobile table view (filters hidden in filter pane, use badges/chips for item info, +- buttons) - @boccileonardo
+- English language support - @agoralewski
 - textboxes for category/locations after create button is clicked should come preselected
 - allow modification of existing items
-- manufacturer is set to 'None' instead of just NULL when cloning existing items
 
 ## Backend
 - email notification for nearly expired
 
 ## Fullstack
-- feature to stop current assignment without deleting items
+- feature to stop current assignment without deleting items - @durczokj
 - fix reset password flow
-- Fix bulk removal of item last batch not working
+- Fix bulk removal of item last batch not working - @durczokj
