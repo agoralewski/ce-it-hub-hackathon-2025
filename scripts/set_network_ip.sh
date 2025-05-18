@@ -1,4 +1,4 @@
-# Auto-detect network IP and update docker-compose.yaml if needed
+# Auto-detect network IP and update docker compose.yaml if needed
 # This script helps ensure that QR codes use the correct network IP address
 
 set -e
@@ -70,7 +70,7 @@ else
 fi
 
 echo ".env file updated with NETWORK_HOST=$IP"
-echo "Make sure your docker-compose.yaml uses 'NETWORK_HOST=${NETWORK_HOST}' in the environment section of the web service."
+echo "Make sure your docker compose.yaml uses 'NETWORK_HOST=${NETWORK_HOST}' in the environment section of the web service."
 
 if [ $CHANGED -eq 1 ]; then
     echo "IP address changed. Restarting Docker containers to apply new NETWORK_HOST..."

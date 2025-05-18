@@ -16,13 +16,13 @@ Make sure the application is running:
 
 ```bash
 cd /path/to/ce-it-hub-hackathon-2025
-docker-compose ps
+docker compose ps
 ```
 
 If it's not running, start it:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 2. Finding Your Local IP Address
@@ -76,11 +76,11 @@ If the QR code doesn't work on your mobile device:
 
 If the QR code still shows "localhost" or "127.0.0.1":
 
-1. Make sure you've removed or commented out the `NETWORK_HOST=localhost` line in docker-compose.yaml
+1. Make sure you've removed or commented out the `NETWORK_HOST=localhost` line in docker compose.yaml
 2. Check settings.py to ensure `NETWORK_HOST` is set to `None` if not provided
-3. Restart Docker containers: `docker-compose down && docker-compose up -d`
+3. Restart Docker containers: `docker compose down && docker compose up -d`
 4. Clear browser cache or use incognito mode
-5. If the issue persists, you can manually set the IP in docker-compose.yaml:
+5. If the issue persists, you can manually set the IP in docker compose.yaml:
    ```yaml
    - NETWORK_HOST=192.168.x.x  # Replace with your actual network IP
    ```

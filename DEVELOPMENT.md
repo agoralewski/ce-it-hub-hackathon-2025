@@ -37,7 +37,7 @@ This guide provides instructions for developers working on the KSP Warehouse Man
 ### Running with Docker (Development)
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Testing
@@ -72,31 +72,31 @@ If you encounter issues with static files:
 
 1. Check if the database container is running:
    ```bash
-   docker-compose ps db
+   docker compose ps db
    ```
 
 2. Check the database logs:
    ```bash
-   docker-compose logs db
+   docker compose logs db
    ```
 
 ### Nginx Issues
 
 1. Check Nginx configuration:
    ```bash
-   docker-compose exec nginx nginx -t
+   docker compose exec nginx nginx -t
    ```
 
 2. Check Nginx logs:
    ```bash
-   docker-compose logs nginx
+   docker compose logs nginx
    ```
 
 ### Known Issues and Solutions
 
 #### Docker Compose Version Warning
 
-If you see a warning about an obsolete version directive in docker-compose.yaml, run:
+If you see a warning about an obsolete version directive in docker compose.yaml, run:
 ```bash
 ./fix_docker_compose_version.sh
 ```
@@ -142,7 +142,7 @@ See `DEPLOY.md` for detailed deployment instructions.
 
 ### Important Files
 
-- `docker-compose.yaml` - Docker services configuration
+- `docker compose.yaml` - Docker services configuration
 - `nginx/nginx.conf` - Nginx configuration
 - `requirements.txt` - Python dependencies
 - `warehouse/views/utils.py` - Utility functions including network-aware URL generation

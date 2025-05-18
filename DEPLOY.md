@@ -42,7 +42,7 @@ Replace `your-secure-secret-key` with a strong random secret key and `your-serve
 ### 3. Build and Start the Docker Containers
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will:
@@ -69,7 +69,7 @@ This script will:
 ### 5. Create a Superuser (First Time Only)
 
 ```bash
-docker-compose exec web uv run manage.py createsuperuser
+docker compose exec web uv run manage.py createsuperuser
 ```
 
 ### 6. Access the Application
@@ -107,7 +107,7 @@ The application generates QR codes for each shelf that can be scanned with mobil
 
 1. Set the `NETWORK_HOST` environment variable to your server's IP address or domain name:
    ```
-   # In .env file or directly in docker-compose.yaml
+   # In .env file or directly in docker compose.yaml
    NETWORK_HOST=your-server-ip-or-hostname
    ```
 
@@ -130,28 +130,28 @@ For detailed testing instructions, see [QR_CODE_TESTING.md](QR_CODE_TESTING.md).
 
 ```bash
 git pull
-docker-compose build
-docker-compose down
-docker-compose up -d
+docker compose build
+docker compose down
+docker compose up -d
 ```
 
 ### Backing Up the Database
 
 ```bash
-docker-compose exec db pg_dump -U kspuser ksp > backup_$(date +%Y%m%d).sql
+docker compose exec db pg_dump -U kspuser ksp > backup_$(date +%Y%m%d).sql
 ```
 
 ### Viewing Logs
 
 ```bash
 # Web application logs
-docker-compose logs web
+docker compose logs web
 
 # Nginx logs
-docker-compose logs nginx
+docker compose logs nginx
 
 # Database logs
-docker-compose logs db
+docker compose logs db
 ```
 
 ## Troubleshooting
@@ -160,17 +160,17 @@ docker-compose logs db
 
 1. Check if all containers are running:
    ```bash
-   docker-compose ps
+   docker compose ps
    ```
 
 2. Check the logs for errors:
    ```bash
-   docker-compose logs
+   docker compose logs
    ```
 
 3. Verify that the Nginx configuration is correct:
    ```bash
-   docker-compose exec nginx nginx -t
+   docker compose exec nginx nginx -t
    ```
 
 4. Ensure your firewall allows traffic on port 80.
@@ -190,7 +190,7 @@ STATIC_FILES_TROUBLESHOOTING.md
 ## Security Considerations
 
 - The default setup uses HTTP. For production environments, consider adding HTTPS using Let's Encrypt.
-- Database credentials are stored in docker-compose.yaml. For production, use environment variables or Docker secrets.
+- Database credentials are stored in docker compose.yaml. For production, use environment variables or Docker secrets.
 - Consider regular database backups for production deployments.
 
 ## Performance Tuning
