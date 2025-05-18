@@ -170,7 +170,7 @@
                         <td>
                             <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
                             <div>
-                                <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-add-item me-1">
+                                <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}{% if group.manufacturer %}&manufacturer={{ group.manufacturer|urlencode }}{% endif %}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-add-item me-1">
                                     <i class="fas fa-plus"></i> Dodaj kolejny
                                 </a>
                                 <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-remove-item">
