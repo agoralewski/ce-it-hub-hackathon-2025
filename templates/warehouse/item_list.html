@@ -108,13 +108,20 @@
         </div>
         
         <!-- Pagination Info -->
-        <div class="pagination-info">
-            {% if total_count > 0 %}
-                Showing {{ grouped_items|length }} of {{ total_count }} items
-                {% if page_obj.paginator.num_pages > 1 %}
-                    (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+        <div class="pagination-info d-flex justify-content-between">
+            <div>
+                {% if total_count > 0 %}
+                    Wyświetlanie {{ grouped_items|length }} z {{ total_count }} przedmiotów
+                    {% if page_obj.paginator.num_pages > 1 %}
+                        (Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }})
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
+            <div class="text-end">
+                {% if assignments %}
+                    <strong>Łączna liczba produktów: {{ assignments|length }}</strong>
+                {% endif %}
+            </div>
         </div>
         
         <!-- Items table -->
@@ -177,12 +184,6 @@
                         <td colspan="7" class="text-center">Brak przedmiotów spełniających kryteria.</td>
                     </tr>
                     {% endfor %}
-                    {% if grouped_items %}
-                    <tr class="table-secondary">
-                        <td colspan="6" class="text-end fw-bold">Suma:</td>
-                        <td class="fw-bold">{{ assignments|length }}</td>
-                    </tr>
-                    {% endif %}
                 </tbody>
             </table>
         </div>
