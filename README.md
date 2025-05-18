@@ -123,8 +123,8 @@ erDiagram
         shelf_id int
         added_by int
         removed_by int
-        add_date date
-        remove_date date
+        add_date datetime
+        remove_date datetime
     }
     item {
         id int
@@ -143,16 +143,18 @@ erDiagram
         id int
         number int
         rack_id int
+        qr_code_uuid UUID
     }
     rack {
         id int
         name char
         room_id int
+        qr_code_uuid UUID
     }
     room {
         id int
         name string
-        warehouse_id int
+        qr_code_uuid UUID
     }
  
     user ||--o{ item_shelf_assignment: "1:*"
