@@ -1,15 +1,13 @@
 ## Frontend
-- english language support - Artur
-- table view for mobile devices with only key info and open accordion for row on click - Leo
-- qr code selection in generate qr codes page should allow for selection on row click
-- textboxes for category/locations after create button is clicked should come preselected
-- allow modification of existing items
-- return url for item creation page should lead back to item list view and not to shelf view
-- manufacturer is set to 'None' instead of just NULL when cloning existing items
+- Various alignments (especially filters in item list view and history view) - @Path-Finder-00
+- Mobile table view (filters hidden in filter pane, use badges/chips for item info, +- buttons) - @boccileonardo
+- English language support - @agoralewski
+- allow modification of existing items - @durczokj
 
 ## Backend
-- email notification for nearly expired
+- email notification for nearly expired - @martazielinska
+- excel export group by same fields as item list view - @boccileonardo
+- excel export date formatting - @boccileonardo
 
 ## Fullstack
-- feature to stop current assignment without deleting items
-- fix reset password flow
+- fix reset password flow (email send) - @martazielinska

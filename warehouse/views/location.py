@@ -416,7 +416,7 @@ def shelf_delete(request, pk):
 
 @login_required
 def shelf_detail(request, pk):
-    """Detail view of a shelf with its items"""
+    """Detail view of a shelf with its items and summary stats"""
     shelf = get_object_or_404(Shelf.objects.select_related('rack', 'rack__room'), pk=pk)
 
     # Get active assignments with optimized related fields
@@ -424,14 +424,24 @@ def shelf_detail(request, pk):
         shelf=shelf, remove_date__isnull=True
     ).select_related('item', 'item__category', 'added_by')
 
-    # Add pagination to handle large number of items on a shelf
-    paginator = Paginator(assignments, 50)  # Show 50 items per page
-    page_number = request.GET.get('page')
-    assignments_page = paginator.get_page(page_number)
-
-    # Add date context for expiration highlighting
+    # Expiration logic (same as item_list view)
     today_date = timezone.now().date()
     thirty_days_from_now = today_date + timedelta(days=30)
+
+    expired_count = assignments.filter(
+        item__expiration_date__isnull=False,
+        item__expiration_date__lt=today_date
+    ).count()
+    nearly_expired_count = assignments.filter(
+        item__expiration_date__isnull=False,
+        item__expiration_date__gte=today_date,
+        item__expiration_date__lte=thirty_days_from_now
+    ).count()
+
+    # Add pagination to handle large number of items on a shelf (not used in template, but kept for compatibility)
+    paginator = Paginator(assignments, 50)
+    page_number = request.GET.get('page')
+    assignments_page = paginator.get_page(page_number)
 
     # Create a network-aware absolute URL for this shelf
     from django.urls import reverse
@@ -446,9 +456,11 @@ def shelf_detail(request, pk):
             'assignments': assignments_page,
             'page_obj': assignments_page,
             'total_count': assignments.count(),
+            'expired_count': expired_count,
+            'nearly_expired_count': nearly_expired_count,
             'today_date': today_date,
             'thirty_days_from_now': thirty_days_from_now,
-            'shelf_url': shelf_url,  # Add the network-aware URL to the context
+            'shelf_url': shelf_url,
         },
     )
 

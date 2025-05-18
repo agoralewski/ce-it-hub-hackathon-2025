@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, DateTimeField, F
 from django.utils import timezone
 from django.core.paginator import Paginator
 
@@ -94,7 +94,8 @@ def history_list(request):
     
     # Filter by action type if provided
     if action_type == 'add':
-        # Only show additions (all assignments have add_date)
+        # Only show additions (not removed)
+        assignments = assignments.filter(remove_date__isnull=True)
         # Sort by most recent additions first
         assignments = assignments.order_by('-add_date')
     elif action_type == 'remove':
@@ -104,10 +105,15 @@ def history_list(request):
         assignments = assignments.order_by('-remove_date')
     else:
         # Show all actions (both additions and removals)
-        # For sorting, we need to consider both dates
-        # Use case logic: if remove_date exists, use it, otherwise use add_date
-        assignments = assignments.order_by('-remove_date', '-add_date')
-    
+        # Annotate with the latest operation date (remove_date if exists, else add_date)
+        assignments = assignments.annotate(
+            latest_operation=Case(
+                When(remove_date__isnull=False, then=F('remove_date')),
+                default=F('add_date'),
+                output_field=DateTimeField(),
+            )
+        ).order_by('-latest_operation')
+
     # Get total count for stats (before pagination)
     total_count = assignments.count()
     

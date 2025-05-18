@@ -206,8 +206,8 @@ def item_list(request):
 
 @login_required
 def low_stock(request):
-    """View for categories with low stock"""
-    # Use a more efficient query with prefetch_related to reduce database hits
+    """View for categories with low stock (efficient version)"""
+    # Find categories with <10 active items
     categories = (
         Category.objects.annotate(
             active_items=Count(
@@ -216,37 +216,29 @@ def low_stock(request):
             )
         )
         .filter(active_items__lt=10)
-        .prefetch_related('items__assignments__shelf__rack__room')
     )
 
     low_stock_categories = []
     for category in categories:
-        # Use optimized query that leverages the prefetched data
-        assignments = [
-            a
-            for item in category.items.all()
-            for a in item.assignments.all()
-            if a.remove_date is None
+        # Find all shelves with at least one active item in this category
+        shelf_ids = (
+            ItemShelfAssignment.objects.filter(
+                item__category=category,
+                remove_date__isnull=True
+            )
+            .values_list('shelf_id', flat=True)
+            .distinct()
+        )
+        # Fetch shelf objects and build location data
+        shelves = Shelf.objects.filter(id__in=shelf_ids)
+        location_data = [
+            {
+                'id': shelf.id,
+                'full_location': shelf.full_location,
+                'path': reverse('warehouse:shelf_detail', kwargs={'pk': shelf.id}),
+            }
+            for shelf in shelves
         ]
-
-        # Deduplicate shelves by their id
-        seen_shelf_ids = set()
-        location_data = []
-
-        for assignment in assignments:
-            shelf_id = assignment.shelf.id
-            if shelf_id not in seen_shelf_ids:
-                seen_shelf_ids.add(shelf_id)
-                location_data.append(
-                    {
-                        'id': shelf_id,
-                        'full_location': assignment.shelf.full_location,
-                        'path': reverse(
-                            'warehouse:shelf_detail', kwargs={'pk': shelf_id}
-                        ),
-                    }
-                )
-
         low_stock_categories.append(
             {
                 'name': category.name,

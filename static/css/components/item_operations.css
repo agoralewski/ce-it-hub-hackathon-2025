@@ -1,0 +1,86 @@
+/* CSS for item operations (add, remove, new item) */
+
+/* Progress bar styles for bulk operations */
+.progress {
+    height: 25px;
+}
+.progress-bar {
+    transition: width 0.5s ease;
+}
+
+/* Stats container for bulk operations */
+.stats-container {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+.stats-item {
+    margin-bottom: 5px;
+}
+
+/* Bulk operation container */
+.bulk-operation-container {
+    margin-top: 20px;
+}
+
+/* Processing message */
+#processing-message {
+    margin-top: 15px;
+    font-style: italic;
+}
+
+/* Cancel button for bulk operations */
+#cancel-bulk-btn {
+    margin-left: 10px;
+}
+
+/* Form section for add_new_item */
+.form-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Select2 styling for dropdown menus */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+
+/* Category container and dropdown styles */
+.category-container {
+    width: 100%;
+}
+.category-dropdown {
+    max-width: 100%;
+}
+
+/* Quantity button styles */
+.quantity-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Autocomplete fields */
+.item-autocomplete, .manufacturer-autocomplete {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}

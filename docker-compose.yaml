@@ -1,3 +1,6 @@
+# Load environment variables from .env file
+# Docker Compose automatically reads from .env in the same directory
+
 services:
   db:
     image: postgres:15
@@ -12,8 +15,6 @@ services:
 
   web:
     build: .
-    # Use Django development server initially for debugging
-    command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - .:/app
     depends_on:
@@ -27,10 +28,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_ENGINE=django.db.backends.postgresql
-      - NETWORK_HOST=143.28.45.143  # Auto-detected by fix_network_ip.sh
-    # No need to publish port 8000 as Nginx will handle external connections
-    # ports:
-    #   - "8000:8000"
+      - NETWORK_HOST=${NETWORK_HOST} # auto-detected by fix_network_ip.sh
+    entrypoint: ["/bin/bash", "-c", "./fix_network_ip.sh && exec uv run manage.py runserver 0.0.0.0:8000"]
 
   nginx:
     build:
@@ -46,9 +45,3 @@ services:
 
 volumes:
   postgres_data:
-
-# Load environment variables from .env file
-# Docker Compose automatically reads from .env in the same directory
-
-# Load environment variables from .env file
-# Docker Compose automatically reads from .env in the same directory

@@ -78,9 +78,15 @@
                     </div>
                     
                     <div class="mt-4 d-flex justify-content-between">
+                        {% if next %}
+                        <a href="{{ next }}" class="btn btn-outline-secondary" id="back-btn">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        {% else %}
                         <a href="{% url 'warehouse:shelf_detail' assignment.shelf.pk %}" class="btn btn-outline-secondary" id="back-btn">
                             <i class="fas fa-arrow-left"></i> Powrót
                         </a>
+                        {% endif %}
                         <div>
                             <button type="button" class="btn btn-success d-none" id="view-shelf-btn">
                                 <i class="fas fa-eye"></i> Zobacz półkę
@@ -97,6 +103,9 @@
                     {% csrf_token %}
                     <input type="hidden" id="assignment_id" name="assignment_id" value="{{ assignment.pk }}">
                     <input type="hidden" id="quantity" name="quantity" value="{{ quantity }}">
+                    {% if next %}
+                    <input type="hidden" id="next" name="next" value="{{ next }}">
+                    {% endif %}
                     <!-- Debug info -->
                     <div class="d-none">Assignment ID: {{ assignment.pk }}</div>
                 </form>
@@ -125,15 +134,24 @@
                 
                 <form method="post">
                     {% csrf_token %}
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
                     <div class="mb-3">
                         <label for="quantity" class="form-label"><strong>Liczba do usunięcia:</strong></label>
                         <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ total_available }}" value="1" required>
                         <div class="form-text">Dostępne przedmioty: {{ total_available }}</div>
                     </div>
                     <div class="d-flex justify-content-between mt-4">
+                        {% if next %}
+                        <a href="{{ next }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Anuluj
+                        </a>
+                        {% else %}
                         <a href="{% url 'warehouse:shelf_detail' assignment.shelf.pk %}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Anuluj
                         </a>
+                        {% endif %}
                         <button type="submit" class="btn btn-danger">
                             <i class="fas fa-trash"></i> Usuń przedmiot
                         </button>
@@ -164,6 +182,7 @@
         var totalBatches = 0;
         var startTime = new Date();
         var batchSize = 1000; // Production batch size
+        var nextUrl = '{% if next %}{{ next }}{% else %}{% url "warehouse:shelf_detail" assignment.shelf.pk %}{% endif %}';
         
         // Process items in batches using AJAX
         function processItemBatch(offset) {
@@ -235,8 +254,10 @@
                             totalTime.toFixed(2) + ' sekund (' + finalSpeed + ' przedmiotów/s)');
                         
                         // Show view shelf button and hide cancel button
+                        // Use next_url from response if available, otherwise use the template variable
+                        var nextUrl = response.next_url || '{% if next %}{{ next }}{% else %}{% url "warehouse:shelf_detail" assignment.shelf.pk %}{% endif %}';
                         $('#view-shelf-btn').removeClass('d-none').attr('onclick', 
-                            'window.location.href="{% url "warehouse:shelf_detail" assignment.shelf.pk %}"');
+                            'window.location.href="' + nextUrl + '"');
                         $('#cancel-bulk-btn').addClass('d-none');
                     }
                 },
@@ -277,9 +298,9 @@
                 isCancelled = true;
                 $('#processing-message').html('<i class="fas fa-ban text-danger"></i> Operacja została anulowana.');
                 $('#progress-bar').addClass('bg-danger');
-                $(this).addClass('d-none');
+                $(this).addClass('d-none');                        // Use the pre-defined nextUrl variable
                 $('#view-shelf-btn').removeClass('d-none').attr('onclick', 
-                    'window.location.href="{% url "warehouse:shelf_detail" assignment.shelf.pk %}"');
+                    'window.location.href="' + nextUrl + '"');
             }
         });
     });

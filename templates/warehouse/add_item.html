@@ -3,36 +3,6 @@
 
 {% block title %}Dodaj przedmiot na półkę - KSP{% endblock %}
 
-{% block extra_css %}
-<style>
-    .progress {
-        height: 25px;
-    }
-    .progress-bar {
-        transition: width 0.5s ease;
-    }
-    .stats-container {
-        margin-top: 15px;
-        padding: 10px;
-        background-color: #f8f9fa;
-        border-radius: 5px;
-    }
-    .stats-item {
-        margin-bottom: 5px;
-    }
-    .bulk-operation-container {
-        margin-top: 20px;
-    }
-    #processing-message {
-        margin-top: 15px;
-        font-style: italic;
-    }
-    #cancel-bulk-btn {
-        margin-left: 10px;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
@@ -77,9 +47,15 @@
                     </div>
                     
                     <div class="mt-4 d-flex justify-content-between">
+                        {% if next %}
+                        <a href="{{ next }}" class="btn btn-outline-secondary" id="back-btn">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        {% else %}
                         <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary" id="back-btn">
                             <i class="fas fa-arrow-left"></i> Powrót
                         </a>
+                        {% endif %}
                         <div>
                             <button type="button" class="btn btn-success d-none" id="view-shelf-btn">
                                 <i class="fas fa-eye"></i> Zobacz półkę
@@ -99,14 +75,20 @@
                     <input type="hidden" id="category-id" name="category_id" value="{{ category_id }}">
                     <input type="hidden" id="manufacturer" name="manufacturer" value="{{ manufacturer }}">
                     <input type="hidden" id="expiration-date" name="expiration_date" value="{{ expiration_date }}">
-                    <input type="hidden" id="note" name="note" value="{{ note }}">
+                    <input type="hidden" id="note" name="notes" value="{{ note }}">
                     <input type="hidden" id="quantity" name="quantity" value="{{ quantity }}">
+                    {% if next %}
+                    <input type="hidden" id="next" name="next" value="{{ next }}">
+                    {% endif %}
                 </form>
                 
                 {% else %}
                 <!-- Regular item addition form -->
                 <form method="post">
                     {% csrf_token %}
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
                     
                     <div class="row">
                         <div class="col-md-6">
@@ -217,9 +199,15 @@
                     </div>
                     
                     <div class="d-flex justify-content-between">
+                        {% if next %}
+                        <a href="{{ next }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        {% else %}
                         <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Powrót
                         </a>
+                        {% endif %}
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Dodaj przedmiot
                         </button>
@@ -375,6 +363,7 @@
         var totalBatches = 0;
         var startTime = new Date();
         var batchSize = 5000; // Optimal batch size for best performance
+        var nextUrl = '{% if next %}{{ next }}{% else %}{% url "warehouse:shelf_detail" shelf.pk %}{% endif %}';
         
         // Process items in batches using AJAX
         function processItemBatch(offset) {
@@ -439,8 +428,10 @@
                             totalTime.toFixed(2) + ' sekund (' + finalSpeed + ' przedmiotów/s)');
                         
                         // Show view shelf button and hide cancel button
+                        // Use next_url from response if available, otherwise use the template variable
+                        var nextUrl = response.next_url || '{% if next %}{{ next }}{% else %}{% url "warehouse:shelf_detail" shelf.pk %}{% endif %}';
                         $('#view-shelf-btn').removeClass('d-none').attr('onclick', 
-                            'window.location.href="{% url "warehouse:shelf_detail" shelf.pk %}"');
+                            'window.location.href="' + nextUrl + '"');
                         $('#cancel-bulk-btn').addClass('d-none');
                     }
                 },
@@ -478,8 +469,11 @@
                 $('#processing-message').html('<i class="fas fa-ban text-danger"></i> Operacja została anulowana.');
                 $('#progress-bar').addClass('bg-danger');
                 $(this).addClass('d-none');
+                
+                // Use the next parameter if available
+                var nextUrl = '{% if next %}{{ next }}{% else %}{% url "warehouse:shelf_detail" shelf.pk %}{% endif %}';
                 $('#view-shelf-btn').removeClass('d-none').attr('onclick', 
-                    'window.location.href="{% url "warehouse:shelf_detail" shelf.pk %}"');
+                    'window.location.href="' + nextUrl + '"');
             }
         });
         {% endif %}

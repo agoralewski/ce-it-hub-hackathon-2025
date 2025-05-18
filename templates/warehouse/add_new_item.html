@@ -3,29 +3,6 @@
 
 {% block title %}Wybierz lokalizację przedmiotu - KSP{% endblock %}
 
-{% block extra_css %}
-<style>
-    .form-section {
-        margin-bottom: 20px;
-        padding: 20px;
-        border-radius: 5px;
-        background-color: #f8f9fa;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .select2-container--default .select2-selection--single {
-        height: 38px;
-        padding: 6px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
@@ -36,6 +13,9 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
                     
                     <div class="form-section">
                         <p class="text-muted mb-4">Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:</p>
@@ -66,9 +46,15 @@
                     </div>
                     
                     <div class="mt-4 d-flex justify-content-between">
+                        {% if next %}
+                        <a href="{{ next }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        {% else %}
                         <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Powrót
                         </a>
+                        {% endif %}
                         <button type="submit" class="btn btn-success" id="submit-btn" disabled>
                             <i class="fas fa-arrow-right"></i> Dalej
                         </button>

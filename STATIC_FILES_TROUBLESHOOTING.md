@@ -26,7 +26,7 @@ This script will:
 
 b) **Check Nginx logs:**
 ```bash
-docker-compose logs nginx
+docker compose logs nginx
 ```
 Look for 404 errors or other issues related to static files.
 
@@ -49,7 +49,7 @@ chmod -R 755 ./staticfiles
 chmod -R 755 ./media
 
 # Restart containers
-docker-compose restart
+docker compose restart
 ```
 
 ### 3. Django not finding static files
@@ -65,7 +65,7 @@ docker-compose restart
 
 2. Run collectstatic manually:
 ```bash
-docker-compose exec web uv run manage.py collectstatic --noinput --clear
+docker compose exec web uv run manage.py collectstatic --noinput --clear
 ```
 
 ### 4. Browser caching issues
@@ -100,7 +100,7 @@ To manually verify static files are correctly collected:
 
 ```bash
 # Enter the web container
-docker-compose exec web sh
+docker compose exec web sh
 
 # Check if static files exist
 ls -la /app/staticfiles
@@ -112,7 +112,7 @@ ls -la /app/static
 For Nginx:
 ```bash
 # Enter the nginx container
-docker-compose exec nginx sh
+docker compose exec nginx sh
 
 # Check if static files are accessible
 ls -la /app/staticfiles

@@ -5,7 +5,7 @@ set -e  # Exit on any error
 
 echo "==== KSP Docker Static Files Fix ===="
 echo "Stopping all running containers..."
-docker-compose down
+docker compose down
 
 echo "Creating required directories if they don't exist..."
 mkdir -p ./staticfiles
@@ -20,26 +20,26 @@ echo "Cleaning staticfiles directory..."
 rm -rf ./staticfiles/*
 
 echo "Rebuilding containers..."
-docker-compose build
+docker compose build
 
 echo "Starting containers..."
-docker-compose up -d
+docker compose up -d
 
 echo "Waiting for containers to be ready..."
 sleep 5
 
 echo "Collecting static files inside the container..."
-docker-compose exec web uv run manage.py collectstatic --noinput
+docker compose exec web uv run manage.py collectstatic --noinput
 
 echo "Container status:"
-docker-compose ps
+docker compose ps
 
 echo "==== Completed Successfully ===="
 echo "Your application should now be available at http://localhost with CSS files properly loaded."
 echo ""
 echo "If you're still having issues:"
-echo "1. Check Nginx logs: docker-compose logs nginx"
-echo "2. Check Django logs: docker-compose logs web"
+echo "1. Check Nginx logs: docker compose logs nginx"
+echo "2. Check Django logs: docker compose logs web"
 echo "3. Verify file permissions in the staticfiles directory"
 echo ""
 echo "You can access the application on other devices using your IP address: $(ipconfig getifaddr en0)"

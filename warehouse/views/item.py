@@ -20,9 +20,15 @@ def add_item_to_shelf(request, shelf_id):
     shelf = get_object_or_404(
         Shelf.objects.select_related('rack', 'rack__room'), pk=shelf_id
     )
+    
+    # Get the next URL if provided, or default to item_list
+    next_url = request.GET.get('next', '')
 
     if request.method == 'POST':
         form = ItemShelfAssignmentForm(request.POST)
+        
+        # Get the next URL from POST if available
+        next_url = request.POST.get('next', next_url)
 
         if form.is_valid():
             # Get form data
@@ -52,6 +58,7 @@ def add_item_to_shelf(request, shelf_id):
                     if expiration_date
                     else '',
                     'note': note or '',
+                    'next': next_url,  # Pass along the next URL
                 }
                 return render(request, 'warehouse/add_item.html', context)
 
@@ -116,7 +123,12 @@ def add_item_to_shelf(request, shelf_id):
                     request,
                     f'{quantity} przedmiot(ów) zostało dodanych na półkę.',
                 )
-                return redirect('warehouse:shelf_detail', pk=shelf_id)
+                
+                # Redirect to the next URL if provided, otherwise to shelf detail
+                if next_url:
+                    return redirect(next_url)
+                else:
+                    return redirect('warehouse:shelf_detail', pk=shelf_id)
 
             except Exception as e:
                 messages.error(
@@ -139,7 +151,13 @@ def add_item_to_shelf(request, shelf_id):
         form = ItemShelfAssignmentForm(initial=initial)
 
     # Prepare context data for the form fields
-    context = {'form': form, 'shelf': shelf, 'input_data': {}, 'bulk_operation': False}
+    context = {
+        'form': form, 
+        'shelf': shelf, 
+        'input_data': {}, 
+        'bulk_operation': False,
+        'next': next_url  # Pass the next URL to the template
+    }
 
     # If this is a POST request, pass input values for Select2 fields
     if request.method == 'POST' and not form.is_valid():
@@ -158,6 +176,9 @@ def remove_item_from_shelf(request, pk):
     item_name = assignment.item.name
     shelf_id = assignment.shelf.pk
     
+    # Get the next URL if provided, or default to shelf detail
+    next_url = request.GET.get('next', '')
+    
     # Get all active assignments for this item on this shelf that match the same properties
     matching_assignments = ItemShelfAssignment.objects.filter(
         item__name=item_name,
@@ -172,6 +193,9 @@ def remove_item_from_shelf(request, pk):
     total_available = matching_assignments.count()
 
     if request.method == 'POST':
+        # Get the next URL from POST if available
+        next_url = request.POST.get('next', next_url)
+        
         quantity = int(request.POST.get('quantity', 1))
         # Ensure quantity doesn't exceed available items
         quantity = min(quantity, total_available)
@@ -184,7 +208,8 @@ def remove_item_from_shelf(request, pk):
                 'total_available': total_available,
                 'bulk_operation': True,
                 'quantity': quantity,
-                'assignment_id': assignment.pk,  # Add explicit assignment_id 
+                'assignment_id': assignment.pk,  # Add explicit assignment_id
+                'next': next_url,  # Pass along the next URL
             }
             return render(request, 'warehouse/remove_item.html', context)
             
@@ -196,12 +221,18 @@ def remove_item_from_shelf(request, pk):
             assignment_to_remove.save()
 
         messages.success(request, f'{quantity} przedmiot(ów) "{item_name}" zostało pomyślnie zdjętych z półki.')
-        return redirect('warehouse:shelf_detail', pk=shelf_id)
+        
+        # Redirect to the next URL if provided, otherwise to shelf detail
+        if next_url:
+            return redirect(next_url)
+        else:
+            return redirect('warehouse:shelf_detail', pk=shelf_id)
 
     return render(request, 'warehouse/remove_item.html', {
         'assignment': assignment,
         'total_available': total_available,
-        'bulk_operation': False
+        'bulk_operation': False,
+        'next': next_url  # Pass the next URL to the template
     })
 
 
@@ -218,6 +249,8 @@ def ajax_bulk_add_items(request):
         category_id = int(request.POST.get('category_id'))
         manufacturer = request.POST.get('manufacturer', '').strip() or None
         expiration_date = request.POST.get('expiration_date')
+        # Get the next URL if provided
+        next_url = request.POST.get('next', '')
         if expiration_date and expiration_date != 'null':
             # Parse ISO format date
             from datetime import datetime
@@ -229,6 +262,8 @@ def ajax_bulk_add_items(request):
         quantity = int(request.POST.get('quantity'))
         batch_size = int(request.POST.get('batch_size', 10000))
         offset = int(request.POST.get('offset', 0))
+        # Get the next URL if provided
+        next_url = request.POST.get('next', '')
     except (ValueError, TypeError) as e:
         return JsonResponse({'error': f'Invalid parameters: {str(e)}'}, status=400)
 
@@ -254,6 +289,7 @@ def ajax_bulk_add_items(request):
                 'complete': True,
                 'message': f'Successfully added {quantity} items',
                 'total_processed': quantity,
+                'next_url': next_url,
             }
         )
 
@@ -330,6 +366,8 @@ def ajax_bulk_remove_items(request):
         quantity = int(request.POST.get('quantity', 0))
         batch_size = int(request.POST.get('batch_size', 5000))
         offset = int(request.POST.get('offset', 0))
+        # Get the next URL if provided
+        next_url = request.POST.get('next', '')
         
         # Debug information
         print(f"Request POST data: {request.POST}")
@@ -438,22 +476,32 @@ def ajax_bulk_remove_items(request):
 @login_required
 def add_new_item(request):
     """Add a new item with shelf selection - first step: select location"""
+    # Get the next URL if provided (where to return after the whole process)
+    next_url = request.GET.get('next', '')
+    
     if request.method == 'POST':
         # Get the selected shelf ID from POST data
         shelf_id = request.POST.get('shelf')
+        # Get the next URL from POST if available
+        next_url = request.POST.get('next', next_url)
         
         if not shelf_id:
             messages.error(request, 'Proszę wybrać półkę.')
             return render(request, 'warehouse/add_new_item.html', {
-                'rooms': Room.objects.all().order_by('name')
+                'rooms': Room.objects.all().order_by('name'),
+                'next': next_url
             })
         
-        # Redirect to add_item_to_shelf with the selected shelf
-        return redirect('warehouse:add_item_to_shelf', shelf_id=shelf_id)
+        # Redirect to add_item_to_shelf with the selected shelf and next parameter
+        url = reverse('warehouse:add_item_to_shelf', kwargs={'shelf_id': shelf_id})
+        if next_url:
+            url = f"{url}?next={next_url}"
+        return redirect(url)
     else:
         # Just show the room/rack/shelf selection form
         return render(request, 'warehouse/add_new_item.html', {
-            'rooms': Room.objects.all().order_by('name')
+            'rooms': Room.objects.all().order_by('name'),
+            'next': next_url
         })
 
 

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Lista przedmiotów - KSP{% endblock %}
+{% block title %}Przedmioty - KSP{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
@@ -12,8 +12,8 @@
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Lista przedmiotów w magazynie</h5>
-        <a href="{% url 'warehouse:add_new_item' %}" class="btn btn-light btn-sm">
+        <h5 class="mb-0">Przedmioty w magazynie</h5>
+        <a href="{% url 'warehouse:add_new_item' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-light btn-sm">
             <i class="fas fa-plus-circle"></i> Dodaj przedmiot
         </a>
     </div>
@@ -108,13 +108,20 @@
         </div>
         
         <!-- Pagination Info -->
-        <div class="pagination-info">
-            {% if total_count > 0 %}
-                Showing {{ grouped_items|length }} of {{ total_count }} items
-                {% if page_obj.paginator.num_pages > 1 %}
-                    (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+        <div class="pagination-info d-flex justify-content-between">
+            <div>
+                {% if total_count > 0 %}
+                    Wyświetlanie {{ grouped_items|length }} z {{ total_count }} przedmiotów
+                    {% if page_obj.paginator.num_pages > 1 %}
+                        (Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }})
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
+            <div class="text-end">
+                {% if assignments %}
+                    <strong>Łączna liczba produktów: {{ assignments|length }}</strong>
+                {% endif %}
+            </div>
         </div>
         
         <!-- Items table -->
@@ -163,15 +170,15 @@
                         <td>
                             <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
                             <div class="mb-2">
-                                <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-add-item me-1">
+                                <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-add-item me-1">
                                     <i class="fas fa-plus"></i> Dodaj kolejny
                                 </a>
-                                <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}" class="btn btn-sm btn-remove-item">
+                                <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-remove-item">
                                     <i class="fas fa-minus"></i> Wez z polki
                                 </a>
                             </div>
                             <div>
-                                <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
                                 </a>
                             </div>
@@ -182,12 +189,6 @@
                         <td colspan="7" class="text-center">Brak przedmiotów spełniających kryteria.</td>
                     </tr>
                     {% endfor %}
-                    {% if grouped_items %}
-                    <tr class="table-secondary">
-                        <td colspan="6" class="text-end fw-bold">Suma:</td>
-                        <td class="fw-bold">{{ assignments|length }}</td>
-                    </tr>
-                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -623,8 +624,8 @@
             var formData = $(form).serialize();
             var url = "{% url 'warehouse:item_list' %}?" + formData;
             
-            // Use navigateWithLoading but with a delay to only show loading for slow loads
-            return window.navigateWithLoading(url, 'Przygotowywanie listy przedmiotów...', true, 300);
+            // Use direct navigation instead of navigateWithLoading
+            window.location.href = url;
         }
         
         // Clear all filters
@@ -643,8 +644,8 @@
             // Reset search
             productSearch.val('').trigger('change');
             
-            // Navigate with loading screen, but using a delay so it only shows for slow loads
-            window.navigateWithLoading('{% url "warehouse:item_list" %}', 'Przygotowywanie listy przedmiotów...', true, 300);
+            // Navigate directly without loading screen
+            window.location.href = '{% url "warehouse:item_list" %}';
         });
         
         // Add fade-in class on page load
