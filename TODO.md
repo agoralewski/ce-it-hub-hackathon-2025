@@ -1,4 +1,5 @@
 ## Frontend
+- Revamp mobile view entirely (filters hidden in filter pane, use badges/chips for item info, +- buttons, submit page with summary of changes)
 - english language support - Artur
 - table view for mobile devices with only key info and open accordion for row on click - Leo
 - qr code selection in generate qr codes page should allow for selection on row click
@@ -13,3 +14,4 @@
 ## Fullstack
 - feature to stop current assignment without deleting items
 - fix reset password flow
+- Fix bulk removal of item last batch not working

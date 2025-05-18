@@ -618,8 +618,8 @@
             var formData = $(form).serialize();
             var url = "{% url 'warehouse:item_list' %}?" + formData;
             
-            // Use navigateWithLoading but with a delay to only show loading for slow loads
-            return window.navigateWithLoading(url, 'Przygotowywanie listy przedmiotów...', true, 300);
+            // Use direct navigation instead of navigateWithLoading
+            window.location.href = url;
         }
         
         // Clear all filters
@@ -638,8 +638,8 @@
             // Reset search
             productSearch.val('').trigger('change');
             
-            // Navigate with loading screen, but using a delay so it only shows for slow loads
-            window.navigateWithLoading('{% url "warehouse:item_list" %}', 'Przygotowywanie listy przedmiotów...', true, 300);
+            // Navigate directly without loading screen
+            window.location.href = '{% url "warehouse:item_list" %}';
         });
         
         // Add fade-in class on page load
