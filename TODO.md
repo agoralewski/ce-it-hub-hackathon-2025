@@ -11,3 +11,7 @@
 
 ## Fullstack
 - fix reset password flow (email send) - @martazielinska
+
+## Documentation
+- mkdocs
+- pdf guides (deployment, maintenance)
