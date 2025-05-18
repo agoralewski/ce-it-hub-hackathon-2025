@@ -122,3 +122,18 @@
 .dropdown-item {
     border: none !important;
 }
+
+/* Admin Footer Panel Styling */
+.admin-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.admin-footer .card {
+    margin-bottom: 1.5rem;
+}
+
+.admin-footer + .footer {
+    margin-top: 0 !important; 
+}
