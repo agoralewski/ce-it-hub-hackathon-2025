@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from .env import get_env_variable, get_bool_env_variable
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,7 +33,9 @@ ALLOWED_HOSTS = ['*']  # Allow all hosts for development
 
 # Network host to use for QR codes and external URLs (optional)
 # If not set, the system will try to detect the network IP automatically
-NETWORK_HOST = get_env_variable('NETWORK_HOST', None)  # Will be auto-detected if not specified
+NETWORK_HOST = get_env_variable(
+    'NETWORK_HOST', None
+)  # Will be auto-detected if not specified
 
 
 # Application definition

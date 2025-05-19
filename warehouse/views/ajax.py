@@ -1,11 +1,17 @@
 """
 AJAX views for dynamic filtering and autocomplete.
 """
+
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
 
-from warehouse.models import Category, Rack, Shelf, Item, ItemShelfAssignment, ItemShelfAssignment
+from warehouse.models import (
+    Category,
+    Rack,
+    Shelf,
+    Item,
+    ItemShelfAssignment,
+)
 
 
 @login_required
@@ -128,16 +134,18 @@ def autocomplete_manufacturers(request):
 def autocomplete_users(request):
     """AJAX view for user autocomplete"""
     from django.contrib.auth.models import User
+
     query = request.GET.get('term', '')
 
     if query:
         # If there's a search query, filter and limit results
-        users = User.objects.filter(
-            username__icontains=query
-        )[:10]
-        
+        users = User.objects.filter(username__icontains=query)[:10]
+
         # Format results with username and email
-        results = [{'id': user.username, 'text': f"{user.username} ({user.email})"} for user in users]
+        results = [
+            {'id': user.username, 'text': f'{user.username} ({user.email})'}
+            for user in users
+        ]
     else:
         # For empty queries, don't return anything to avoid loading the entire dataset
         results = []
@@ -149,27 +157,29 @@ def autocomplete_users(request):
 def get_shelf_items(request):
     """AJAX view for getting items on a shelf"""
     shelf_id = request.GET.get('shelf_id')
-    
+
     if not shelf_id:
         return JsonResponse([], safe=False)
-    
+
     # Get active items on this shelf with their details
-    items_on_shelf = (
-        ItemShelfAssignment.objects
-        .filter(shelf_id=shelf_id, remove_date__isnull=True)
-        .select_related('item', 'item__category')
-    )
-    
+    items_on_shelf = ItemShelfAssignment.objects.filter(
+        shelf_id=shelf_id, remove_date__isnull=True
+    ).select_related('item', 'item__category')
+
     items_data = [
         {
             'id': assignment.item.id,
             'name': assignment.item.name,
-            'category': assignment.item.category.name if assignment.item.category else None,
+            'category': assignment.item.category.name
+            if assignment.item.category
+            else None,
             'manufacturer': assignment.item.manufacturer,
-            'expiration_date': assignment.item.expiration_date.strftime('%Y-%m-%d') if assignment.item.expiration_date else None,
-            'assignment_id': assignment.id
+            'expiration_date': assignment.item.expiration_date.strftime('%Y-%m-%d')
+            if assignment.item.expiration_date
+            else None,
+            'assignment_id': assignment.id,
         }
         for assignment in items_on_shelf
     ]
-    
+
     return JsonResponse(items_data, safe=False)

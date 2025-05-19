@@ -50,7 +50,7 @@ Edit the `.env` file with your specific configuration:
 ### 4.A Use docker compose and run databse migrations and superuser creation
 ```bash
 docker compose up --build
-./manage_django.sh
+./scripts/manage_django.sh
 ```
 
 ### 4.B ONLY IF NOT USING DOCKER COMPOSE
@@ -123,8 +123,8 @@ erDiagram
         shelf_id int
         added_by int
         removed_by int
-        add_date datetime
-        remove_date datetime
+        add_date date
+        remove_date date
     }
     item {
         id int
@@ -143,18 +143,16 @@ erDiagram
         id int
         number int
         rack_id int
-        qr_code_uuid UUID
     }
     rack {
         id int
         name char
         room_id int
-        qr_code_uuid UUID
     }
     room {
         id int
         name string
-        qr_code_uuid UUID
+        warehouse_id int
     }
  
     user ||--o{ item_shelf_assignment: "1:*"
