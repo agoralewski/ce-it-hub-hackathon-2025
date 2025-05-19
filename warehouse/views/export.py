@@ -1,19 +1,20 @@
 """
 Export and QR code generation views.
 """
+
 import io
 import xlsxwriter
 from datetime import timedelta
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Q
 
-from warehouse.models import Room, Rack, Shelf, Category, Item, ItemShelfAssignment
+from warehouse.models import Room, Rack, Shelf, Category, ItemShelfAssignment
 from warehouse.forms import ExportForm
 from warehouse.views.utils import is_admin
 
@@ -92,9 +93,9 @@ def generate_qr_codes(request):
 
                 # Create the URL for the shelf detail page with the network IP
                 from warehouse.views.utils import build_network_absolute_uri
+
                 shelf_url = build_network_absolute_uri(
-                    request, 
-                    reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
+                    request, reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
                 )
 
                 qr.add_data(shelf_url)

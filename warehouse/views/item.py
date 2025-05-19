@@ -1,6 +1,7 @@
 """
 Item management views.
 """
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -9,9 +10,12 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.urls import reverse
 
-from warehouse.models import Shelf, Category, Item, ItemShelfAssignment, Room, Rack
-from warehouse.forms import ItemShelfAssignmentForm, ItemLocationForm
-from warehouse.views.location import batch_move_items_between_shelves, move_item_between_shelves
+from warehouse.models import Shelf, Category, Item, ItemShelfAssignment, Room
+from warehouse.forms import ItemShelfAssignmentForm
+from warehouse.views.location import (
+    batch_move_items_between_shelves,
+    move_item_between_shelves,
+)
 
 
 @login_required
@@ -20,13 +24,13 @@ def add_item_to_shelf(request, shelf_id):
     shelf = get_object_or_404(
         Shelf.objects.select_related('rack', 'rack__room'), pk=shelf_id
     )
-    
+
     # Get the next URL if provided, or default to item_list
     next_url = request.GET.get('next', '')
 
     if request.method == 'POST':
         form = ItemShelfAssignmentForm(request.POST)
-        
+
         # Get the next URL from POST if available
         next_url = request.POST.get('next', next_url)
 
@@ -73,8 +77,6 @@ def add_item_to_shelf(request, shelf_id):
                 else:
                     batch_size = 5000
 
-                start_time = timezone.now()
-
                 # SQLite doesn't support parallel processing well due to locking
                 # So we'll use the optimized single-thread approach
                 with transaction.atomic():
@@ -115,15 +117,11 @@ def add_item_to_shelf(request, shelf_id):
                         # Update remaining count
                         remaining -= current_batch
 
-                end_time = timezone.now()
-                duration = (end_time - start_time).total_seconds()
-                items_per_second = quantity / duration if duration > 0 else 0
-
                 messages.success(
                     request,
                     f'{quantity} przedmiot(ów) zostało dodanych na półkę.',
                 )
-                
+
                 # Redirect to the next URL if provided, otherwise to shelf detail
                 if next_url:
                     return redirect(next_url)
@@ -152,11 +150,11 @@ def add_item_to_shelf(request, shelf_id):
 
     # Prepare context data for the form fields
     context = {
-        'form': form, 
-        'shelf': shelf, 
-        'input_data': {}, 
+        'form': form,
+        'shelf': shelf,
+        'input_data': {},
         'bulk_operation': False,
-        'next': next_url  # Pass the next URL to the template
+        'next': next_url,  # Pass the next URL to the template
     }
 
     # If this is a POST request, pass input values for Select2 fields
@@ -175,10 +173,10 @@ def remove_item_from_shelf(request, pk):
     assignment = get_object_or_404(ItemShelfAssignment, pk=pk, remove_date__isnull=True)
     item_name = assignment.item.name
     shelf_id = assignment.shelf.pk
-    
+
     # Get the next URL if provided, or default to shelf detail
     next_url = request.GET.get('next', '')
-    
+
     # Get all active assignments for this item on this shelf that match the same properties
     matching_assignments = ItemShelfAssignment.objects.filter(
         item__name=item_name,
@@ -187,22 +185,22 @@ def remove_item_from_shelf(request, pk):
         item__category=assignment.item.category,
         item__manufacturer=assignment.item.manufacturer,
         item__expiration_date=assignment.item.expiration_date,
-        item__note=assignment.item.note
+        item__note=assignment.item.note,
     ).select_related('item')
-    
+
     total_available = matching_assignments.count()
 
     if request.method == 'POST':
         # Get the next URL from POST if available
         next_url = request.POST.get('next', next_url)
-        
+
         quantity = int(request.POST.get('quantity', 1))
         # Ensure quantity doesn't exceed available items
         quantity = min(quantity, total_available)
-        
+
         # For very large quantities, use an AJAX approach to show progress
         if quantity > 1000:  # More reasonable threshold for production
-            print(f"Assignment PK: {assignment.pk}")
+            print(f'Assignment PK: {assignment.pk}')
             context = {
                 'assignment': assignment,
                 'total_available': total_available,
@@ -212,7 +210,7 @@ def remove_item_from_shelf(request, pk):
                 'next': next_url,  # Pass along the next URL
             }
             return render(request, 'warehouse/remove_item.html', context)
-            
+
         # Mark the specified number of assignments as removed
         assignments_to_remove = matching_assignments[:quantity]
         for assignment_to_remove in assignments_to_remove:
@@ -220,20 +218,27 @@ def remove_item_from_shelf(request, pk):
             assignment_to_remove.removed_by = request.user
             assignment_to_remove.save()
 
-        messages.success(request, f'{quantity} przedmiot(ów) "{item_name}" zostało pomyślnie zdjętych z półki.')
-        
+        messages.success(
+            request,
+            f'{quantity} przedmiot(ów) "{item_name}" zostało pomyślnie zdjętych z półki.',
+        )
+
         # Redirect to the next URL if provided, otherwise to shelf detail
         if next_url:
             return redirect(next_url)
         else:
             return redirect('warehouse:shelf_detail', pk=shelf_id)
 
-    return render(request, 'warehouse/remove_item.html', {
-        'assignment': assignment,
-        'total_available': total_available,
-        'bulk_operation': False,
-        'next': next_url  # Pass the next URL to the template
-    })
+    return render(
+        request,
+        'warehouse/remove_item.html',
+        {
+            'assignment': assignment,
+            'total_available': total_available,
+            'bulk_operation': False,
+            'next': next_url,  # Pass the next URL to the template
+        },
+    )
 
 
 @login_required
@@ -368,10 +373,10 @@ def ajax_bulk_remove_items(request):
         offset = int(request.POST.get('offset', 0))
         # Get the next URL if provided
         next_url = request.POST.get('next', '')
-        
+
         # Debug information
-        print(f"Request POST data: {request.POST}")
-        print(f"Assignment ID: {assignment_id}")
+        print(f'Request POST data: {request.POST}')
+        print(f'Assignment ID: {assignment_id}')
     except (ValueError, TypeError) as e:
         return JsonResponse({'error': f'Invalid parameters: {str(e)}'}, status=400)
 
@@ -383,13 +388,17 @@ def ajax_bulk_remove_items(request):
     try:
         # Try to get the assignment, first by looking for one that's not removed
         try:
-            assignment = ItemShelfAssignment.objects.get(pk=assignment_id, remove_date__isnull=True)
+            assignment = ItemShelfAssignment.objects.get(
+                pk=assignment_id, remove_date__isnull=True
+            )
         except ItemShelfAssignment.DoesNotExist:
             # If that fails, look for any assignment with this ID, even if it's already removed
             assignment = ItemShelfAssignment.objects.get(pk=assignment_id)
-            print(f"Found assignment {assignment.pk} but it was already removed")
+            print(f'Found assignment {assignment.pk} but it was already removed')
     except ItemShelfAssignment.DoesNotExist:
-        return JsonResponse({'error': f'Invalid assignment ID: {assignment_id}'}, status=400)
+        return JsonResponse(
+            {'error': f'Invalid assignment ID: {assignment_id}'}, status=400
+        )
 
     # Get all matching assignments
     try:
@@ -400,16 +409,20 @@ def ajax_bulk_remove_items(request):
             item__category=assignment.item.category,
             item__manufacturer=assignment.item.manufacturer,
             item__expiration_date=assignment.item.expiration_date,
-            item__note=assignment.item.note
+            item__note=assignment.item.note,
         ).select_related('item')
-        
+
         total_available = matching_assignments.count()
-        
+
         if total_available == 0:
-            return JsonResponse({'error': 'No matching items available for removal'}, status=400)
+            return JsonResponse(
+                {'error': 'No matching items available for removal'}, status=400
+            )
     except Exception as e:
-        return JsonResponse({'error': f'Error finding matching assignments: {str(e)}'}, status=400)
-    
+        return JsonResponse(
+            {'error': f'Error finding matching assignments: {str(e)}'}, status=400
+        )
+
     # Calculate how many items to process in this request
     items_to_process = min(batch_size, quantity - offset)
 
@@ -423,6 +436,7 @@ def ajax_bulk_remove_items(request):
                 'total_processed': quantity,
                 'remaining': 0,
                 'progress': 100,
+                'next': next_url
             }
         )
 
@@ -433,7 +447,7 @@ def ajax_bulk_remove_items(request):
         with transaction.atomic():
             # Get the batch of assignments to remove
             assignments_to_remove = list(matching_assignments[0:items_to_process])
-            
+
             # Mark all assignments in this batch as removed
             current_time = timezone.now()
             for assignment_to_remove in assignments_to_remove:
@@ -478,31 +492,33 @@ def add_new_item(request):
     """Add a new item with shelf selection - first step: select location"""
     # Get the next URL if provided (where to return after the whole process)
     next_url = request.GET.get('next', '')
-    
+
     if request.method == 'POST':
         # Get the selected shelf ID from POST data
         shelf_id = request.POST.get('shelf')
         # Get the next URL from POST if available
         next_url = request.POST.get('next', next_url)
-        
+
         if not shelf_id:
             messages.error(request, 'Proszę wybrać półkę.')
-            return render(request, 'warehouse/add_new_item.html', {
-                'rooms': Room.objects.all().order_by('name'),
-                'next': next_url
-            })
-        
+            return render(
+                request,
+                'warehouse/add_new_item.html',
+                {'rooms': Room.objects.all().order_by('name'), 'next': next_url},
+            )
+
         # Redirect to add_item_to_shelf with the selected shelf and next parameter
         url = reverse('warehouse:add_item_to_shelf', kwargs={'shelf_id': shelf_id})
         if next_url:
-            url = f"{url}?next={next_url}"
+            url = f'{url}?next={next_url}'
         return redirect(url)
     else:
         # Just show the room/rack/shelf selection form
-        return render(request, 'warehouse/add_new_item.html', {
-            'rooms': Room.objects.all().order_by('name'),
-            'next': next_url
-        })
+        return render(
+            request,
+            'warehouse/add_new_item.html',
+            {'rooms': Room.objects.all().order_by('name'), 'next': next_url},
+        )
 
 
 @login_required
@@ -514,104 +530,118 @@ def move_group_items(request):
     category_id = request.GET.get('category')
     manufacturer = request.GET.get('manufacturer')
     expiration_date = request.GET.get('expiration_date')
-    
+
     # Validate that we have the required information
     if not all([source_shelf_id, item_name, category_id]):
         messages.error(request, 'Brakuje wymaganych parametrów.')
         return redirect('warehouse:item_list')
-    
-    source_shelf = get_object_or_404(Shelf.objects.select_related('rack', 'rack__room'), pk=source_shelf_id)
+
+    source_shelf = get_object_or_404(
+        Shelf.objects.select_related('rack', 'rack__room'), pk=source_shelf_id
+    )
     category = get_object_or_404(Category, pk=category_id)
-    
+
     # Find all items matching the criteria
     matching_items = Item.objects.filter(
         name=item_name,
         category=category,
         manufacturer=manufacturer if manufacturer else None,
-        expiration_date=expiration_date if expiration_date else None
+        expiration_date=expiration_date if expiration_date else None,
     )
-    
+
     # Find all active assignments for these items on the source shelf
     matching_assignments = ItemShelfAssignment.objects.filter(
-        item__in=matching_items,
-        shelf=source_shelf,
-        remove_date__isnull=True
+        item__in=matching_items, shelf=source_shelf, remove_date__isnull=True
     ).select_related('item')
-    
+
     items_count = matching_assignments.count()
-    
+
     if request.method == 'POST':
         # Process form submission - get the target shelf ID
         target_shelf_id = request.POST.get('shelf')
-        
+
         if not target_shelf_id:
             messages.error(request, 'Proszę wybrać półkę docelową.')
             # Get all rooms to repopulate the form
             rooms = Room.objects.all().order_by('name')
-            return render(request, 'warehouse/move_items.html', {
-                'rooms': rooms,
-                'source_shelf': source_shelf,
-                'item_name': item_name,
-                'category': category,
-                'manufacturer': manufacturer,
-                'expiration_date': expiration_date,
-                'items_count': items_count
-            })
-        
+            return render(
+                request,
+                'warehouse/move_items.html',
+                {
+                    'rooms': rooms,
+                    'source_shelf': source_shelf,
+                    'item_name': item_name,
+                    'category': category,
+                    'manufacturer': manufacturer,
+                    'expiration_date': expiration_date,
+                    'items_count': items_count,
+                },
+            )
+
         # Don't allow moving to the same shelf
         if int(target_shelf_id) == int(source_shelf_id):
             messages.error(request, 'Nie można przenieść przedmiotów na tę samą półkę.')
             rooms = Room.objects.all().order_by('name')
-            return render(request, 'warehouse/move_items.html', {
-                'rooms': rooms,
-                'source_shelf': source_shelf,
-                'item_name': item_name,
-                'category': category,
-                'manufacturer': manufacturer,
-                'expiration_date': expiration_date,
-                'items_count': items_count
-            })
-        
+            return render(
+                request,
+                'warehouse/move_items.html',
+                {
+                    'rooms': rooms,
+                    'source_shelf': source_shelf,
+                    'item_name': item_name,
+                    'category': category,
+                    'manufacturer': manufacturer,
+                    'expiration_date': expiration_date,
+                    'items_count': items_count,
+                },
+            )
+
         # Get list of item IDs to move
         item_ids = [assignment.item_id for assignment in matching_assignments]
-        
+
         # Execute the move
         with transaction.atomic():
             moved_count, new_assignments, errors = batch_move_items_between_shelves(
                 item_ids=item_ids,
-                from_shelf_id=source_shelf_id, 
+                from_shelf_id=source_shelf_id,
                 to_shelf_id=target_shelf_id,
-                user=request.user
+                user=request.user,
             )
-            
+
             # Display any errors
             for error in errors:
                 messages.warning(request, error)
-            
+
             target_shelf = get_object_or_404(Shelf, pk=target_shelf_id)
-            
+
             if moved_count > 0:
                 messages.success(
-                    request, 
-                    f'{moved_count} przedmiot(ów) "{item_name}" zostało pomyślnie przeniesionych na półkę {target_shelf.full_location}.'
+                    request,
+                    f'{moved_count} przedmiot(ów) "{item_name}" zostało pomyślnie przeniesionych na półkę {target_shelf.full_location}.',
                 )
                 return redirect('warehouse:shelf_detail', pk=target_shelf_id)
             else:
-                messages.warning(request, 'Nie udało się przenieść żadnych przedmiotów.')
+                messages.warning(
+                    request, 'Nie udało się przenieść żadnych przedmiotów.'
+                )
                 return redirect('warehouse:item_list')
-    
+
     # GET request - show the form to select target location
     rooms = Room.objects.all().order_by('name')
-    
-    return render(request, 'warehouse/move_items.html', {
-        'rooms': rooms,
-        'source_shelf': source_shelf,
-        'item_name': item_name,
-        'category': category,
-        'manufacturer': manufacturer,
-        'expiration_date': expiration_date,
-        'items_count': items_count
-    })
+
+    return render(
+        request,
+        'warehouse/move_items.html',
+        {
+            'rooms': rooms,
+            'source_shelf': source_shelf,
+            'item_name': item_name,
+            'category': category,
+            'manufacturer': manufacturer,
+            'expiration_date': expiration_date,
+            'items_count': items_count,
+        },
+    )
 
 
 @login_required
@@ -619,77 +649,91 @@ def move_single_item(request, assignment_id):
     """Move a single item to a different shelf."""
     # Get the assignment
     assignment = get_object_or_404(
-        ItemShelfAssignment.objects.select_related('item', 'shelf', 'shelf__rack', 'shelf__rack__room', 'item__category'),
+        ItemShelfAssignment.objects.select_related(
+            'item', 'shelf', 'shelf__rack', 'shelf__rack__room', 'item__category'
+        ),
         pk=assignment_id,
-        remove_date__isnull=True
+        remove_date__isnull=True,
     )
-    
+
     source_shelf = assignment.shelf
     item = assignment.item
-    
+
     if request.method == 'POST':
         # Process form submission - get the target shelf ID
         target_shelf_id = request.POST.get('shelf')
-        
+
         if not target_shelf_id:
             messages.error(request, 'Proszę wybrać półkę docelową.')
             # Get all rooms to repopulate the form
             rooms = Room.objects.all().order_by('name')
-            return render(request, 'warehouse/move_items.html', {
-                'rooms': rooms,
-                'source_shelf': source_shelf,
-                'item_name': item.name,
-                'category': item.category,
-                'manufacturer': item.manufacturer,
-                'expiration_date': item.expiration_date,
-                'items_count': 1,
-                'assignment': assignment
-            })
-        
+            return render(
+                request,
+                'warehouse/move_items.html',
+                {
+                    'rooms': rooms,
+                    'source_shelf': source_shelf,
+                    'item_name': item.name,
+                    'category': item.category,
+                    'manufacturer': item.manufacturer,
+                    'expiration_date': item.expiration_date,
+                    'items_count': 1,
+                    'assignment': assignment,
+                },
+            )
+
         # Don't allow moving to the same shelf
         if int(target_shelf_id) == source_shelf.id:
             messages.error(request, 'Nie można przenieść przedmiotu na tę samą półkę.')
             rooms = Room.objects.all().order_by('name')
-            return render(request, 'warehouse/move_items.html', {
-                'rooms': rooms,
-                'source_shelf': source_shelf,
-                'item_name': item.name,
-                'category': item.category,
-                'manufacturer': item.manufacturer,
-                'expiration_date': item.expiration_date,
-                'items_count': 1,
-                'assignment': assignment
-            })
-        
+            return render(
+                request,
+                'warehouse/move_items.html',
+                {
+                    'rooms': rooms,
+                    'source_shelf': source_shelf,
+                    'item_name': item.name,
+                    'category': item.category,
+                    'manufacturer': item.manufacturer,
+                    'expiration_date': item.expiration_date,
+                    'items_count': 1,
+                    'assignment': assignment,
+                },
+            )
+
         # Move the item
         success, message, new_assignment = move_item_between_shelves(
             item_id=item.id,
             from_shelf_id=source_shelf.id,
             to_shelf_id=target_shelf_id,
-            user=request.user
+            user=request.user,
         )
-        
+
         if success:
             target_shelf = get_object_or_404(Shelf, pk=target_shelf_id)
             messages.success(
-                request, 
-                f'Przedmiot "{item.name}" został pomyślnie przeniesiony na półkę {target_shelf.full_location}.'
+                request,
+                f'Przedmiot "{item.name}" został pomyślnie przeniesiony na półkę {target_shelf.full_location}.',
             )
             return redirect('warehouse:shelf_detail', pk=target_shelf_id)
         else:
             messages.error(request, f'Błąd podczas przenoszenia przedmiotu: {message}')
             return redirect('warehouse:shelf_detail', pk=source_shelf.id)
-    
+
     # GET request - show the form to select target location
     rooms = Room.objects.all().order_by('name')
-    
-    return render(request, 'warehouse/move_items.html', {
-        'rooms': rooms,
-        'source_shelf': source_shelf,
-        'item_name': item.name,
-        'category': item.category,
-        'manufacturer': item.manufacturer,
-        'expiration_date': item.expiration_date,
-        'items_count': 1,
-        'assignment': assignment
-    })
+
+    return render(
+        request,
+        'warehouse/move_items.html',
+        {
+            'rooms': rooms,
+            'source_shelf': source_shelf,
+            'item_name': item.name,
+            'category': item.category,
+            'manufacturer': item.manufacturer,
+            'expiration_date': item.expiration_date,
+            'items_count': 1,
+            'assignment': assignment,
+        },
+    )

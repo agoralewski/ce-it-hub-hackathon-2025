@@ -1,6 +1,7 @@
 """
 Location management views for rooms, racks, and shelves.
 """
+
 from datetime import timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -19,13 +20,13 @@ from warehouse.views.utils import is_admin
 def move_item_between_shelves(item_id, from_shelf_id, to_shelf_id, user):
     """
     Move an item from one shelf to another by ending the old assignment and creating a new one.
-    
+
     Args:
         item_id (int): ID of the item to move
         from_shelf_id (int): ID of the shelf the item is currently on
         to_shelf_id (int): ID of the shelf to move the item to
         user (User): The user performing the move
-    
+
     Returns:
         tuple: (bool, str, ItemShelfAssignment) - Success status, message, and the new assignment if successful
     """
@@ -33,95 +34,101 @@ def move_item_between_shelves(item_id, from_shelf_id, to_shelf_id, user):
         with transaction.atomic():
             # Find the active assignment for this item on the source shelf
             assignment = ItemShelfAssignment.objects.get(
-                item_id=item_id,
-                shelf_id=from_shelf_id,
-                remove_date__isnull=True
+                item_id=item_id, shelf_id=from_shelf_id, remove_date__isnull=True
             )
-            
+
             # Mark the old assignment as removed
             assignment.remove_date = timezone.now()
             assignment.removed_by = user
             assignment.save()
-            
+
             # Create a new assignment for the same item on the destination shelf
             new_assignment = ItemShelfAssignment.objects.create(
-                item_id=item_id,
-                shelf_id=to_shelf_id,
-                added_by=user
+                item_id=item_id, shelf_id=to_shelf_id, added_by=user
             )
-            
-            return True, f"Item {assignment.item.name} moved successfully", new_assignment
+
+            return (
+                True,
+                f'Item {assignment.item.name} moved successfully',
+                new_assignment,
+            )
     except ItemShelfAssignment.DoesNotExist:
-        return False, "No active assignment found for this item on the source shelf", None
+        return (
+            False,
+            'No active assignment found for this item on the source shelf',
+            None,
+        )
     except Exception as e:
-        return False, f"Error moving item: {str(e)}", None
+        return False, f'Error moving item: {str(e)}', None
 
 
 def batch_move_items_between_shelves(item_ids, from_shelf_id, to_shelf_id, user):
     """
     Move multiple items from one shelf to another in a single transaction.
     This is more efficient than calling move_item_between_shelves multiple times.
-    
+
     Args:
         item_ids (list): List of item IDs to move
         from_shelf_id (int): ID of the shelf the items are currently on
         to_shelf_id (int): ID of the shelf to move the items to
         user (User): The user performing the move
-    
+
     Returns:
         tuple: (int, list, list) - Count of successfully moved items, list of new assignments, list of errors
     """
     if not item_ids:
         return 0, [], []
-    
+
     successfully_moved = 0
     new_assignments = []
     errors = []
-    
+
     try:
         with transaction.atomic():
             # Find all active assignments for these items on the source shelf
             active_assignments = ItemShelfAssignment.objects.filter(
-                item_id__in=item_ids,
-                shelf_id=from_shelf_id,
-                remove_date__isnull=True
+                item_id__in=item_ids, shelf_id=from_shelf_id, remove_date__isnull=True
             ).select_related('item')
-            
+
             # Check if we found all requested items
-            found_item_ids = set(assignment.item_id for assignment in active_assignments)
+            found_item_ids = set(
+                assignment.item_id for assignment in active_assignments
+            )
             missing_item_ids = set(item_ids) - found_item_ids
-            
+
             if missing_item_ids:
-                errors.append(f"Could not find {len(missing_item_ids)} items on the source shelf")
-            
+                errors.append(
+                    f'Could not find {len(missing_item_ids)} items on the source shelf'
+                )
+
             # Mark all old assignments as removed
             now = timezone.now()
             for assignment in active_assignments:
                 assignment.remove_date = now
                 assignment.removed_by = user
-            
+
             # Bulk update the removed assignments
             if active_assignments:
                 ItemShelfAssignment.objects.bulk_update(
                     active_assignments, ['remove_date', 'removed_by']
                 )
-            
+
             # Create new assignments for all items
             new_assignments_to_create = [
                 ItemShelfAssignment(
-                    item_id=assignment.item_id,
-                    shelf_id=to_shelf_id,
-                    added_by=user
+                    item_id=assignment.item_id, shelf_id=to_shelf_id, added_by=user
                 )
                 for assignment in active_assignments
             ]
-            
+
             # Bulk create the new assignments
             if new_assignments_to_create:
-                created_assignments = ItemShelfAssignment.objects.bulk_create(new_assignments_to_create)
+                created_assignments = ItemShelfAssignment.objects.bulk_create(
+                    new_assignments_to_create
+                )
                 new_assignments = created_assignments
                 successfully_moved = len(created_assignments)
-            
+
             return successfully_moved, new_assignments, errors
     except Exception as e:
         return 0, [], [str(e)]
@@ -206,73 +213,70 @@ def room_delete(request, pk):
 def clean_room(request, pk):
     """Move all items from a room to an 'Unassigned' room with rack A and shelf 1"""
     room = get_object_or_404(Room, pk=pk)
-    
+
     # Check if room has any items
     active_assignments = ItemShelfAssignment.objects.filter(
         shelf__rack__room=room, remove_date__isnull=True
     ).select_related('item', 'shelf', 'shelf__rack')
-    
+
     items_count = active_assignments.count()
-    
+
     if request.method == 'POST' and 'confirm' in request.POST and items_count > 0:
         with transaction.atomic():
             # Ensure the "Unassigned" room exists
             unassigned_room, _ = Room.objects.get_or_create(
-                name="Unassigned",
-                defaults={"name": "Unassigned"}
+                name='Unassigned', defaults={'name': 'Unassigned'}
             )
-            
+
             # Ensure rack "A" exists in the unassigned room
             unassigned_rack, _ = Rack.objects.get_or_create(
-                name="A", 
+                name='A',
                 room=unassigned_room,
-                defaults={"name": "A", "room": unassigned_room}
+                defaults={'name': 'A', 'room': unassigned_room},
             )
-            
+
             # Ensure shelf "1" exists in the unassigned rack
             unassigned_shelf, _ = Shelf.objects.get_or_create(
-                number=1, 
+                number=1,
                 rack=unassigned_rack,
-                defaults={"number": 1, "rack": unassigned_rack}
+                defaults={'number': 1, 'rack': unassigned_rack},
             )
-            
+
             # Group items by source shelf for batch processing
             shelf_to_items = {}
             for assignment in active_assignments:
                 if assignment.shelf_id not in shelf_to_items:
                     shelf_to_items[assignment.shelf_id] = []
                 shelf_to_items[assignment.shelf_id].append(assignment.item_id)
-            
+
             # Move all items from this room to the unassigned shelf using batch processing
             moved_count = 0
             new_assignments = []
             errors = []
-            
+
             for source_shelf_id, item_ids in shelf_to_items.items():
-                batch_moved, batch_assignments, batch_errors = batch_move_items_between_shelves(
-                    item_ids=item_ids,
-                    from_shelf_id=source_shelf_id,
-                    to_shelf_id=unassigned_shelf.id,
-                    user=request.user
+                batch_moved, batch_assignments, batch_errors = (
+                    batch_move_items_between_shelves(
+                        item_ids=item_ids,
+                        from_shelf_id=source_shelf_id,
+                        to_shelf_id=unassigned_shelf.id,
+                        user=request.user,
+                    )
                 )
                 moved_count += batch_moved
                 new_assignments.extend(batch_assignments)
                 errors.extend(batch_errors)
-            
+
             messages.success(
-                request, 
-                f'Pokój "{room.name}" został wyczyszczony. {moved_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".'
+                request,
+                f'Pokój "{room.name}" został wyczyszczony. {moved_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".',
             )
             return redirect('warehouse:room_list')
-    
+
     return render(
-        request, 
-        'warehouse/room_clean.html', 
-        {
-            'room': room, 
-            'has_items': items_count > 0,
-            'items_count': items_count
-        }
+        request,
+        'warehouse/room_clean.html',
+        {'room': room, 'has_items': items_count > 0, 'items_count': items_count},
     )
 
 
@@ -429,13 +433,12 @@ def shelf_detail(request, pk):
     thirty_days_from_now = today_date + timedelta(days=30)
 
     expired_count = assignments.filter(
-        item__expiration_date__isnull=False,
-        item__expiration_date__lt=today_date
+        item__expiration_date__isnull=False, item__expiration_date__lt=today_date
     ).count()
     nearly_expired_count = assignments.filter(
         item__expiration_date__isnull=False,
         item__expiration_date__gte=today_date,
-        item__expiration_date__lte=thirty_days_from_now
+        item__expiration_date__lte=thirty_days_from_now,
     ).count()
 
     # Add pagination to handle large number of items on a shelf (not used in template, but kept for compatibility)
@@ -446,7 +449,10 @@ def shelf_detail(request, pk):
     # Create a network-aware absolute URL for this shelf
     from django.urls import reverse
     from warehouse.views.utils import build_network_absolute_uri
-    shelf_url = build_network_absolute_uri(request, reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk}))
+
+    shelf_url = build_network_absolute_uri(
+        request, reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
+    )
 
     return render(
         request,
@@ -470,73 +476,70 @@ def shelf_detail(request, pk):
 def clean_rack(request, pk):
     """Move all items from a rack to an 'Unassigned' room with rack A and shelf 1"""
     rack = get_object_or_404(Rack.objects.select_related('room'), pk=pk)
-    
+
     # Check if rack has any items
     active_assignments = ItemShelfAssignment.objects.filter(
         shelf__rack=rack, remove_date__isnull=True
     ).select_related('item', 'shelf')
-    
+
     items_count = active_assignments.count()
-    
+
     if request.method == 'POST' and 'confirm' in request.POST and items_count > 0:
         with transaction.atomic():
             # Ensure the "Unassigned" room exists
             unassigned_room, _ = Room.objects.get_or_create(
-                name="Unassigned",
-                defaults={"name": "Unassigned"}
+                name='Unassigned', defaults={'name': 'Unassigned'}
             )
-            
+
             # Ensure rack "A" exists in the unassigned room
             unassigned_rack, _ = Rack.objects.get_or_create(
-                name="A", 
+                name='A',
                 room=unassigned_room,
-                defaults={"name": "A", "room": unassigned_room}
+                defaults={'name': 'A', 'room': unassigned_room},
             )
-            
+
             # Ensure shelf "1" exists in the unassigned rack
             unassigned_shelf, _ = Shelf.objects.get_or_create(
-                number=1, 
+                number=1,
                 rack=unassigned_rack,
-                defaults={"number": 1, "rack": unassigned_rack}
+                defaults={'number': 1, 'rack': unassigned_rack},
             )
-            
+
             # Group items by source shelf for batch processing
             shelf_to_items = {}
             for assignment in active_assignments:
                 if assignment.shelf_id not in shelf_to_items:
                     shelf_to_items[assignment.shelf_id] = []
                 shelf_to_items[assignment.shelf_id].append(assignment.item_id)
-            
+
             # Move all items from this rack to the unassigned shelf using batch processing
             moved_count = 0
             new_assignments = []
             errors = []
-            
+
             for source_shelf_id, item_ids in shelf_to_items.items():
-                batch_moved, batch_assignments, batch_errors = batch_move_items_between_shelves(
-                    item_ids=item_ids,
-                    from_shelf_id=source_shelf_id,
-                    to_shelf_id=unassigned_shelf.id,
-                    user=request.user
+                batch_moved, batch_assignments, batch_errors = (
+                    batch_move_items_between_shelves(
+                        item_ids=item_ids,
+                        from_shelf_id=source_shelf_id,
+                        to_shelf_id=unassigned_shelf.id,
+                        user=request.user,
+                    )
                 )
                 moved_count += batch_moved
                 new_assignments.extend(batch_assignments)
                 errors.extend(batch_errors)
-            
+
             messages.success(
-                request, 
-                f'Regał "{rack.room.name}.{rack.name}" został wyczyszczony. {moved_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".'
+                request,
+                f'Regał "{rack.room.name}.{rack.name}" został wyczyszczony. {moved_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".',
             )
             return redirect('warehouse:room_list')
-    
+
     return render(
-        request, 
-        'warehouse/rack_clean.html', 
-        {
-            'rack': rack,
-            'has_items': items_count > 0,
-            'items_count': items_count
-        }
+        request,
+        'warehouse/rack_clean.html',
+        {'rack': rack, 'has_items': items_count > 0, 'items_count': items_count},
     )
 
 
@@ -545,59 +548,54 @@ def clean_rack(request, pk):
 def clean_shelf(request, pk):
     """Move all items from a shelf to an 'Unassigned' room with rack A and shelf 1"""
     shelf = get_object_or_404(Shelf.objects.select_related('rack', 'rack__room'), pk=pk)
-    
+
     # Check if shelf has any items
     active_assignments = ItemShelfAssignment.objects.filter(
         shelf=shelf, remove_date__isnull=True
     ).select_related('item')
-    
+
     items_count = active_assignments.count()
-    
+
     if request.method == 'POST' and 'confirm' in request.POST and items_count > 0:
         with transaction.atomic():
             # Ensure the "Unassigned" room exists
             unassigned_room, _ = Room.objects.get_or_create(
-                name="Unassigned",
-                defaults={"name": "Unassigned"}
+                name='Unassigned', defaults={'name': 'Unassigned'}
             )
-            
+
             # Ensure rack "A" exists in the unassigned room
             unassigned_rack, _ = Rack.objects.get_or_create(
-                name="A", 
+                name='A',
                 room=unassigned_room,
-                defaults={"name": "A", "room": unassigned_room}
+                defaults={'name': 'A', 'room': unassigned_room},
             )
-            
+
             # Ensure shelf "1" exists in the unassigned rack
             unassigned_shelf, _ = Shelf.objects.get_or_create(
-                number=1, 
+                number=1,
                 rack=unassigned_rack,
-                defaults={"number": 1, "rack": unassigned_rack}
+                defaults={'number': 1, 'rack': unassigned_rack},
             )
-            
+
             # Get all item IDs from this shelf
             item_ids = [assignment.item_id for assignment in active_assignments]
-            
+
             # Move all items from this shelf to the unassigned shelf
             moved_count, new_assignments, errors = batch_move_items_between_shelves(
                 item_ids=item_ids,
                 from_shelf_id=shelf.id,
                 to_shelf_id=unassigned_shelf.id,
-                user=request.user
+                user=request.user,
             )
-            
+
             messages.success(
-                request, 
-                f'Półka "{shelf.rack.room.name}.{shelf.rack.name}.{shelf.number}" została wyczyszczona. {moved_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".'
+                request,
+                f'Półka "{shelf.rack.room.name}.{shelf.rack.name}.{shelf.number}" została wyczyszczona. {moved_count} przedmiotów zostało przeniesionych do lokalizacji "Unassigned.A.1".',
             )
             return redirect('warehouse:shelf_detail', pk=shelf.id)
-    
+
     return render(
-        request, 
-        'warehouse/shelf_clean.html', 
-        {
-            'shelf': shelf,
-            'has_items': items_count > 0,
-            'items_count': items_count
-        }
+        request,
+        'warehouse/shelf_clean.html',
+        {'shelf': shelf, 'has_items': items_count > 0, 'items_count': items_count},
     )

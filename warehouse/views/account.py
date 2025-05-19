@@ -1,6 +1,7 @@
 """
 User account and authentication views.
 """
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash, logout
@@ -29,7 +30,7 @@ def edit_profile(request):
             messages.error(request, 'Proszę poprawić błędy w formularzu.')
     else:
         form = UserProfileForm(instance=request.user)
-    
+
     return render(request, 'warehouse/edit_profile.html', {'form': form})
 
 

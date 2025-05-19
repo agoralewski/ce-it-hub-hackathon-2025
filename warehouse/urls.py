@@ -1,27 +1,53 @@
 from django.urls import path
+
 # Import views from their specific modules
 from warehouse.views.core import index, item_list, low_stock
 from warehouse.views.location import (
-    room_list, room_create, room_update, room_delete, clean_room,
-    rack_create, rack_update, rack_delete, clean_rack,
-    shelf_create, shelf_update, shelf_delete, shelf_detail, clean_shelf
+    room_list,
+    room_create,
+    room_update,
+    room_delete,
+    clean_room,
+    rack_create,
+    rack_update,
+    rack_delete,
+    clean_rack,
+    shelf_create,
+    shelf_update,
+    shelf_delete,
+    shelf_detail,
+    clean_shelf,
 )
 from warehouse.views.category import (
-    category_list, category_create, category_update, category_delete
+    category_list,
+    category_create,
+    category_update,
+    category_delete,
 )
 from warehouse.views.item import (
-    add_item_to_shelf, remove_item_from_shelf, ajax_bulk_add_items, ajax_bulk_remove_items,
-    add_new_item, move_group_items, move_single_item
+    add_item_to_shelf,
+    remove_item_from_shelf,
+    ajax_bulk_add_items,
+    ajax_bulk_remove_items,
+    add_new_item,
+    move_group_items,
+    move_single_item,
 )
-from warehouse.views.export import (
-    generate_qr_codes, export_inventory
-)
+from warehouse.views.export import generate_qr_codes, export_inventory
 from warehouse.views.ajax import (
-    autocomplete_categories, get_racks, get_shelves, get_shelf_items,
-    autocomplete_items, autocomplete_manufacturers, autocomplete_users
+    autocomplete_categories,
+    get_racks,
+    get_shelves,
+    get_shelf_items,
+    autocomplete_items,
+    autocomplete_manufacturers,
+    autocomplete_users,
 )
 from warehouse.views.account import (
-    profile, edit_profile, change_password, custom_logout
+    profile,
+    edit_profile,
+    change_password,
+    custom_logout,
 )
 from warehouse.views.history import history_list
 
@@ -42,9 +68,7 @@ urlpatterns = [
     path('racks/<int:pk>/update/', rack_update, name='rack_update'),
     path('racks/<int:pk>/delete/', rack_delete, name='rack_delete'),
     path('racks/<int:pk>/clean/', clean_rack, name='rack_clean'),
-    path(
-        'racks/<int:rack_id>/shelves/create/', shelf_create, name='shelf_create'
-    ),
+    path('racks/<int:rack_id>/shelves/create/', shelf_create, name='shelf_create'),
     path('shelves/<int:pk>/update/', shelf_update, name='shelf_update'),
     path('shelves/<int:pk>/delete/', shelf_delete, name='shelf_delete'),
     path('shelves/<int:pk>/clean/', clean_shelf, name='shelf_clean'),
@@ -90,9 +114,7 @@ urlpatterns = [
         autocomplete_categories,
         name='autocomplete_categories',
     ),
-    path(
-        'api/autocomplete/items/', autocomplete_items, name='autocomplete_items'
-    ),
+    path('api/autocomplete/items/', autocomplete_items, name='autocomplete_items'),
     path(
         'api/autocomplete/manufacturers/',
         autocomplete_manufacturers,
@@ -108,7 +130,9 @@ urlpatterns = [
     path('api/shelves/', get_shelves, name='get_shelves'),
     path('api/shelf_items/', get_shelf_items, name='get_shelf_items'),
     path('ajax/bulk-add-items/', ajax_bulk_add_items, name='ajax_bulk_add_items'),
-    path('ajax/bulk-remove-items/', ajax_bulk_remove_items, name='ajax_bulk_remove_items'),
+    path(
+        'ajax/bulk-remove-items/', ajax_bulk_remove_items, name='ajax_bulk_remove_items'
+    ),
     # User profile and password management
     path('profile/', profile, name='profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),

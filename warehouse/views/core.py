@@ -1,11 +1,11 @@
 """
 Core views for the warehouse app.
 """
+
 from datetime import timedelta
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.db.models import Count, Q
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -61,18 +61,20 @@ def item_list(request):
         assignments = assignments.filter(shelf_id=shelf_id)
     if category_id:
         assignments = assignments.filter(item__category_id=category_id)
-    
+
     # Apply search filter if provided
     if search_query:
         assignments = assignments.filter(item__name__icontains=search_query)
-    
+
     # Apply 'has_note' filter if provided
     if has_note:
-        assignments = assignments.filter(item__note__isnull=False).exclude(item__note='')
+        assignments = assignments.filter(item__note__isnull=False).exclude(
+            item__note=''
+        )
 
     # Create a Q object to collect multiple filter conditions
     filters_q = Q()
-    
+
     # Apply 'expiring_soon' filter if provided
     if 'expiring_soon' in filter_values:
         expiring_soon_q = Q(
@@ -89,52 +91,56 @@ def item_list(request):
             item__expiration_date__lt=timezone.now().date(),
         )
         filters_q |= expired_q
-    
+
     # Apply combined filters if any were selected
     if filter_values:
         assignments = assignments.filter(filters_q)
-    
+
     # Group assignments by item name, shelf, category and other properties using database aggregation
     from django.db.models import Count, F
-    
+
     # We use values() to group by the relevant fields and annotate to count and collect assignments
-    grouped_items_query = (
-        assignments
-        .values(
-            'item__name',
-            'shelf',
-            'item__category',
-            'item__manufacturer',
-            'item__expiration_date',
-            'item__note',
-            'shelf__id',
-            'item__category__id',
-        )
-        .annotate(
-            item_name=F('item__name'),
-            count=Count('id'),
-            shelf_id=F('shelf__id'),
-            category_id=F('item__category__id'),
-            manufacturer=F('item__manufacturer'),
-            expiration_date=F('item__expiration_date'),
-            note=F('item__note'),
-        )
+    grouped_items_query = assignments.values(
+        'item__name',
+        'shelf',
+        'item__category',
+        'item__manufacturer',
+        'item__expiration_date',
+        'item__note',
+        'shelf__id',
+        'item__category__id',
+    ).annotate(
+        item_name=F('item__name'),
+        count=Count('id'),
+        shelf_id=F('shelf__id'),
+        category_id=F('item__category__id'),
+        manufacturer=F('item__manufacturer'),
+        expiration_date=F('item__expiration_date'),
+        note=F('item__note'),
     )
-    
+
     # Fetch related objects in bulk to avoid N+1 queries
     shelf_ids = {item['shelf_id'] for item in grouped_items_query}
-    shelves = {shelf.id: shelf for shelf in Shelf.objects.filter(id__in=shelf_ids).select_related('rack', 'rack__room')}
-    
+    shelves = {
+        shelf.id: shelf
+        for shelf in Shelf.objects.filter(id__in=shelf_ids).select_related(
+            'rack', 'rack__room'
+        )
+    }
+
     category_ids = {item['category_id'] for item in grouped_items_query}
-    categories = {category.id: category for category in Category.objects.filter(id__in=category_ids)}
-    
+    categories = {
+        category.id: category
+        for category in Category.objects.filter(id__in=category_ids)
+    }
+
     # Convert query results to the expected format for the template
     grouped_items = []
     for group in grouped_items_query:
         # Get the related objects from our prefetched dictionaries
         shelf = shelves.get(group['shelf_id'])
         category = categories.get(group['category_id'])
-        
+
         # For each group, also fetch the actual assignment records
         group_assignments = assignments.filter(
             item__name=group['item_name'],
@@ -142,19 +148,21 @@ def item_list(request):
             item__category_id=group['category_id'],
             item__manufacturer=group['manufacturer'],
             item__expiration_date=group['expiration_date'],
-            item__note=group['note']
+            item__note=group['note'],
         )[:1]  # Limit to one assignment for display purposes
-        
-        grouped_items.append({
-            'item_name': group['item_name'],
-            'shelf': shelf,
-            'category': category,
-            'manufacturer': group['manufacturer'],
-            'expiration_date': group['expiration_date'],
-            'note': group['note'],
-            'assignments': list(group_assignments),
-            'count': group['count']
-        })
+
+        grouped_items.append(
+            {
+                'item_name': group['item_name'],
+                'shelf': shelf,
+                'category': category,
+                'manufacturer': group['manufacturer'],
+                'expiration_date': group['expiration_date'],
+                'note': group['note'],
+                'assignments': list(group_assignments),
+                'count': group['count'],
+            }
+        )
 
     # Add pagination to handle large number of items
     paginator = Paginator(grouped_items, 50)  # Show 50 items per page
@@ -208,23 +216,19 @@ def item_list(request):
 def low_stock(request):
     """View for categories with low stock (efficient version)"""
     # Find categories with <10 active items
-    categories = (
-        Category.objects.annotate(
-            active_items=Count(
-                'items__assignments',
-                filter=Q(items__assignments__remove_date__isnull=True),
-            )
+    categories = Category.objects.annotate(
+        active_items=Count(
+            'items__assignments',
+            filter=Q(items__assignments__remove_date__isnull=True),
         )
-        .filter(active_items__lt=10)
-    )
+    ).filter(active_items__lt=10)
 
     low_stock_categories = []
     for category in categories:
         # Find all shelves with at least one active item in this category
         shelf_ids = (
             ItemShelfAssignment.objects.filter(
-                item__category=category,
-                remove_date__isnull=True
+                item__category=category, remove_date__isnull=True
             )
             .values_list('shelf_id', flat=True)
             .distinct()
