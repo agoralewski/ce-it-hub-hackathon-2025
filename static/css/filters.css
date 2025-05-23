@@ -84,14 +84,6 @@
     padding-left: 35px;
 }
 
-.search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #858796;
-}
-
 @media (max-width: 768px) {
     .search-input-container {
         width: 100%;
@@ -119,4 +111,9 @@
 .clear-filters-btn:hover {
     background-color: var(--primary);
     color: #fff;
+}
+
+/* Essential Select2 sizing for mobile usability */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: calc(1.5em + 0.75rem + 2px);
 }

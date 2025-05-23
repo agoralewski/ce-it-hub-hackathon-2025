@@ -15,10 +15,7 @@
     font-style: italic;
 }
 
-.select2-results__option--invalidated {
-    color: #999 !important;
-    font-style: italic !important;
-}
+/* Removed .select2-results__option--invalidated. Use components/select2.css for Select2 customizations. */
 
 .input-group .input-group-text {
     background-color: #f8f9fa;
