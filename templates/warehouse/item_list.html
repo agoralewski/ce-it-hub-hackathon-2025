@@ -29,9 +29,11 @@
                 <!-- Advanced filters (new) -->
                 <div class="advanced-filters-container">
                     <div class="search-input-container">
-                        <input type="text" name="search" class="form-control" id="product-search" 
-                               placeholder="Szukaj"
-                               value="{{ search_query|default:'' }}">
+                        <select name="search" class="form-control" id="product-search" style="width: 100%;">
+                            {% if search_query %}
+                                <option value="{{ search_query }}" selected>{{ search_query }}</option>
+                            {% endif %}
+                        </select>
                     </div>
                     
                     <button type="button" class="filter-button" id="expired-filter" 
