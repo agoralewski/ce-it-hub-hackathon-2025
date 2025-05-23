@@ -202,11 +202,13 @@ def get_shelf_info(request):
     shelf_id = request.GET.get('shelf_id')
     try:
         shelf = Shelf.objects.select_related('rack', 'rack__room').get(pk=shelf_id)
-        return JsonResponse({
-            'rack_id': shelf.rack.id,
-            'rack_name': shelf.rack.name,
-            'room_id': shelf.rack.room.id,
-            'room_name': shelf.rack.room.name
-        })
+        return JsonResponse(
+            {
+                'rack_id': shelf.rack.id,
+                'rack_name': shelf.rack.name,
+                'room_id': shelf.rack.room.id,
+                'room_name': shelf.rack.room.name,
+            }
+        )
     except Shelf.DoesNotExist:
         return JsonResponse({'error': 'Shelf not found'}, status=404)

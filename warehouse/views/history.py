@@ -2,7 +2,6 @@
 History views for tracking item additions and removals.
 """
 
-
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q, Case, When, DateTimeField, F

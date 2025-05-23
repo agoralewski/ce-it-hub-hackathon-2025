@@ -9,9 +9,52 @@
     --info: #0dcaf0;
     --light: #f9f9f9;
     --dark: #212529;
+    --white: #fff;
+    --black: #000;
     --primary-shadow: rgba(208, 36, 44, 0.15);
     --primary-light: rgba(208, 36, 44, 0.05);
     --shadow-light: rgba(0, 0, 0, 0.075);
     --shadow-medium: rgba(0, 0, 0, 0.15);
     --primary-muted: rgba(208, 36, 44, 0.3);
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --blue: #0d6efd;
+    --danger-red: #e74a3b;
+    --select2-hover: rgba(255, 255, 255, 0.2);
+    --flat-shadow: rgba(0, 0, 0, 0.1);
+    --autocomplete-shadow: rgba(0, 0, 0, 0.175);
+    --item-shadow: rgba(0,0,0,0.04);
+    --table-hover: rgba(0, 123, 255, 0.05);
+    
+    /* Chip colors */
+    --chip-bg: #f1f3f4;
+    --chip-color: #495057;
+    --chip-border: #e3e6f0;
+    
+    --chip-category-bg: #e3f2fd;
+    --chip-category-color: #1976d2;
+    
+    --chip-manufacturer-bg: #f3e5f5;
+    --chip-manufacturer-color: #6f42c1;
+    
+    --chip-note-bg: #dbc3af;
+    --chip-note-color: #7a511a;
+    
+    --chip-expired-bg: #f8d7da;
+    --chip-expired-color: #842029;
+    
+    --chip-expiring-bg: #ffeeba;
+    --chip-expiring-color: #856404;
+    
+    --chip-valid-bg: #d1e7dd;
+    --chip-valid-color: #0f5132;
+    
+    --chip-location-bg: #e2e3e5;
+    --chip-location-color: #41464b;
 }
