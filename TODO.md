@@ -1,5 +1,4 @@
 ## Frontend
-- Mobile table view (filters hidden in filter pane, use badges/chips for item info, +- buttons) - @boccileonardo
 - English language support - @agoralewski
 - allow modification of existing items - @durczokj
 
@@ -10,6 +9,7 @@
 - excel export separate way of extracting add/remove history. Main extract should summarize current item state - @boccileonardo
 
 ## Fullstack
+- retest mobile access to the web app
 - fix reset password flow (email send) - @martazielinska
 
 ## Documentation
