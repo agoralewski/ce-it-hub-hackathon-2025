@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 # Update and restart the KSP Warehouse Management application
 # Use this script when you've pulled new changes and need to update your deployment
 
@@ -12,15 +12,29 @@ if ! command -v docker compose &> /dev/null; then
     exit 1
 fi
 
-# Function to get the network IP
+# Cross-platform check
+OS=$(uname)
+if [[ "$OS" == MINGW* || "$OS" == MSYS* || "$OS" == CYGWIN* || "$OS" == "Windows_NT" ]]; then
+    echo "[WARNING] This script is intended for Bash-compatible shells. On Windows, use WSL or Git Bash."
+fi
+
+# Function to get the network IP (cross-platform)
 get_network_ip() {
-    IP=$(ipconfig getifaddr en0)  # Try Wi-Fi first
-    if [ -z "$IP" ]; then
-        IP=$(ipconfig getifaddr en1)  # Try Ethernet
-    fi
-    if [ -z "$IP" ]; then
-        # Fallback method using route
-        IP=$(route -n get default | grep 'interface' | awk '{print $2}' | xargs ipconfig getifaddr)
+    if [ "$OS" = "Darwin" ]; then
+        IP=$(ipconfig getifaddr en0)
+        if [ -z "$IP" ]; then
+            IP=$(ipconfig getifaddr en1)
+        fi
+        if [ -z "$IP" ]; then
+            IP=$(route -n get default | grep 'interface' | awk '{print $2}' | xargs ipconfig getifaddr)
+        fi
+    elif [ "$OS" = "Linux" ]; then
+        IP=$(hostname -I | awk '{print $1}')
+        if [ -z "$IP" ]; then
+            IP=$(ip route get 1 | awk '{print $7;exit}')
+        fi
+    else
+        IP="(IP detection not supported on this OS)"
     fi
     echo $IP
 }
@@ -45,8 +59,13 @@ if [ -n "$NETWORK_IP" ]; then
         echo "This will cause QR codes to be inaccessible on mobile devices."
         echo "Would you like to update it to your network IP? (y/n)"
         read -r response
-        if [[ "$response" =~ ^[Yy]$ ]]; then
-            sed -i '' "s/NETWORK_HOST=localhost/NETWORK_HOST=$NETWORK_IP  # Updated by update.sh/g" docker compose.yaml
+        if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
+            # Use portable sed for macOS and Linux
+            if [ "$OS" = "Darwin" ]; then
+                sed -i '' "s/NETWORK_HOST=localhost/NETWORK_HOST=$NETWORK_IP  # Updated by update.sh/g" docker compose.yaml
+            else
+                sed -i "s/NETWORK_HOST=localhost/NETWORK_HOST=$NETWORK_IP  # Updated by update.sh/g" docker compose.yaml
+            fi
             echo "Updated NETWORK_HOST to $NETWORK_IP in docker compose.yaml"
         else
             echo "Continuing without updating NETWORK_HOST. QR codes may not work on other devices."
@@ -81,5 +100,3 @@ echo "  docker compose logs web    # Django application logs"
 echo "  docker compose logs nginx  # Nginx logs"
 echo "  docker compose logs db     # Database logs"
 echo ""
-echo "If QR codes show 'localhost' URLs, run:"
-echo "  ./fix_network_ip.sh"
