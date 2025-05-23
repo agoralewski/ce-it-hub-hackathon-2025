@@ -25,7 +25,7 @@
                             <select name="room" id="room" class="form-control room-select" required>
                                 <option value="">Wybierz pokój</option>
                                 {% for room in rooms %}
-                                <option value="{{ room.id }}">{{ room.name }}</option>
+                                <option value="{{ room.id }}" {% if initial_room == room.id|stringformat:'s' %}selected{% endif %}>{{ room.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -161,6 +161,74 @@
                 $('#submit-btn').prop('disabled', true);
             }
         });
+        
+        // Pre-select rack and shelf if provided, even if room is not selected
+        var initialRack = '{{ initial_rack|default:"" }}';
+        var initialShelf = '{{ initial_shelf|default:"" }}';
+        var initialRoom = '{{ initial_room|default:"" }}';
+
+        // If only rack is set, fetch its room and select both
+        if (initialRack && !initialRoom) {
+            $.ajax({
+                url: '/warehouse/api/get_rack_info/',
+                data: { rack_id: initialRack },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.room_id) {
+                        $('#room').val(data.room_id).trigger('change');
+                        // Wait for racks to load, then select rack
+                        var checkRacks = setInterval(function() {
+                            if ($('#rack option').length > 1) {
+                                $('#rack').val(initialRack).trigger('change');
+                                clearInterval(checkRacks);
+                            }
+                        }, 100);
+                    }
+                }
+            });
+        } else if (initialRoom && initialRack) {
+            // If both are set, just select as before
+            $('#room').val(initialRoom).trigger('change');
+            var checkRacks = setInterval(function() {
+                if ($('#rack option').length > 1) {
+                    $('#rack').val(initialRack).trigger('change');
+                    clearInterval(checkRacks);
+                }
+            }, 100);
+        }
+        // If only shelf is set, fetch its rack and room and select all
+        if (initialShelf && !initialRack) {
+            $.ajax({
+                url: '/warehouse/api/get_shelf_info/',
+                data: { shelf_id: initialShelf },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.room_id) {
+                        $('#room').val(data.room_id).trigger('change');
+                    }
+                    var waitForRacks = setInterval(function() {
+                        if ($('#rack option').length > 1 && data.rack_id) {
+                            $('#rack').val(data.rack_id).trigger('change');
+                            clearInterval(waitForRacks);
+                        }
+                    }, 100);
+                    var waitForShelves = setInterval(function() {
+                        if ($('#shelf option').length > 1) {
+                            $('#shelf').val(initialShelf).trigger('change');
+                            clearInterval(waitForShelves);
+                        }
+                    }, 100);
+                }
+            });
+        } else if (initialRack && initialShelf) {
+            // If both are set, just select as before
+            var checkShelves = setInterval(function() {
+                if ($('#shelf option').length > 1) {
+                    $('#shelf').val(initialShelf).trigger('change');
+                    clearInterval(checkShelves);
+                }
+            }, 100);
+        }
     });
 </script>
 {% endblock %}

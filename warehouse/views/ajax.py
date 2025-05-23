@@ -183,3 +183,30 @@ def get_shelf_items(request):
     ]
 
     return JsonResponse(items_data, safe=False)
+
+
+@login_required
+def get_rack_info(request):
+    """AJAX view to get parent room for a given rack"""
+    rack_id = request.GET.get('rack_id')
+    try:
+        rack = Rack.objects.select_related('room').get(pk=rack_id)
+        return JsonResponse({'room_id': rack.room.id, 'room_name': rack.room.name})
+    except Rack.DoesNotExist:
+        return JsonResponse({'error': 'Rack not found'}, status=404)
+
+
+@login_required
+def get_shelf_info(request):
+    """AJAX view to get parent rack and room for a given shelf"""
+    shelf_id = request.GET.get('shelf_id')
+    try:
+        shelf = Shelf.objects.select_related('rack', 'rack__room').get(pk=shelf_id)
+        return JsonResponse({
+            'rack_id': shelf.rack.id,
+            'rack_name': shelf.rack.name,
+            'room_id': shelf.rack.room.id,
+            'room_name': shelf.rack.room.name
+        })
+    except Shelf.DoesNotExist:
+        return JsonResponse({'error': 'Shelf not found'}, status=404)
