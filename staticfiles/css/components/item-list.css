@@ -23,4 +23,18 @@
     color: #6c757d;
 }
 
+/* Table scrollbar styling */
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Make sure table header stays fixed when scrolling */
+.table-responsive table thead {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+}
+
 /* This vertical alignment styling has been moved to tables.css for better centralization */

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 # Script to rebuild Docker containers and fix static files issues
 
 set -e  # Exit on any error
@@ -42,4 +42,21 @@ echo "1. Check Nginx logs: docker compose logs nginx"
 echo "2. Check Django logs: docker compose logs web"
 echo "3. Verify file permissions in the staticfiles directory"
 echo ""
-echo "You can access the application on other devices using your IP address: $(ipconfig getifaddr en0)"
+# Cross-platform check
+OS=$(uname)
+if [[ "$OS" == MINGW* || "$OS" == MSYS* || "$OS" == CYGWIN* || "$OS" == "Windows_NT" ]]; then
+    echo "[WARNING] This script is intended for Bash-compatible shells. On Windows, use WSL or Git Bash."
+fi
+
+# Use portable way to get IP address
+get_ip() {
+    if [ "$OS" = "Darwin" ]; then
+        ipconfig getifaddr en0 || ipconfig getifaddr en1
+    elif [ "$OS" = "Linux" ]; then
+        hostname -I | awk '{print $1}'
+    else
+        echo "(IP detection not supported on this OS)"
+    fi
+}
+
+echo "You can access the application on other devices using your IP address: $(get_ip)"
