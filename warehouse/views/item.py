@@ -436,7 +436,7 @@ def ajax_bulk_remove_items(request):
                 'total_processed': quantity,
                 'remaining': 0,
                 'progress': 100,
-                'next': next_url
+                'next': next_url,
             }
         )
 

@@ -1,26 +1,26 @@
 /* Item list page styles */
 .btn-add-item, .btn-remove-item {
-    border: 1px solid #adb5bd; /* grey outline */
-    background: #fff;
-    color: #212529;
+    border: 1px solid var(--gray-500); /* grey outline */
+    background: var(--white);
+    color: var(--dark);
     transition: background 0.2s, color 0.2s;
 }
 
 .btn-add-item:hover, .btn-add-item:focus {
-    background: #198754; /* Bootstrap green */
-    color: #fff;
-    border-color: #198754;
+    background: var(--success); /* Bootstrap green */
+    color: var(--white);
+    border-color: var(--success);
 }
 
 .btn-remove-item:hover, .btn-remove-item:focus {
-    background: #dc3545; /* Bootstrap red */
-    color: #fff;
-    border-color: #dc3545;
+    background: var(--danger); /* Bootstrap red */
+    color: var(--white);
+    border-color: var(--danger);
 }
 
 .pagination-info {
     margin-bottom: 15px;
-    color: #6c757d;
+    color: var(--gray-600);
 }
 
 /* Table scrollbar styling */
@@ -33,7 +33,7 @@
 .table-responsive table thead {
     position: sticky;
     top: 0;
-    background-color: white;
+    background-color: var(--white);
     z-index: 1;
 }
 

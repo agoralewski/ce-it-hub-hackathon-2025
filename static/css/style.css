@@ -107,7 +107,7 @@
 /* Dropdown menu styling */
 .dropdown-menu {
     border-radius: 0.25rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem var(--shadow-light);
     border-width: 0.5px !important;
     border-color: var(--primary-light) !important;
     padding: 0.25rem;
@@ -127,7 +127,7 @@
 .admin-footer {
     margin-top: 3rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--flat-shadow);
 }
 
 .admin-footer .card {
@@ -150,12 +150,12 @@
     border: none;
 }
 .badge.bg-summary-total {
-    background: #e9ecef;
-    color: #495057;
+    background: var(--gray-200);
+    color: var(--gray-700);
 }
 .badge-shelf-total {
-    background: #6c757d !important; /* Bootstrap secondary */
-    color: #fff !important;
+    background: var(--gray-600) !important;
+    color: var(--white) !important;
     font-size: 1.1em;
     font-weight: 600;
     padding: 0.5em 1.1em;

@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 <link rel="stylesheet" href="{% static 'css/filters.css' %}">
 <link rel="stylesheet" href="{% static 'css/components/item-list.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/item-list-mobile.css' %}"> <!-- New CSS file for mobile cards -->
 {% endblock %}
 
 {% block content %}
@@ -110,7 +111,7 @@
         <div class="pagination-info d-flex justify-content-between">
             <div>
                 {% if total_count > 0 %}
-                    Wyświetlanie {{ grouped_items|length }} z {{ total_count }} przedmiotów
+                    Wyświetlanie {{ grouped_items|length }} z {{ total_count }} pogrupowanych przedmiotów
                     {% if page_obj.paginator.num_pages > 1 %}
                         (Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }})
                     {% endif %}
@@ -123,8 +124,8 @@
             </div>
         </div>
         
-        <!-- Items table -->
-        <div class="table-responsive">
+        <!-- Items table (desktop) -->
+        <div class="table-responsive item-table-desktop">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
@@ -190,6 +191,52 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        
+        <!-- Mobile card view -->
+        <div class="item-list-mobile">
+            {% for group in grouped_items %}
+            <div class="item-mobile-card">
+                <div class="item-mobile-header">{{ group.item_name }}</div>
+                <div class="item-mobile-chips">
+                    <span class="item-chip category"><i class="fas fa-tag"></i> {{ group.category.name }}</span>
+                    {% if group.manufacturer %}
+                    <span class="item-chip manufacturer"><i class="fas fa-industry"></i> {{ group.manufacturer }}</span>
+                    {% endif %}
+                    {% if group.note %}
+                    <span class="item-chip note"><i class="fas fa-sticky-note"></i> {{ group.note }}</span>
+                    {% endif %}
+                    {% if group.expiration_date %}
+                        {% with today_date|date:"Y-m-d" as today %}
+                        {% with thirty_days_from_now|date:"Y-m-d" as soon %}
+                            {% if group.expiration_date|date:"Y-m-d" < today %}
+                                <span class="item-chip expired"><i class="fas fa-clock"></i> {{ group.expiration_date }}</span>
+                            {% elif group.expiration_date|date:"Y-m-d" <= soon %}
+                                <span class="item-chip expiring"><i class="fas fa-exclamation-triangle"></i> {{ group.expiration_date }}</span>
+                            {% else %}
+                                <span class="item-chip valid"><i class="fas fa-calendar-check"></i> {{ group.expiration_date }}</span>
+                            {% endif %}
+                        {% endwith %}
+                        {% endwith %}
+                    {% endif %}
+                    <span class="item-chip location"><i class="fas fa-map-marker-alt"></i> <a href="{% url 'warehouse:shelf_detail' group.shelf.pk %}">{{ group.shelf.full_location }}</a></span>
+                </div>
+                <div class="item-mobile-actions">
+                    <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
+                    <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-add-item">
+                        <i class="fas fa-plus"></i> Dodaj kolejny
+                    </a>
+                    <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-remove-item">
+                        <i class="fas fa-minus"></i> Wez z polki
+                    </a>
+                    <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center">Brak przedmiotów spełniających kryteria.</div>
+            {% endfor %}
         </div>
         
         <!-- Pagination Controls -->

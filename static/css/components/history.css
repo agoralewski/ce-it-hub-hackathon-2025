@@ -11,17 +11,17 @@
 
 /* Styling for invalidated options */
 .invalidated-option {
-    color: #999;
+    color: var(--gray-500);
     font-style: italic;
 }
 
 .select2-results__option--invalidated {
-    color: #999 !important;
+    color: var(--gray-500) !important;
     font-style: italic !important;
 }
 
 .input-group .input-group-text {
-    background-color: #f8f9fa;
+    background-color: var(--gray-100);
     border-right: none;
 }
 
@@ -31,8 +31,8 @@
 
 /* Flatpickr calendar adjustments */
 .flatpickr-calendar {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ced4da;
+    box-shadow: 0 0 10px var(--flat-shadow);
+    border: 1px solid var(--gray-400);
 }
 
 .flatpickr-day.selected,
@@ -53,8 +53,8 @@
 .flatpickr-day.selected.nextMonthDay,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
-    background: #0d6efd;
-    border-color: #0d6efd;
+    background: var(--blue);
+    border-color: var(--blue);
 }
 
 /* Active/Remove badge colors */

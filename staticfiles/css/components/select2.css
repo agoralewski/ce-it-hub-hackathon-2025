@@ -26,7 +26,7 @@
 
 /* Category dropdown styling */
 .category-container .select2-selection {
-    background-color: #fff;
+    background-color: var(--white);
     border: 1px solid var(--secondary);
     border-radius: 0.25rem;
     height: 38px;
@@ -34,7 +34,7 @@
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #212529;
+    color: var(--dark);
     cursor: pointer;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -71,7 +71,7 @@
 
 /* Dropdown placement */
 .category-dropdown {
-    border: 1px solid #ced4da;
+    border: 1px solid var(--gray-400);
     border-radius: 0.25rem;
     box-shadow: none;
 }
@@ -85,7 +85,7 @@
 .select2-container--bootstrap-5 .select2-results__option.select2-results__option--highlighted,
 .select2-container--bootstrap-5 .select2-results__option--selected {
     background-color: var(--primary) !important;
-    color: white !important;
+    color: var(--white) !important;
 }
 
 /* Search field styling */
@@ -99,7 +99,7 @@
 .category-container .select2-selection__choice,
 .select2-container--bootstrap-5 .select2-selection__choice {
     background-color: var(--primary) !important;
-    color: white !important;
+    color: var(--white) !important;
     border: none !important;
     border-radius: 0.2rem !important;
     padding: 0.25rem 0.5rem !important;
@@ -108,7 +108,7 @@
 
 .category-container .select2-selection__choice__remove,
 .select2-container--bootstrap-5 .select2-selection__choice__remove {
-    color: white !important;
+    color: var(--white) !important;
     margin-right: 5px !important;
     border: none !important;
     background: transparent !important;
@@ -116,8 +116,8 @@
 
 .category-container .select2-selection__choice__remove:hover,
 .select2-container--bootstrap-5 .select2-selection__choice__remove:hover {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    color: white !important;
+    background-color: var(--select2-hover) !important;
+    color: var(--white) !important;
 }
 
 /* Selected value styling */
@@ -135,7 +135,7 @@
 /* Search field override */
 .select2-container--bootstrap-5 .select2-dropdown,
 .select2-dropdown {
-    border-color: #ced4da !important;
+    border-color: var(--gray-400) !important;
     box-shadow: none !important;
 }
 
@@ -148,12 +148,12 @@
 
 /* Dropdown borders */
 .select2-results {
-    border-color: #ced4da !important;
+    border-color: var(--gray-400) !important;
 }
 
 /* Search field styling */
 .select2-search__field {
-    border-color: #ced4da !important;
+    border-color: var(--gray-400) !important;
     border-radius: 0.25rem !important;
 }
 
@@ -165,7 +165,7 @@
 
 /* Invalidated options */
 .select2-container--default .select2-results__option--invalidated {
-    color: #999 !important;
+    color: var(--gray-500) !important;
     font-style: italic;
 }
 
@@ -177,18 +177,18 @@
 
 /* Selected dropdown option styling for filters */
 .select2-container--default .select2-results__option--selected {
-    background-color: #6c757d !important; /* Dark grey */
-    color: white !important;
+    background-color: var(--gray-600) !important; /* Dark grey */
+    color: var(--white) !important;
 }
 
 /* Hover state for consistency */
 .select2-container--default .select2-results__option--highlighted[aria-selected],
 .select2-container--default .select2-results__option--highlighted[aria-selected]:hover {
-    background-color: #5a6268 !important; /* Slightly darker grey for hover */
-    color: white !important;
+    background-color: var(--gray-700) !important; /* Slightly darker grey for hover */
+    color: var(--white) !important;
 }
 
 /* Selection text color */
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #495057;
+    color: var(--gray-700);
 }

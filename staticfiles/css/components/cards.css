@@ -11,7 +11,7 @@
 .card-header {
     font-weight: 500;
     border-bottom: 2px solid var(--primary);
-    background-color: white !important;
+    background-color: var(--white) !important;
     color: var(--dark) !important;
 }
 
@@ -36,15 +36,15 @@
 
 .card-text a:hover {
     background-color: var(--primary);
-    color: white;
+    color: var(--white);
 }
 
 /* Filters card */
 .filters-card {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
     border-radius: 0.25rem;
 }
 
@@ -57,7 +57,7 @@
 
 /* Shelf header card */
 .shelf-header {
-    background-color: white !important;
+    background-color: var(--white) !important;
     color: var(--dark) !important;
 }
 
