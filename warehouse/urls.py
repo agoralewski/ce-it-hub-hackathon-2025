@@ -42,6 +42,8 @@ from warehouse.views.ajax import (
     autocomplete_items,
     autocomplete_manufacturers,
     autocomplete_users,
+    get_rack_info,
+    get_shelf_info,
 )
 from warehouse.views.account import (
     profile,
@@ -140,4 +142,7 @@ urlpatterns = [
     path('logout/', custom_logout, name='custom_logout'),
     # Low stock view
     path('low_stock/', low_stock, name='low_stock'),
+    # AJAX endpoints for getting rack and shelf info
+    path('api/get_rack_info/', get_rack_info, name='get_rack_info'),
+    path('api/get_shelf_info/', get_shelf_info, name='get_shelf_info'),
 ]

@@ -513,11 +513,21 @@ def add_new_item(request):
             url = f'{url}?next={next_url}'
         return redirect(url)
     else:
-        # Just show the room/rack/shelf selection form
+        # Pre-select room/rack/shelf if provided in GET params
+        initial_room = request.GET.get('room')
+        initial_rack = request.GET.get('rack')
+        initial_shelf = request.GET.get('shelf')
+        context = {
+            'rooms': Room.objects.all().order_by('name'),
+            'next': next_url,
+            'initial_room': initial_room,
+            'initial_rack': initial_rack,
+            'initial_shelf': initial_shelf,
+        }
         return render(
             request,
             'warehouse/add_new_item.html',
-            {'rooms': Room.objects.all().order_by('name'), 'next': next_url},
+            context,
         )
 
 
