@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 # Script to rebuild Docker containers and fix static files issues
 
 set -e  # Exit on any error
@@ -42,4 +42,4 @@ echo "1. Check Nginx logs: docker compose logs nginx"
 echo "2. Check Django logs: docker compose logs web"
 echo "3. Verify file permissions in the staticfiles directory"
 echo ""
-echo "You can access the application on other devices using your IP address: $(ipconfig getifaddr en0)"
+echo "You can access the application on other devices using your IP address: $(hostname -I | awk '{print $1}')"
