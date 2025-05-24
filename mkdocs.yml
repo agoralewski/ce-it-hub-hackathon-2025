@@ -1,0 +1,25 @@
+site_name: Warehouse Application Documentation
+site_url: http://localhost/warehouse/docs
+nav:
+  - Home: index.md
+  - User Guide:
+      - Getting Started: getting_started.md
+      - Authentication: authentication.md
+      - Inventory Management: inventory.md
+      - QR Code Features: qr_codes.md
+      - Exporting Data: export.md
+      - User Profile: user_profile.md
+      - Admin Features: admin.md
+theme:
+  name: material
+docs_dir: docs
+site_dir: staticfiles/docs
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-repo
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
