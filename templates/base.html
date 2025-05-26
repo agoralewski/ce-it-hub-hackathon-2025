@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="pl">
-
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -61,19 +62,19 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"
                             href="{% url 'warehouse:index' %}">
-                            <i class="fas fa-home"></i> Strona główna
+                            <i class="fas fa-home"></i> {% trans "Home" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'item_list' %}active{% endif %}"
                             href="{% url 'warehouse:item_list' %}" onclick="return window.navigateWithLoading(this.href, 'Przygotowywanie listy przedmiotów...', true);">
-                            <i class="fas fa-box-open"></i> Lista przedmiotów
+                            <i class="fas fa-box-open"></i> {% trans "ItemList" %}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'low_stock' %}active{% endif %}"
                             href="{% url 'warehouse:low_stock' %}">
-                            <i class="fas fa-boxes"></i> Niski Stan
+                            <i class="fas fa-boxes"></i> {% trans "Low Stock" %}
                         </a>
                     </li>
 
@@ -81,32 +82,32 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-cog"></i> Administracja
+                            <i class="fas fa-cog"></i> {% trans "Administration" %}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:room_list' %}">
-                                    <i class="fas fa-warehouse"></i> Pokoje/Regały/Półki
+                                    <i class="fas fa-warehouse"></i> {% trans "Rooms/Racks/Shelves" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:category_list' %}">
-                                    <i class="fas fa-tags"></i> Kategorie
+                                    <i class="fas fa-tags"></i> {% trans "Categories" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:history_list' %}">
-                                    <i class="fas fa-history"></i> Historia zmian
+                                    <i class="fas fa-history"></i> {% trans "Change History" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:export_inventory' %}">
-                                    <i class="fas fa-file-excel"></i> Eksport do Excela
+                                    <i class="fas fa-file-excel"></i> {% trans "Export to Excel" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:generate_qr_codes' %}">
-                                    <i class="fas fa-qrcode"></i> Generuj kody QR
+                                    <i class="fas fa-qrcode"></i> {% trans "Generate QR Codes" %}
                                 </a>
                             </li>
                             <li>
@@ -114,7 +115,7 @@
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'admin:index' %}">
-                                    <i class="fas fa-user-shield"></i> Panel administratora
+                                    <i class="fas fa-user-shield"></i> {% trans "Admin Panel" %}
                                 </a>
                             </li>
                         </ul>
@@ -122,7 +123,7 @@
                     {% endif %}
                 </ul>
 
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto">                  
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
@@ -132,12 +133,12 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:profile' %}">
-                                    <i class="fas fa-id-card"></i> Profil
+                                    <i class="fas fa-id-card"></i> {% trans "Profile" %}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:change_password' %}">
-                                    <i class="fas fa-key"></i> Zmień hasło
+                                    <i class="fas fa-key"></i> {% trans "Change Password" %}
                                 </a>
                             </li>
                             <li>
@@ -145,7 +146,7 @@
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'warehouse:custom_logout' %}">
-                                    <i class="fas fa-sign-out-alt"></i> Wyloguj się
+                                    <i class="fas fa-sign-out-alt"></i> {% trans "Log Out" %}
                                 </a>
                             </li>
                         </ul>
@@ -153,10 +154,30 @@
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">
-                            <i class="fas fa-sign-in-alt"></i> Zaloguj się
+                            <i class="fas fa-sign-in-alt"></i> {% trans "Log In" %}
                         </a>
                     </li>
                     {% endif %}
+
+                    <!-- Language Selector -->
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'set_language' %}" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ redirect_to }}">
+
+                            <select id="language-select" name="language" class="form-select form-select-sm me-2">
+                                {% get_current_language as LANGUAGE_CODE %}
+                                {% get_available_languages as LANGUAGES %}
+                                {% get_language_info_list for LANGUAGES as languages %}
+                                {% for language in languages %}
+                                    <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                                        {{ language.name_local }} ({{ language.code }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <input type="submit" value="Go">
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>
