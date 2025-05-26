@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Niski stan magazynowy - KSP{% endblock %}
+{% block title %}{% trans "Niski stan magazynowy - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Kategorie z niskim stanem magazynowym</h5>
+        <h5 class="mb-0">{% trans "Kategorie z niskim stanem magazynowym" %}</h5>
     </div>
     <div class="card-body">
         {% if low_stock_categories %}
@@ -27,7 +27,7 @@
             {% endfor %}
         </div>
         {% else %}
-        <p class="text-muted">Brak kategorii z niskim stanem magazynowym.</p>
+        <p class="text-muted">{% trans "Brak kategorii z niskim stanem magazynowym." %}</p>
         {% endif %}
     </div>
 </div>

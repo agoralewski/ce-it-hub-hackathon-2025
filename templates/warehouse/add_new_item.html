@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 
-{% block title %}Wybierz lokalizację przedmiotu - KSP{% endblock %}
+{% block title %}{% trans "Wybierz lokalizację przedmiotu - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Wybierz lokalizację przedmiotu</h5>
+                <h5 class="mb-0">{% trans "Wybierz lokalizację przedmiotu" %}</h5>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -18,12 +18,12 @@
                     {% endif %}
                     
                     <div class="form-section">
-                        <p class="text-muted mb-4">Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:</p>
+                        <p class="text-muted mb-4">{% trans "Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:" %}</p>
                         
                         <div class="form-group">
-                            <label for="room" class="form-label">Pokój</label>
+                            <label for="room" class="form-label">{% trans "Pokój" %}</label>
                             <select name="room" id="room" class="form-control room-select" required>
-                                <option value="">Wybierz pokój</option>
+                                <option value="">{% trans "Wybierz pokój" %}</option>
                                 {% for room in rooms %}
                                 <option value="{{ room.id }}" {% if initial_room == room.id|stringformat:'s' %}selected{% endif %}>{{ room.name }}</option>
                                 {% endfor %}
@@ -31,16 +31,16 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="rack" class="form-label">Regał</label>
+                            <label for="rack" class="form-label">{% trans "Regał" %}</label>
                             <select name="rack" id="rack" class="form-control rack-select" required disabled>
-                                <option value="">Wybierz najpierw pokój</option>
+                                <option value="">{% trans "Wybierz najpierw pokój" %}</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="shelf" class="form-label">Półka</label>
+                            <label for="shelf" class="form-label">{% trans "Półka" %}</label>
                             <select name="shelf" id="shelf" class="form-control shelf-select" required disabled>
-                                <option value="">Wybierz najpierw regał</option>
+                                <option value="">{% trans "Wybierz najpierw regał" %}</option>
                             </select>
                         </div>
                     </div>
@@ -48,15 +48,15 @@
                     <div class="mt-4 d-flex justify-content-between">
                         {% if next %}
                         <a href="{{ next }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
                         </a>
                         {% else %}
                         <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
                         </a>
                         {% endif %}
                         <button type="submit" class="btn btn-success" id="submit-btn" disabled>
-                            <i class="fas fa-arrow-right"></i> Dalej
+                            <i class="fas fa-arrow-right"></i> {% trans "Dalej" %}
                         </button>
                     </div>
                 </form>

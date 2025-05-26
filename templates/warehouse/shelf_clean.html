@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Wyczyść półkę - KSP{% endblock %}
+{% block title %}{% trans %}Wyczyść półkę{% endtrans %} - KSP{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">Wyczyść półkę</h5>
+                <h5 class="mb-0">{% trans %}Wyczyść półkę{% endtrans %}</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Czy na pewno chcesz wyczyścić półkę "{{ shelf.full_location }}"?</h5>
+                <h5 class="card-title">{% trans %}Czy na pewno chcesz wyczyścić półkę{% endtrans %} "{{ shelf.full_location }}"?</h5>
                 
                 {% if has_items %}
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Uwaga!</strong> Ta półka zawiera {{ items_count }} przedmiotów. Wszystkie one zostaną przeniesione do lokalizacji "Unassigned.A.1".
+                    <strong>{% trans %}Uwaga!{% endtrans %}</strong> {% trans %}Ta półka zawiera{% endtrans %} {{ items_count }} {% trans %}przedmiotów. Wszystkie one zostaną przeniesione do lokalizacji{% endtrans %} "Unassigned.A.1".
                 </div>
                 {% else %}
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Na tej półce nie ma żadnych przedmiotów do przeniesienia.
+                    {% trans %}Na tej półce nie ma żadnych przedmiotów do przeniesienia.{% endtrans %}
                 </div>
                 {% endif %}
                 
@@ -28,10 +28,10 @@
                     {% csrf_token %}
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Anuluj
+                            <i class="fas fa-arrow-left"></i> {% trans %}Anuluj{% endtrans %}
                         </a>
                         <button type="submit" name="confirm" class="btn btn-danger" {% if not has_items %}disabled{% endif %}>
-                            <i class="fas fa-broom"></i> Wyczyść półkę
+                            <i class="fas fa-broom"></i> {% trans %}Wyczyść półkę{% endtrans %}
                         </button>
                     </div>
                 </form>

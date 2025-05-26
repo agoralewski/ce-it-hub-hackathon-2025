@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Przedmioty - KSP{% endblock %}
+{% block title %}{% trans "Przedmioty - KSP" %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
@@ -13,9 +13,9 @@
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Przedmioty w magazynie</h5>
+        <h5 class="mb-0">{% trans "Przedmioty w magazynie" %}</h5>
         <a href="{% url 'warehouse:add_new_item' %}?next={{ request.get_full_path|urlencode }}{% if selected_room %}&room={{ selected_room }}{% endif %}{% if selected_rack %}&rack={{ selected_rack }}{% endif %}{% if selected_shelf %}&shelf={{ selected_shelf }}{% endif %}" class="btn btn-light btn-sm">
-            <i class="fas fa-plus-circle"></i> Dodaj przedmiot
+            <i class="fas fa-plus-circle"></i> {% trans "Dodaj przedmiot" %}
         </a>
     </div>
     <div class="card-body">
@@ -40,19 +40,19 @@
                     <button type="button" class="filter-button" id="expired-filter" 
                             data-filter="expired" 
                             {% if 'expired' in filter_values %}aria-pressed="true"{% endif %}>
-                        <i class="fas fa-clock"></i> Przeterminowane
+                        <i class="fas fa-clock"></i> {% trans "Przeterminowane" %}
                     </button>
                     
                     <button type="button" class="filter-button" id="expiring-filter" 
                             data-filter="expiring_soon"
                             {% if 'expiring_soon' in filter_values %}aria-pressed="true"{% endif %}>
-                        <i class="fas fa-exclamation-triangle"></i> Wkrótce przeterminowane
+                        <i class="fas fa-exclamation-triangle"></i> {% trans "Wkrótce przeterminowane" %}
                     </button>
                     
                     <button type="button" class="filter-button" id="has-note-filter" 
                             data-filter="has_note"
                             {% if has_note %}aria-pressed="true"{% endif %}>
-                        <i class="fas fa-sticky-note"></i> Z notatką
+                        <i class="fas fa-sticky-note"></i> {% trans "Z notatką" %}
                     </button>
                     
                     <!-- Hidden inputs to store filter values -->
@@ -60,22 +60,22 @@
                     <input type="hidden" id="expiring-input" name="filter" value="expiring_soon" disabled>
                     <input type="hidden" id="has-note-input" name="has_note" value="1" disabled>
                     
-                    <button type="button" class="clear-filters-btn" title="Wyczyść filtry" id="clear-filters">
-                        <i class="fas fa-times"></i> Wyczyść filtry
+                    <button type="button" class="clear-filters-btn" title="{% trans 'Wyczyść filtry' %}" id="clear-filters">
+                        <i class="fas fa-times"></i> {% trans "Wyczyść filtry" %}
                     </button>
                 </div>
                 
                 <!-- Dropdown filters (existing) -->
                 <div class="dropdown-filters-container">
-                    <select name="room" class="form-select" data-placeholder="Pokój" id="room-select">
-                        <option value="">Pokój</option>
+                    <select name="room" class="form-select" data-placeholder="{% trans 'Pokój' %}" id="room-select">
+                        <option value="">{% trans 'Pokój' %}</option>
                         {% for room in rooms %}
                         <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
                         {% endfor %}
                     </select>
                     
-                    <select name="rack" class="form-select" data-placeholder="Regał" id="rack-select">
-                        <option value="">Regał</option>
+                    <select name="rack" class="form-select" data-placeholder="{% trans 'Regał' %}" id="rack-select">
+                        <option value="">{% trans 'Regał' %}</option>
                         {% for rack in racks %}
                         <option value="{{ rack.id }}" 
                                 data-room="{{ rack.room.id }}"
@@ -85,8 +85,8 @@
                         {% endfor %}
                     </select>
                     
-                    <select name="shelf" class="form-select" data-placeholder="Półka" id="shelf-select">
-                        <option value="">Półka</option>
+                    <select name="shelf" class="form-select" data-placeholder="{% trans 'Półka' %}" id="shelf-select">
+                        <option value="">{% trans 'Półka' %}</option>
                         {% for shelf in shelves %}
                         <option value="{{ shelf.id }}" 
                                 data-rack="{{ shelf.rack.id }}"
@@ -97,8 +97,8 @@
                         {% endfor %}
                     </select>
                     
-                    <select name="category" class="form-select" data-placeholder="Kategoria" id="category-select">
-                        <option value="">Kategoria</option>
+                    <select name="category" class="form-select" data-placeholder="{% trans 'Kategoria' %}" id="category-select">
+                        <option value="">{% trans 'Kategoria' %}</option>
                         {% for category in categories %}
                         <option value="{{ category.id }}" {% if selected_category == category.id|slugify %}selected{% endif %}>{{ category.name }}</option>
                         {% endfor %}
@@ -129,13 +129,13 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Nazwa</th>
-                        <th>Kategoria</th>
-                        <th>Producent</th>
-                        <th>Notatka</th>
-                        <th>Data ważności</th>
-                        <th>Lokalizacja</th>
-                        <th>Czynności</th>
+                        <th>{% trans "Nazwa" %}</th>
+                        <th>{% trans "Kategoria" %}</th>
+                        <th>{% trans "Producent" %}</th>
+                        <th>{% trans "Notatka" %}</th>
+                        <th>{% trans "Data ważności" %}</th>
+                        <th>{% trans "Lokalizacja" %}</th>
+                        <th>{% trans "Czynności" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -171,22 +171,22 @@
                             <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
                             <div class="mb-2">
                                 <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-add-item me-1">
-                                    <i class="fas fa-plus"></i> Dodaj kolejny
+                                    <i class="fas fa-plus"></i> {% trans "Dodaj kolejny" %}
                                 </a>
                                 <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-remove-item">
-                                    <i class="fas fa-minus"></i> Wez z polki
+                                    <i class="fas fa-minus"></i> {% trans "Wez z polki" %}
                                 </a>
                             </div>
                             <div>
                                 <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
+                                    <i class="fas fa-exchange-alt"></i> {% trans "Przenieś przedmioty" %}
                                 </a>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">Brak przedmiotów spełniających kryteria.</td>
+                        <td colspan="7" class="text-center">{% trans "Brak przedmiotów spełniających kryteria." %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -224,18 +224,18 @@
                 <div class="item-mobile-actions">
                     <span class="badge bg-secondary mb-2">Liczba: {{ group.count }}</span>
                     <a href="{% url 'warehouse:add_item_to_shelf' group.shelf.pk %}?item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&notes={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-add-item">
-                        <i class="fas fa-plus"></i> Dodaj kolejny
+                        <i class="fas fa-plus"></i> {% trans "Dodaj kolejny" %}
                     </a>
                     <a href="{% url 'warehouse:remove_item_from_shelf' group.assignments.0.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-remove-item">
-                        <i class="fas fa-minus"></i> Wez z polki
+                        <i class="fas fa-minus"></i> {% trans "Wez z polki" %}
                     </a>
                     <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
+                        <i class="fas fa-exchange-alt"></i> {% trans "Przenieś przedmioty" %}
                     </a>
                 </div>
             </div>
             {% empty %}
-            <div class="text-center">Brak przedmiotów spełniających kryteria.</div>
+            <div class="text-center">{% trans "Brak przedmiotów spełniających kryteria." %}</div>
             {% endfor %}
         </div>
         
@@ -245,17 +245,17 @@
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1">&laquo; First</a>
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1">&laquo; {% trans "First" %}</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">&laquo; First</a>
+                        <a class="page-link" href="#" tabindex="-1">&laquo; {% trans "First" %}</a>
                     </li>
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        <a class="page-link" href="#" tabindex="-1">{% trans "Previous" %}</a>
                     </li>
                 {% endif %}
                 

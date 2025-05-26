@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Eksport inwentarza - KSP{% endblock %}
+{% block title %}{% trans "Eksport inwentarza - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Eksport inwentarza do Excela</h5>
+        <h5 class="mb-0">{% trans "Eksport inwentarza do Excela" %}</h5>
     </div>
     <div class="card-body">
         <!-- Add a message container for the download success message -->
         <div id="download-message" class="alert alert-success" style="display: none;">
-            <i class="fas fa-check-circle"></i> Inwentarz został pomyślnie wyeksportowany.
+            <i class="fas fa-check-circle"></i> {% trans "Inwentarz został pomyślnie wyeksportowany." %}
         </div>
         
         <form method="post" id="export-form">
@@ -20,17 +20,17 @@
                 <div class="col-md-4 mb-3">
                     <label for="{{ form.room.id_for_label }}" class="form-label">{{ form.room.label }}</label>
                     {{ form.room }}
-                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranego pokoju.</small>
+                    <small class="form-text text-muted">{% trans "Wybierz, aby eksportować tylko zawartość wybranego pokoju." %}</small>
                 </div>
                 <div class="col-md-4 mb-3">
                     <label for="{{ form.rack.id_for_label }}" class="form-label">{{ form.rack.label }}</label>
                     {{ form.rack }}
-                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranego regału.</small>
+                    <small class="form-text text-muted">{% trans "Wybierz, aby eksportować tylko zawartość wybranego regału." %}</small>
                 </div>
                 <div class="col-md-4 mb-3">
                     <label for="{{ form.shelf.id_for_label }}" class="form-label">{{ form.shelf.label }}</label>
                     {{ form.shelf }}
-                    <small class="form-text text-muted">Wybierz, aby eksportować tylko zawartość wybranej półki.</small>
+                    <small class="form-text text-muted">{% trans "Wybierz, aby eksportować tylko zawartość wybranej półki." %}</small>
                 </div>
             </div>
             
@@ -38,32 +38,16 @@
                 <div class="col-md-6">
                     <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
                     {{ form.category }}
-                    <small class="form-text text-muted">Wybierz, aby eksportować tylko przedmioty z wybranej kategorii.</small>
+                    <small class="form-text text-muted">{% trans "Wybierz, aby eksportować tylko przedmioty z wybranej kategorii." %}</small>
                 </div>
             </div>
             
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="form-check">
-                        {{ form.include_expired }}
-                        <label class="form-check-label" for="{{ form.include_expired.id_for_label }}">
-                            {{ form.include_expired.label }}
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-check">
-                        {{ form.include_removed }}
-                        <label class="form-check-label" for="{{ form.include_removed.id_for_label }}">
-                            {{ form.include_removed.label }}
-                        </label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'warehouse:index' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
+                </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-file-excel"></i> Eksportuj do Excela
+                    <i class="fas fa-download"></i> {% trans "Eksportuj" %}
                 </button>
             </div>
         </form>

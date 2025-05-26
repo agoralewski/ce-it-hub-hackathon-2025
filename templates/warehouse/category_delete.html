@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Usuń kategorię - KSP{% endblock %}
+{% block title %}{% trans "Usuń kategorię - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">Usuń kategorię</h5>
+                <h5 class="mb-0">{% trans "Usuń kategorię" %}</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Czy na pewno chcesz usunąć kategorię "{{ category.name }}"?</h5>
+                <h5 class="card-title">{% trans "Czy na pewno chcesz usunąć kategorię" %} "{{ category.name }}"?</h5>
                 
                 {% if has_items %}
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Uwaga!</strong> Ta kategoria zawiera przedmioty. Nie można usunąć kategorii, która jest używana przez przedmioty.
+                    <strong>{% trans "Uwaga!" %}</strong> {% trans "Ta kategoria zawiera przedmioty. Nie można usunąć kategorii, która jest używana przez przedmioty." %}
                 </div>
                 {% endif %}
                 
@@ -23,10 +23,10 @@
                     {% csrf_token %}
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'warehouse:category_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Anuluj
+                            <i class="fas fa-arrow-left"></i> {% trans "Anuluj" %}
                         </a>
                         <button type="submit" name="confirm" class="btn btn-danger" {% if has_items %}disabled{% endif %}>
-                            <i class="fas fa-trash"></i> Usuń
+                            <i class="fas fa-trash"></i> {% trans "Usuń" %}
                         </button>
                     </div>
                 </form>

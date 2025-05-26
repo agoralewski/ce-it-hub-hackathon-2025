@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Generowanie kodów QR - KSP{% endblock %}
+{% block title %}{% trans "Generowanie kodów QR - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Generowanie kodów QR dla półek</h5>
+        <h5 class="mb-0">{% trans "Generowanie kodów QR dla półek" %}</h5>
     </div>
     <div class="card-body">
         <div class="alert alert-secondary alert-dismissible fade show" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <i class="fas fa-info-circle"></i>
-            Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać linki do stron z detalami półek.
+            {% trans "Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać linki do stron z detalami półek." %}
         </div>
 
         <form method="post">
@@ -24,12 +24,12 @@
                             <th>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="selectAll">
-                                    <label class="form-check-label" for="selectAll">Zaznacz wszystkie</label>
+                                    <label class="form-check-label" for="selectAll">{% trans "Zaznacz wszystkie" %}</label>
                                 </div>
                             </th>
-                            <th>Lokalizacja</th>
-                            <th>Numer półki</th>
-                            <th>Pokój</th>
+                            <th>{% trans "Lokalizacja" %}</th>
+                            <th>{% trans "Numer półki" %}</th>
+                            <th>{% trans "Pokój" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,7 +53,7 @@
 
             <div class="d-flex justify-content-center mt-4">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-qrcode"></i> Generuj kody QR
+                    <i class="fas fa-qrcode"></i> {% trans "Generuj kody QR" %}
                 </button>
             </div>
         </form>
