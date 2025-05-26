@@ -1,19 +1,20 @@
 """
 Export and QR code generation views.
 """
+
 import io
 import xlsxwriter
 from datetime import timedelta
 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Count, F
 
-from warehouse.models import Room, Rack, Shelf, Category, Item, ItemShelfAssignment
+from warehouse.models import Room, Rack, Shelf, Category, ItemShelfAssignment
 from warehouse.forms import ExportForm
 from warehouse.views.utils import is_admin
 
@@ -92,9 +93,9 @@ def generate_qr_codes(request):
 
                 # Create the URL for the shelf detail page with the network IP
                 from warehouse.views.utils import build_network_absolute_uri
+
                 shelf_url = build_network_absolute_uri(
-                    request, 
-                    reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
+                    request, reverse('warehouse:shelf_detail', kwargs={'pk': shelf.pk})
                 )
 
                 qr.add_data(shelf_url)
@@ -189,7 +190,7 @@ def export_inventory(request):
             if category_id:
                 query &= Q(item__category_id=category_id)
 
-            # Handle expiration filter
+            # Handle expiration filter - only filter out expired items if include_expired is False
             if not include_expired:
                 query &= Q(item__expiration_date__isnull=True) | Q(
                     item__expiration_date__gt=timezone.now().date()
@@ -219,37 +220,42 @@ def export_inventory(request):
                 }
             )
 
-            date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
-            datetime_format = workbook.add_format({'num_format': 'yyyy-mm-dd hh:mm:ss'})
-            expired_format = workbook.add_format({'bg_color': '#ffcccb', 'border': 1})
-            removed_format = workbook.add_format(
-                {'color': '#888888', 'italic': True, 'border': 1}
-            )
+            # Base formats
             cell_format = workbook.add_format({'border': 1})
+            date_format = workbook.add_format({'border': 1, 'num_format': 'yyyy-mm-dd'})
+            datetime_format = workbook.add_format({'border': 1, 'num_format': 'yyyy-mm-dd hh:mm:ss'})
+            
+            # Special condition formats with corresponding date formats
+            expired_format = workbook.add_format({'bg_color': '#ff0000', 'border': 1})  # Red
+            expired_date_format = workbook.add_format({'bg_color': '#ff0000', 'border': 1, 'num_format': 'yyyy-mm-dd'})
+            
+            nearly_expired_format = workbook.add_format({'bg_color': '#FFA500', 'border': 1})  # Orange
+            nearly_expired_date_format = workbook.add_format({'bg_color': '#FFA500', 'border': 1, 'num_format': 'yyyy-mm-dd'})
+            
+            removed_format = workbook.add_format({'color': '#888888', 'italic': True, 'border': 1})
+            removed_date_format = workbook.add_format({'color': '#888888', 'italic': True, 'border': 1, 'num_format': 'yyyy-mm-dd'})
 
             # Create main inventory worksheet
             worksheet = workbook.add_worksheet('Inwentarz')
             worksheet.set_column('A:A', 25)  # Nazwa przedmiotu
             worksheet.set_column('B:B', 15)  # Kategoria
             worksheet.set_column('C:C', 15)  # Producent
-            worksheet.set_column('D:D', 12)  # Data ważności
-            worksheet.set_column('E:E', 20)  # Lokalizacja
-            worksheet.set_column('F:G', 15)  # Dodany/Usunięty przez
-            worksheet.set_column('H:I', 18)  # Data dodania/usunięcia
-            worksheet.set_column('J:J', 25)  # Notatki
+            worksheet.set_column('D:D', 25)  # Notatka
+            worksheet.set_column('E:E', 12)  # Data ważności
+            worksheet.set_column('F:F', 20)  # Lokalizacja
+            worksheet.set_column('G:G', 8)   # Liczba
+            worksheet.set_column('H:H', 12)  # Data usunięcia
 
             # Add header with Polish names
             headers = [
                 'Nazwa przedmiotu',
                 'Kategoria',
                 'Producent',
-                'Data ważności',
+                'Notatka',
+                'Data Waznosci',
                 'Lokalizacja',
-                'Dodany przez',
-                'Data dodania',
-                'Usunięty przez',
-                'Data usunięcia',
-                'Notatki',
+                'Liczba',
+                'Data Usuniecia',
             ]
 
             for col, header in enumerate(headers):
@@ -258,54 +264,112 @@ def export_inventory(request):
             # Add data
             today = timezone.now().date()
 
-            for row, assignment in enumerate(assignments, start=1):
-                item = assignment.item
+            # Group assignments by item name, shelf, category, and other properties
+            # Similar to item_list view to maintain the same level of aggregation
+            from django.db.models import Count, F
+            
+            # Group items for the export
+            grouped_items_query = assignments.values(
+                'item__name',
+                'shelf',
+                'item__category',
+                'item__manufacturer',
+                'item__expiration_date',
+                'item__note',
+                'shelf__id',
+                'item__category__id',
+                'remove_date',  # Include removal date for removed items
+            ).annotate(
+                item_name=F('item__name'),
+                count=Count('id'),
+                shelf_id=F('shelf__id'),
+                category_id=F('item__category__id'),
+                manufacturer=F('item__manufacturer'),
+                expiration_date=F('item__expiration_date'),
+                note=F('item__note'),
+                is_removed=F('remove_date'),
+            ).order_by('item__name', 'shelf__id')
+            
+            # Fetch related objects in bulk
+            shelf_ids = {item['shelf_id'] for item in grouped_items_query}
+            shelves = {
+                shelf.id: shelf
+                for shelf in Shelf.objects.filter(id__in=shelf_ids).select_related(
+                    'rack', 'rack__room'
+                )
+            }
 
-                # Determine if this item is expired
-                is_expired = item.expiration_date and item.expiration_date < today
-                is_removed = assignment.remove_date is not None
-
+            category_ids = {item['category_id'] for item in grouped_items_query}
+            categories = {
+                category.id: category
+                for category in Category.objects.filter(id__in=category_ids)
+            }
+            
+            # Using the nearly_expired_format already defined above
+            
+            row = 1  # Start from row 1 (after header)
+            
+            for group in grouped_items_query:
+                shelf = shelves.get(group['shelf_id'])
+                category = categories.get(group['category_id'])
+                
+                # Get first assignment for this group to determine removal info
+                example_assignment = assignments.filter(
+                    item__name=group['item_name'],
+                    shelf_id=group['shelf_id'],
+                    item__category_id=group['category_id'],
+                    item__manufacturer=group['manufacturer'],
+                    item__expiration_date=group['expiration_date'],
+                    item__note=group['note'],
+                ).first()
+                
+                # Determine if this item is expired, nearly expired, or removed
+                is_expired = group['expiration_date'] and group['expiration_date'] < today
+                is_nearly_expired = (group['expiration_date'] and 
+                                     today <= group['expiration_date'] <= today + timedelta(days=30))
+                is_removed = example_assignment.remove_date is not None if example_assignment else False
+                
                 # Use appropriate format based on item status
                 current_format = cell_format
                 if is_expired:
                     current_format = expired_format
+                elif is_nearly_expired:
+                    current_format = nearly_expired_format
                 elif is_removed:
                     current_format = removed_format
-
+                
                 # Write the row data with appropriate formatting
-                worksheet.write(row, 0, item.name, current_format)
-                worksheet.write(row, 1, item.category.name, current_format)
-                worksheet.write(row, 2, item.manufacturer or '', current_format)
-
-                if item.expiration_date:
-                    worksheet.write_datetime(row, 3, item.expiration_date, date_format)
+                worksheet.write(row, 0, group['item_name'], current_format)  # Name
+                worksheet.write(row, 1, category.name, current_format)       # Category
+                worksheet.write(row, 2, group['manufacturer'] or '', current_format)  # Manufacturer
+                worksheet.write(row, 3, group['note'] or '', current_format)  # Note
+                
+                # Expiration date - use the appropriate date format based on item status
+                if group['expiration_date']:
+                    if is_expired:
+                        worksheet.write_datetime(row, 4, group['expiration_date'], expired_date_format)
+                    elif is_nearly_expired:
+                        worksheet.write_datetime(row, 4, group['expiration_date'], nearly_expired_date_format)
+                    elif is_removed:
+                        worksheet.write_datetime(row, 4, group['expiration_date'], removed_date_format)
+                    else:
+                        worksheet.write_datetime(row, 4, group['expiration_date'], date_format)
                 else:
-                    worksheet.write(row, 3, '', current_format)
-
-                worksheet.write(row, 4, assignment.shelf.full_location, current_format)
-                worksheet.write(
-                    row,
-                    5,
-                    assignment.added_by.username if assignment.added_by else 'System',
-                    current_format,
-                )
-                worksheet.write_datetime(row, 6, assignment.add_date, datetime_format)
-
-                if assignment.removed_by:
-                    worksheet.write(
-                        row, 7, assignment.removed_by.username, current_format
-                    )
+                    worksheet.write(row, 4, '', current_format)
+                
+                # Location
+                worksheet.write(row, 5, shelf.full_location, current_format)
+                
+                # Count (quantity)
+                worksheet.write(row, 6, group['count'], current_format)
+                
+                # Removal date (only for removed items)
+                if is_removed and example_assignment and example_assignment.remove_date:
+                    worksheet.write_datetime(row, 7, example_assignment.remove_date, removed_date_format)
                 else:
                     worksheet.write(row, 7, '', current_format)
-
-                if assignment.remove_date:
-                    worksheet.write_datetime(
-                        row, 8, assignment.remove_date, datetime_format
-                    )
-                else:
-                    worksheet.write(row, 8, '', current_format)
-
-                worksheet.write(row, 9, item.note or '', current_format)
+                
+                row += 1
 
             # Create summary worksheet
             summary_sheet = workbook.add_worksheet('Podsumowanie')

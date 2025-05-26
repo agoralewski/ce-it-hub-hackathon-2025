@@ -1,6 +1,7 @@
 """
 User account and authentication views.
 """
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash, logout
@@ -8,13 +9,30 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
-from warehouse.forms import CustomUserCreationForm
+from warehouse.forms import CustomUserCreationForm, UserProfileForm
 
 
 @login_required
 def profile(request):
     """User profile view"""
     return render(request, 'warehouse/profile.html')
+
+
+@login_required
+def edit_profile(request):
+    """Edit user profile view"""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Twój profil został pomyślnie zaktualizowany!')
+            return redirect('warehouse:profile')
+        else:
+            messages.error(request, 'Proszę poprawić błędy w formularzu.')
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    return render(request, 'warehouse/edit_profile.html', {'form': form})
 
 
 @login_required

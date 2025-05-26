@@ -3,10 +3,10 @@
 {% block title %}Szczegóły półki - KSP{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row shelf-summary-row">
     <!-- Shelf Information Header Card -->
-    <div class="col-12 mb-4">
-        <div class="card shadow border-0 shelf-header">
+    <div class="col-12 col-lg-4 mb-4 shelf-summary-col">
+        <div class="card shadow border-0 shelf-header h-100">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div class="d-flex align-items-center">
@@ -22,170 +22,29 @@
                             </p>
                         </div>
                     </div>
-                    <div class="mt-2 mt-md-0">
-                        <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}" class="btn btn-primary add-item-btn">
-                            <i class="fas fa-plus"></i> Dodaj przedmiot
+                </div>
+                <div class="mt-4">
+                    <div class="d-grid gap-2">
+                        <div class="btn-group">
+                            <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary add-item-btn">
+                                <i class="fas fa-plus"></i> Dodaj przedmiot
+                            </a>
+                            <a href="{% url 'warehouse:shelf_clean' shelf.pk %}" class="btn btn-outline-warning">
+                                <i class="fas fa-broom"></i> Wyczyść półkę
+                            </a>
+                        </div>
+                        <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list"></i> Zobacz przedmioty
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <!-- Main content - Items on Shelf -->
-    <div class="col-md-8 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Przedmioty na półce</h5>
-                <!-- Item counter badge -->
-                {% if total_count > 0 %}
-                <span class="badge bg-primary rounded-pill">
-                    {{ total_count }} przedmiotów
-                </span>
-                {% endif %}
-            </div>
-            <div class="card-body">
-                {% if assignments %}
-                <!-- Pagination Info -->
-                {% if page_obj.paginator.num_pages > 1 %}
-                <div class="pagination-info mb-3 text-muted">
-                    Pokazuję {{ assignments|length }} z {{ total_count }} przedmiotów
-                    (Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }})
-                </div>
-                {% endif %}
-                
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Nazwa</th>
-                                <th>Kategoria</th>
-                                <th>Producent</th>
-                                <th>Data ważności</th>
-                                <th>Czynności</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for assignment in assignments %}
-                            <tr>
-                                <td class="align-middle">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-2">
-                                            {% if assignment.item.category and assignment.item.category.name == "Elektronika" %}
-                                            <i class="fas fa-laptop text-info"></i>
-                                            {% elif assignment.item.category and assignment.item.category.name == "Żywność" %}
-                                            <i class="fas fa-utensils text-success"></i>
-                                            {% elif assignment.item.category and assignment.item.category.name == "Meble" %}
-                                            <i class="fas fa-chair text-warning"></i>
-                                            {% else %}
-                                            <i class="fas fa-box text-secondary"></i>
-                                            {% endif %}
-                                        </div>
-                                        <strong>{{ assignment.item.name }}</strong>
-                                    </div>
-                                </td>
-                                <td class="align-middle">
-                                    <span class="badge bg-light text-dark rounded-pill">{{ assignment.item.category.name|default:"Brak kategorii" }}</span>
-                                </td>
-                                <td class="align-middle">{{ assignment.item.manufacturer|default:"-" }}</td>
-                                <td class="align-middle">
-                                    {% if assignment.item.expiration_date %}
-                                    {% if assignment.item.expiration_date <= today_date %}
-                                        <span class="badge bg-danger">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
-                                    {% elif assignment.item.expiration_date <= thirty_days_from_now %}
-                                        <span class="badge bg-warning">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
-                                    {% else %}
-                                        <span class="badge bg-success">{{ assignment.item.expiration_date|date:"j F Y" }}</span>
-                                    {% endif %}
-                                    {% else %}
-                                    <span class="text-muted">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="align-middle">
-                                    <a href="{% url 'warehouse:remove_item_from_shelf' assignment.pk %}"
-                                        class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-minus"></i> Weź z półki
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination Controls -->
-                {% if page_obj.paginator.num_pages > 1 %}
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1">&laquo; First</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">&laquo; First</a>
-                            </li>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Previous</a>
-                            </li>
-                        {% endif %}
-                        
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li class="page-item active">
-                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                </li>
-                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Next</a>
-                            </li>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">Last &raquo;</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                {% endif %}
-                
-                {% else %}
-                <div class="text-center py-5">
-                    <div class="empty-shelf-icon mb-3">
-                        <i class="fas fa-box-open fa-4x text-muted"></i>
-                    </div>
-                    <h5 class="text-muted">Brak przedmiotów na tej półce.</h5>
-                    <p class="mb-4">Kliknij "Dodaj przedmiot", aby umieścić coś na tej półce.</p>
-                    <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Dodaj przedmiot
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Sidebar - Shelf details and QR code -->
-    <div class="col-md-4 mb-4">
-        <!-- Location Information Card -->
-        <div class="card shadow mb-4">
+    <!-- Shelf Summary Card -->
+    <div class="col-12 col-lg-4 mb-4 shelf-summary-col">
+        <div class="card shadow mb-4 h-100">
             <div class="card-header bg-white border-bottom border-primary">
                 <h5 class="mb-0">
                     <i class="fas fa-info-circle me-2"></i> Informacje o półce
@@ -202,7 +61,6 @@
                             <div class="fw-bold">{{ shelf.rack.room.name }}</div>
                         </div>
                     </div>
-
                     <div class="d-flex mb-3">
                         <div class="shelf-detail-icon me-3">
                             <i class="fas fa-grip-vertical text-primary"></i>
@@ -212,8 +70,7 @@
                             <div class="fw-bold">{{ shelf.rack.name }}</div>
                         </div>
                     </div>
-
-                    <div class="d-flex">
+                    <div class="d-flex mb-3">
                         <div class="shelf-detail-icon me-3">
                             <i class="fas fa-layer-group text-primary"></i>
                         </div>
@@ -222,12 +79,29 @@
                             <div class="fw-bold">{{ shelf.number }}</div>
                         </div>
                     </div>
+                    <hr>
+                    <div class="shelf-summary-badges d-flex justify-content-between text-center mb-2 align-items-end" style="min-height: 70px; gap: 2.2rem;">
+                        <div class="flex-fill d-flex flex-column justify-content-end">
+                            <div class="small text-muted mb-2" style="min-height:2.5em;">Suma przedmiotów</div>
+                            <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}" class="badge badge-shelf-total fs-5 align-middle text-decoration-none" style="cursor:pointer;">{{ total_count|default:'0' }}</a>
+                        </div>
+                        <div class="flex-fill d-flex flex-column justify-content-end">
+                            <div class="small text-muted mb-2" style="min-height:2.5em;">Przeterminowane</div>
+                            <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}&filter=expired" class="badge bg-danger fs-5 align-middle text-decoration-none" style="cursor:pointer;">{{ expired_count|default:'0' }}</a>
+                        </div>
+                        <div class="flex-fill d-flex flex-column justify-content-end">
+                            <div class="small text-muted mb-2" style="min-height:2.5em;">Prawie przeterminowane</div>
+                            <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}&filter=expiring_soon" class="badge bg-warning text-dark fs-5 align-middle text-decoration-none" style="cursor:pointer;">{{ nearly_expired_count|default:'0' }}</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- QR Code Card -->
-        <div class="card shadow">
+    <!-- QR Code Card -->
+    <div class="col-12 col-lg-4 mb-4 shelf-summary-col">
+        <div class="card shadow h-100">
             <div class="card-header bg-white border-bottom border-primary">
                 <h5 class="mb-0">
                     <i class="fas fa-qrcode me-2"></i> Kod QR

@@ -16,7 +16,19 @@
                     {% for field in form %}
                     <div class="mb-3">
                         <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {% if forloop.first %}
+                        {% with widget=field.field.widget %}
+                        {% if widget.input_type == "number" %}
+                        <input type="number" name="{{ field.html_name }}" class="form-control" id="{{ field.id_for_label }}" autofocus required{% if field.value %} value="{{ field.value }}"{% endif %}>
+                        {% elif widget.input_type == "text" %}
+                        <input type="text" name="{{ field.html_name }}" class="form-control" id="{{ field.id_for_label }}" autofocus required{% if field.value %} value="{{ field.value }}"{% endif %}>
+                        {% else %}
                         {{ field }}
+                        {% endif %}
+                        {% endwith %}
+                        {% else %}
+                        {{ field }}
+                        {% endif %}
                         {% if field.help_text %}
                         <div class="form-text">{{ field.help_text }}</div>
                         {% endif %}

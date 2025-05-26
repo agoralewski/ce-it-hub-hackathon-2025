@@ -3,8 +3,8 @@
 .filters-card {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
     border-radius: 0.25rem;
 }
 
@@ -23,7 +23,7 @@
     width: 100%;
     margin-bottom: 8px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #e3e6f0;
+    border-bottom: 1px solid var(--gray-200);
     justify-content: space-between;
 }
 
@@ -53,9 +53,9 @@
 .filter-button {
     padding: 8px 12px;
     border-radius: 4px;
-    background-color: #f8f9fc;
-    border: 1px solid #d1d3e2;
-    color: #6e707e;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    color: var(--gray-600);
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.85rem;
@@ -66,12 +66,12 @@
 
 .filter-button.active {
     background-color: var(--primary);
-    color: white;
+    color: var(--white);
 }
 
 .filter-button:hover {
     background: var(--primary);
-    color: #fff !important;
+    color: var(--white) !important;
 }
 
 .search-input-container {
@@ -82,14 +82,6 @@
 
 .search-input-container .form-control {
     padding-left: 35px;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #858796;
 }
 
 @media (max-width: 768px) {
@@ -105,7 +97,7 @@
 .clear-filters-btn {
     border: none;
     background: transparent;
-    color: #e74a3b;
+    color: var(--danger-red);
     cursor: pointer;
     padding: 8px 12px;
     display: flex;
@@ -118,5 +110,10 @@
 
 .clear-filters-btn:hover {
     background-color: var(--primary);
-    color: #fff;
+    color: var(--white);
+}
+
+/* Essential Select2 sizing for mobile usability */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: calc(1.5em + 0.75rem + 2px);
 }

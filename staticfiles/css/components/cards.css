@@ -1,0 +1,74 @@
+/* Card styling for KSP */
+
+/* Base card styling */
+.card {
+    box-shadow: 0 0.125rem 0.25rem var(--shadow-light);
+    border: none;
+    margin-bottom: 1rem;
+}
+
+/* Card headers */
+.card-header {
+    font-weight: 500;
+    border-bottom: 2px solid var(--primary);
+    background-color: var(--white) !important;
+    color: var(--dark) !important;
+}
+
+/* Card header with primary border */
+.card-header.border-primary {
+    border-bottom-width: 2px !important;
+    border-bottom-style: solid !important;
+}
+
+/* Card text links */
+.card-text a {
+    display: inline-block;
+    margin: 0.2rem;
+    padding: 0.3rem 0.5rem;
+    background-color: var(--primary-muted);
+    color: var(--primary);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.card-text a:hover {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+/* Filters card */
+.filters-card {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 0.25rem;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Shelf header card */
+.shelf-header {
+    background-color: var(--white) !important;
+    color: var(--dark) !important;
+}
+
+/* Print styles for cards */
+@media print {
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .card-header {
+        display: none;
+    }
+}

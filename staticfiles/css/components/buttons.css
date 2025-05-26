@@ -1,0 +1,158 @@
+/* Button styling for KSP */
+
+/* Primary buttons */
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-transform: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+}
+
+/* Outline buttons */
+.btn-outline-primary {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
+}
+
+/* Consistent hover effect for all buttons */
+.btn-primary:hover,
+.btn-warning:hover,
+.btn-info:hover,
+.btn-secondary:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--dark) !important;
+    transform: scale(1.02);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Add item button styling */
+.add-item-btn {
+    box-shadow: 0 2px 4px var(--flat-shadow);
+    font-weight: 500;
+    padding: 8px 16px;
+}
+
+.add-item-btn:hover {
+    box-shadow: 0 4px 8px var(--shadow-medium);
+}
+
+/* Admin buttons */
+.admin-button {
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+.admin-button:hover {
+    transform: translateY(-5px);
+}
+
+/* Admin buttons in admin section */
+.admin-buttons .btn {
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+/* Landing page buttons */
+@media (min-width: 769px) {
+    .landing-page .btn {
+        flex-direction: column;
+        justify-content: center;
+        font-size: 1.2rem;
+        padding: 1.5rem;
+        height: 150px;
+    }
+
+    .landing-page .btn i {
+        margin-bottom: 0.8rem;
+        margin-right: 0;
+        font-size: 1.5rem;
+    }
+}
+
+/* Quantity buttons */
+.quantity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-color: var(--gray-400);
+}
+
+.quantity-btn:hover {
+    background-color: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+/* QR scan button */
+.scan-qr-btn {
+    width: 210px;
+    height: 210px;
+    padding: 1.5rem 1rem 1.5rem 1rem;
+    font-size: 4.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--dark) !important;
+    color: var(--white) !important;
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 2px 12px var(--shadow-light);
+    transition: background 0.2s, transform 0.1s;
+    flex-direction: column;
+}
+
+.scan-qr-btn .scan-qr-label {
+    font-size: 1.7rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    letter-spacing: 0.01em;
+}
+
+.scan-qr-btn:active,
+.scan-qr-btn:focus,
+.scan-qr-btn:hover {
+    background-color: var(--gray-800) !important;
+    color: var(--white) !important;
+    transform: scale(1.04);
+}
+
+@media (max-width: 1024px) {
+    .scan-qr-btn-row {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 1025px) {
+    .scan-qr-btn-row {
+        display: none !important;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .quantity-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}

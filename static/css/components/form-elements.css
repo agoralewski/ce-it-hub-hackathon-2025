@@ -50,11 +50,11 @@ input.manufacturer-autocomplete:focus {
     margin: 0.125rem 0 0;
     font-size: 0.875rem;
     color: var(--dark);
-    background-color: #fff;
+    background-color: var(--white);
     background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--shadow-medium);
+    box-shadow: 0 0.5rem 1rem var(--autocomplete-shadow);
     border-radius: 0.25rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
     z-index: 1050 !important;
 }
 
@@ -64,14 +64,14 @@ input.manufacturer-autocomplete:focus {
 
 .ui-autocomplete .ui-menu-item-wrapper {
     padding: 0.5rem 1rem;
-    color: #212529;
+    color: var(--dark);
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
     cursor: pointer;
 }
 
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-active {
     background-color: var(--primary);
-    color: white;
+    color: var(--white);
     margin: 0;
     border: none;
 }
@@ -84,7 +84,7 @@ input.manufacturer-autocomplete:focus {
 .accordion-button:not(.collapsed),
 .accordion-button:focus {
     color: var(--dark);
-    background-color: white;
+    background-color: var(--white);
     box-shadow: none;
 }
 

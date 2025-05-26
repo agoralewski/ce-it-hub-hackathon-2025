@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Wybierz lokalizację przedmiotu - KSP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Wybierz lokalizację przedmiotu</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
+                    
+                    <div class="form-section">
+                        <p class="text-muted mb-4">Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:</p>
+                        
+                        <div class="form-group">
+                            <label for="room" class="form-label">Pokój</label>
+                            <select name="room" id="room" class="form-control room-select" required>
+                                <option value="">Wybierz pokój</option>
+                                {% for room in rooms %}
+                                <option value="{{ room.id }}" {% if initial_room == room.id|stringformat:'s' %}selected{% endif %}>{{ room.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rack" class="form-label">Regał</label>
+                            <select name="rack" id="rack" class="form-control rack-select" required disabled>
+                                <option value="">Wybierz najpierw pokój</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shelf" class="form-label">Półka</label>
+                            <select name="shelf" id="shelf" class="form-control shelf-select" required disabled>
+                                <option value="">Wybierz najpierw regał</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex justify-content-between">
+                        {% if next %}
+                        <a href="{{ next }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        {% else %}
+                        <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Powrót
+                        </a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success" id="submit-btn" disabled>
+                            <i class="fas fa-arrow-right"></i> Dalej
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 for dropdown fields
+        $('.room-select, .rack-select, .shelf-select').select2({
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
+            allowClear: true,
+            width: '100%'
+        });
+        
+        // Handle dynamic loading of racks when room changes
+        $('#room').on('change', function() {
+            var roomId = $(this).val();
+            if (roomId) {
+                // Clear rack and shelf selects
+                $('#rack').empty().trigger('change');
+                $('#shelf').empty().trigger('change');
+                $('#rack').prop('disabled', false);
+                $('#shelf').prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
+                
+                // Fetch racks for this room
+                $.ajax({
+                    url: "{% url 'warehouse:get_racks' %}",
+                    data: {
+                        'room_id': roomId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Add empty option
+                        $('#rack').append(new Option('Wybierz regał', '', true, true));
+                        
+                        // Add rack options
+                        $.each(data, function(index, item) {
+                            $('#rack').append(new Option(item.name, item.id, false, false));
+                        });
+                        
+                        // Trigger change to update Select2
+                        $('#rack').trigger('change');
+                    }
+                });
+            } else {
+                $('#rack').prop('disabled', true);
+                $('#shelf').prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
+            }
+        });
+        
+        // Handle dynamic loading of shelves when rack changes
+        $('#rack').on('change', function() {
+            var rackId = $(this).val();
+            if (rackId) {
+                // Clear shelf select
+                $('#shelf').empty().trigger('change');
+                $('#shelf').prop('disabled', false);
+                $('#submit-btn').prop('disabled', true);
+                
+                // Fetch shelves for this rack
+                $.ajax({
+                    url: "{% url 'warehouse:get_shelves' %}",
+                    data: {
+                        'rack_id': rackId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Add empty option
+                        $('#shelf').append(new Option('Wybierz półkę', '', true, true));
+                        
+                        // Add shelf options
+                        $.each(data, function(index, item) {
+                            $('#shelf').append(new Option(item.number, item.id, false, false));
+                        });
+                        
+                        // Trigger change to update Select2
+                        $('#shelf').trigger('change');
+                    }
+                });
+            } else {
+                $('#shelf').prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
+            }
+        });
+        
+        // Enable submit button when shelf is selected
+        $('#shelf').on('change', function() {
+            if ($(this).val()) {
+                $('#submit-btn').prop('disabled', false);
+            } else {
+                $('#submit-btn').prop('disabled', true);
+            }
+        });
+        
+        // Pre-select rack and shelf if provided, even if room is not selected
+        var initialRack = '{{ initial_rack|default:"" }}';
+        var initialShelf = '{{ initial_shelf|default:"" }}';
+        var initialRoom = '{{ initial_room|default:"" }}';
+
+        // If only rack is set, fetch its room and select both
+        if (initialRack && !initialRoom) {
+            $.ajax({
+                url: '/warehouse/api/get_rack_info/',
+                data: { rack_id: initialRack },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.room_id) {
+                        $('#room').val(data.room_id).trigger('change');
+                        // Wait for racks to load, then select rack
+                        var checkRacks = setInterval(function() {
+                            if ($('#rack option').length > 1) {
+                                $('#rack').val(initialRack).trigger('change');
+                                clearInterval(checkRacks);
+                            }
+                        }, 100);
+                    }
+                }
+            });
+        } else if (initialRoom && initialRack) {
+            // If both are set, just select as before
+            $('#room').val(initialRoom).trigger('change');
+            var checkRacks = setInterval(function() {
+                if ($('#rack option').length > 1) {
+                    $('#rack').val(initialRack).trigger('change');
+                    clearInterval(checkRacks);
+                }
+            }, 100);
+        }
+        // If only shelf is set, fetch its rack and room and select all
+        if (initialShelf && !initialRack) {
+            $.ajax({
+                url: '/warehouse/api/get_shelf_info/',
+                data: { shelf_id: initialShelf },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.room_id) {
+                        $('#room').val(data.room_id).trigger('change');
+                    }
+                    var waitForRacks = setInterval(function() {
+                        if ($('#rack option').length > 1 && data.rack_id) {
+                            $('#rack').val(data.rack_id).trigger('change');
+                            clearInterval(waitForRacks);
+                        }
+                    }, 100);
+                    var waitForShelves = setInterval(function() {
+                        if ($('#shelf option').length > 1) {
+                            $('#shelf').val(initialShelf).trigger('change');
+                            clearInterval(waitForShelves);
+                        }
+                    }, 100);
+                }
+            });
+        } else if (initialRack && initialShelf) {
+            // If both are set, just select as before
+            var checkShelves = setInterval(function() {
+                if ($('#shelf option').length > 1) {
+                    $('#shelf').val(initialShelf).trigger('change');
+                    clearInterval(checkShelves);
+                }
+            }, 100);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,4 +1,5 @@
-version: '3.9'
+# Load environment variables from .env file
+# Docker Compose automatically reads from .env in the same directory
 
 services:
   db:
@@ -14,11 +15,8 @@ services:
 
   web:
     build: .
-    command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - .:/app
-    ports:
-      - "8000:8000"
     depends_on:
       - db
     environment:
@@ -30,9 +28,20 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_ENGINE=django.db.backends.postgresql
+      - NETWORK_HOST=${NETWORK_HOST} # auto-detected by set_network_ip.sh
+    entrypoint: ["/bin/bash", "-c", "./scripts/set_network_ip.sh && exec uv run manage.py runserver 0.0.0.0:8000"]
+
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./static:/app/static
+      - ./media:/app/media
+    ports:
+      - "80:80"
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
-
-# Load environment variables from .env file
-# Docker Compose automatically reads from .env in the same directory

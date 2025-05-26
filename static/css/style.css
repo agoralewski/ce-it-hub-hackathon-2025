@@ -107,7 +107,7 @@
 /* Dropdown menu styling */
 .dropdown-menu {
     border-radius: 0.25rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem var(--shadow-light);
     border-width: 0.5px !important;
     border-color: var(--primary-light) !important;
     padding: 0.25rem;
@@ -121,4 +121,71 @@
 
 .dropdown-item {
     border: none !important;
+}
+
+/* Admin Footer Panel Styling */
+.admin-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--flat-shadow);
+}
+
+.admin-footer .card {
+    margin-bottom: 1.5rem;
+}
+
+.admin-footer + .footer {
+    margin-top: 0 !important; 
+}
+
+/* ========== Shelf Summary Badges ========== */
+.shelf-summary-badges .badge {
+    font-size: 1.1em;
+    font-weight: 600;
+    padding: 0.5em 1.1em;
+    border-radius: 1.5em;
+    margin: 0 0.25em;
+    vertical-align: middle;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    border: none;
+}
+.badge.bg-summary-total {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+.badge-shelf-total {
+    background: var(--gray-600) !important;
+    color: var(--white) !important;
+    font-size: 1.1em;
+    font-weight: 600;
+    padding: 0.5em 1.1em;
+    border-radius: 1.5em;
+    margin: 0 0.25em;
+    vertical-align: middle;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    border: none;
+    display: inline-block;
+}
+
+@media (min-width: 992px) {
+  .shelf-summary-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1.5rem;
+  }
+  .shelf-summary-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .shelf-summary-row {
+    display: block;
+  }
+  .shelf-summary-col {
+    margin-bottom: 1.5rem;
+  }
 }

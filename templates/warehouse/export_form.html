@@ -82,6 +82,14 @@
             submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Generowanie pliku...');
             submitBtn.prop('disabled', true);
             
+            // First, show the success message immediately before starting the download
+            $('#download-message').fadeIn();
+            
+            // Automatically hide the message after 5 seconds
+            setTimeout(function() {
+                $('#download-message').fadeOut();
+            }, 5000);
+            
             // Use Ajax to submit the form in the background to get the file
             $.ajax({
                 url: window.location.href,
@@ -113,19 +121,14 @@
                     a.click();
                     window.URL.revokeObjectURL(url);
                     
-                    // Show success message
-                    $('#download-message').fadeIn();
-                    
-                    // Automatically hide the message after 5 seconds
-                    setTimeout(function() {
-                        $('#download-message').fadeOut();
-                    }, 5000);
-                    
                     // Reset button
                     submitBtn.html(originalText);
                     submitBtn.prop('disabled', false);
                 },
                 error: function(xhr, status, error) {
+                    // Hide success message if it's visible
+                    $('#download-message').hide();
+                    
                     // Show error message
                     alert('Wystąpił błąd podczas eksportu. Spróbuj ponownie.');
                     console.error(error);

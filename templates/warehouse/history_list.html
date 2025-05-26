@@ -28,21 +28,19 @@
                 <!-- Advanced filters -->
                 <div class="advanced-filters-container">
                     <div class="search-input-container">
-                        <span class="search-icon">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control" id="product-search" 
-                               placeholder="Szukaj przedmiotu"
-                               value="{{ search_query|default:'' }}">
+                        <select name="search" class="form-control" id="product-search" style="width: 100%;">
+                            {% if search_query %}
+                                <option value="{{ search_query }}" selected>{{ search_query }}</option>
+                            {% endif %}
+                        </select>
                     </div>
                     
                     <div class="search-input-container">
-                        <span class="search-icon">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <input type="text" name="username" class="form-control" id="username-search" 
-                               placeholder="Użytkownik"
-                               value="{{ username|default:'' }}">
+                        <select name="username" class="form-control" id="username-search" style="width: 100%;">
+                            {% if username %}
+                                <option value="{{ username }}" selected>{{ username }}</option>
+                            {% endif %}
+                        </select>
                     </div>
                     
                     <button type="button" class="filter-button" id="add-filter" 

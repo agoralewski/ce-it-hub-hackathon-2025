@@ -1,0 +1,76 @@
+/* Mobile card view for item list */
+@media (max-width: 768px) {
+  .item-table-desktop {
+    display: none !important;
+  }
+  .item-list-mobile {
+    display: block !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .item-list-mobile {
+    display: none !important;
+  }
+}
+
+.item-list-mobile {
+  margin-top: 1rem;
+}
+
+.item-mobile-card {
+  background: var(--white);
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  box-shadow: 0 1px 4px var(--item-shadow);
+}
+
+.item-mobile-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.item-mobile-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.item-chip {
+  display: inline-block;
+  padding: 0.25em 0.7em;
+  font-size: 0.85em;
+  border-radius: 1em;
+  background: var(--chip-bg);
+  color: var(--chip-color);
+  border: 1px solid var(--chip-border);
+}
+
+.item-chip.category { background: var(--chip-category-bg); color: var(--chip-category-color); }
+.item-chip.manufacturer { background: var(--chip-manufacturer-bg); color: var(--chip-manufacturer-color); }
+.item-chip.note { background: var(--chip-note-bg); color: var(--chip-note-color); } /* orange for notes */
+.item-chip.expired { background: var(--chip-expired-bg); color: var(--chip-expired-color); }
+.item-chip.expiring { background: var(--chip-expiring-bg); color: var(--chip-expiring-color); } /* yellow for expiring */
+.item-chip.valid { background: var(--chip-valid-bg); color: var(--chip-valid-color); }
+.item-chip.location { background: var(--chip-location-bg); color: var(--chip-location-color); }
+
+.item-chip i {
+  margin-right: 0.35em;
+  opacity: 0.85;
+}
+
+.item-mobile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.item-mobile-actions .btn {
+  flex: 1 1 45%;
+  min-width: 120px;
+}

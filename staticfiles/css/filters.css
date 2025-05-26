@@ -1,0 +1,119 @@
+/* Filters and filter-form modular CSS extracted from item_list.html and style.css */
+
+.filters-card {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: 0.25rem;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.advanced-filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-200);
+    justify-content: space-between;
+}
+
+.dropdown-filters-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.dropdown-filters-container .form-select {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 768px) {
+    .dropdown-filters-container {
+        flex-wrap: wrap;
+    }
+    .dropdown-filters-container .form-select {
+        width: 100%;
+        flex: none;
+    }
+}
+
+.filter-button {
+    padding: 8px 12px;
+    border-radius: 4px;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-button.active {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.filter-button:hover {
+    background: var(--primary);
+    color: var(--white) !important;
+}
+
+.search-input-container {
+    flex-grow: 1;
+    position: relative;
+    min-width: 200px;
+}
+
+.search-input-container .form-control {
+    padding-left: 35px;
+}
+
+@media (max-width: 768px) {
+    .search-input-container {
+        width: 100%;
+    }
+    .filter-button {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+.clear-filters-btn {
+    border: none;
+    background: transparent;
+    color: var(--danger-red);
+    cursor: pointer;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.clear-filters-btn:hover {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+/* Essential Select2 sizing for mobile usability */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: calc(1.5em + 0.75rem + 2px);
+}

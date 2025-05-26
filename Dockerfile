@@ -22,11 +22,18 @@ COPY . /app/
 # Install dependencies with uv
 RUN uv sync --locked
 
+# Install Gunicorn for production (directly add to requirements.txt)
+RUN pip install --no-cache-dir gunicorn
+
+# Make sure static directories exist
+RUN mkdir -p /app/staticfiles /app/media
+RUN chmod -R 755 /app/staticfiles /app/media
+
 # Collect static files
-# RUN uv run manage.py collectstatic --noinput
+RUN uv run manage.py collectstatic --noinput
 
 # Expose port (default Django port)
 EXPOSE 8000
 
-# Start server
-CMD ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
+# Start server with Gunicorn
+CMD ["uv", "run", "-m", "gunicorn", "ksp.wsgi:application", "--bind", "0.0.0.0:8000"]
