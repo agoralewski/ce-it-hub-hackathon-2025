@@ -1,14 +1,15 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% load widget_tweaks %}
 
-{% block title %}Rejestracja - KSP{% endblock %}
+{% block title %}{% trans "Rejestracja - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
         <div class="card shadow">
             <div class="card-header bg-primary text-white text-center">
-                <h4>Rejestracja</h4>
+                <h4>{% trans "Rejestracja" %}</h4>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -32,12 +33,12 @@
                     {% endfor %}
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Zarejestruj się</button>
+                        <button type="submit" class="btn btn-primary">{% trans "Zarejestruj się" %}</button>
                     </div>
                 </form>
             </div>
             <div class="card-footer text-center">
-                <div>Masz już konto? <a href="{% url 'login' %}">Zaloguj się</a></div>
+                <div>{% trans "Masz już konto?" %} <a href="{% url 'login' %}">{% trans "Zaloguj się" %}</a></div>
             </div>
         </div>
     </div>

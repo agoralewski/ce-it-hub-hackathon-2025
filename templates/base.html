@@ -66,7 +66,7 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'history_list' %}active{% endif %}"
                             href="{% url 'warehouse:history_list' %}">
-                            <i class="fas fa-history"></i> Historia zmian
+                            <i class="fas fa-history"></i> {% trans "Historia zmian" %}
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -203,7 +203,7 @@
                 <div class="col-md-12">
                     <div class="card shadow">
                         <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Panel administratora</h5>
+                            <h5 class="mb-0">{% trans "Admin Panel" %}</h5>
                         </div>
                         <div class="card-body">
                             <div class="row d-flex flex-wrap justify-content-between">
@@ -211,28 +211,28 @@
                                     <a href="{% url 'warehouse:room_list' %}"
                                         class="btn btn-outline-primary d-flex align-items-center py-2">
                                         <i class="fas fa-door-open me-2"></i>
-                                        <span>Zarządzaj lokalizacjami</span>
+                                        <span>{% trans "Manage Locations" %}</span>
                                     </a>
                                 </div>
                                 <div class="col-md-3 col-12 mb-2">
                                     <a href="{% url 'warehouse:category_list' %}"
                                         class="btn btn-outline-primary d-flex align-items-center py-2">
                                         <i class="fas fa-tags me-2"></i>
-                                        <span>Zarządzaj kategoriami</span>
+                                        <span>{% trans "Manage Categories" %}</span>
                                     </a>
                                 </div>
                                 <div class="col-md-3 col-12 mb-2">
                                     <a href="{% url 'warehouse:export_inventory' %}"
                                         class="btn btn-outline-primary d-flex align-items-center py-2">
                                         <i class="fas fa-file-excel me-2"></i>
-                                        <span>Eksport do Excela</span>
+                                        <span>{% trans "Export to Excel" %}</span>
                                     </a>
                                 </div>
                                 <div class="col-md-3 col-12 mb-2">
                                     <a href="{% url 'warehouse:generate_qr_codes' %}"
                                         class="btn btn-outline-primary d-flex align-items-center py-2">
                                         <i class="fas fa-qrcode me-2"></i>
-                                        <span>Generuj kody QR</span>
+                                        <span>{% trans "Generate QR Codes" %}</span>
                                     </a>
                                 </div>
                             </div>
