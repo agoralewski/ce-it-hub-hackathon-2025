@@ -127,6 +127,7 @@ Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 - `static/` - Static files (CSS, JS, images)
 - `templates/` - HTML templates
 - `media/` - User-uploaded files (created when needed)
+- `locale/` - Translation files for multi-language support
 
 ## User Types
 
