@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 
 from warehouse.forms import CustomUserCreationForm
 
@@ -39,7 +40,7 @@ def change_password(request):
 def custom_logout(request):
     """Custom logout view to ensure proper redirection"""
     logout(request)
-    messages.success(request, 'Zostałeś pomyślnie wylogowany.')
+    messages.success(request, _('Zostałeś pomyślnie wylogowany.'))
     return redirect('login')
 
 
