@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-
-{% block title %}Profil użytkownika - KSP{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "User Profile - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Profil użytkownika</h5>
+                <h5 class="mb-0">{% trans "User Profile" %}</h5>
             </div>
             <div class="card-body">
                 <div class="text-center mb-4">
@@ -18,27 +18,27 @@
                     <table class="table">
                         <tbody>
                             <tr>
-                                <th>Nazwa użytkownika:</th>
+                                <th>{% trans "Username:" %}</th>
                                 <td>{{ user.username }}</td>
                             </tr>
                             <tr>
-                                <th>Adres e-mail:</th>
+                                <th>{% trans "Email address:" %}</th>
                                 <td>{{ user.email }}</td>
                             </tr>
                             <tr>
-                                <th>Imię:</th>
-                                <td>{{ user.first_name|default:"Nie podano" }}</td>
+                                <th>{% trans "First name:" %}</th>
+                                <td>{{ user.first_name|default:_("Not provided") }}</td>
                             </tr>
                             <tr>
-                                <th>Nazwisko:</th>
-                                <td>{{ user.last_name|default:"Nie podano" }}</td>
+                                <th>{% trans "Last name:" %}</th>
+                                <td>{{ user.last_name|default:_("Not provided") }}</td>
                             </tr>
                             <tr>
-                                <th>Data dołączenia:</th>
+                                <th>{% trans "Date joined:" %}</th>
                                 <td>{{ user.date_joined }}</td>
                             </tr>
                             <tr>
-                                <th>Ostatnie logowanie:</th>
+                                <th>{% trans "Last login:" %}</th>
                                 <td>{{ user.last_login }}</td>
                             </tr>
                         </tbody>
@@ -47,7 +47,7 @@
                 
                 <div class="d-grid gap-2 mt-4">
                     <a href="{% url 'warehouse:change_password' %}" class="btn btn-primary">
-                        <i class="fas fa-key"></i> Zmień hasło
+                        <i class="fas fa-key"></i> {% trans "Change password" %}
                     </a>
                 </div>
             </div>
