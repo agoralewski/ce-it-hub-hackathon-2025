@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-26 15:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#: templates/base.html:49
+msgid "Home"
+msgstr "Strona główna"
+
+#: templates/base.html:55
+msgid "ItemList"
+msgstr "Lista przedmiotów"
+
+#: templates/base.html:61
+msgid "Low Stock"
+msgstr "Niski stan"
+
+#: templates/base.html:69
+msgid "Historia zmian"
+msgstr "Historia zmian"
+
+#: templates/base.html:75
+msgid "Administration"
+msgstr "Administracja"
+
+#: templates/base.html:80
+msgid "Rooms/Racks/Shelves"
+msgstr "Pokoje/Regały/Półki"
+
+#: templates/base.html:85
+msgid "Categories"
+msgstr "Kategorie"
+
+#: templates/base.html:90 templates/base.html:228
+msgid "Export to Excel"
+msgstr "Eksportuj do Excela"
+
+#: templates/base.html:95 templates/base.html:235
+msgid "Generate QR Codes"
+msgstr "Generuj kody QR"
+
+#: templates/base.html:103 templates/base.html:206
+msgid "Admin Panel"
+msgstr "Panel administratora"
+
+#: templates/base.html:121
+msgid "Profile"
+msgstr "Profil"
+
+#: templates/base.html:126
+msgid "Change Password"
+msgstr "Zmień hasło"
+
+#: templates/base.html:134
+msgid "Log Out"
+msgstr "Wyloguj się"
+
+#: templates/base.html:142
+msgid "Log In"
+msgstr "Zaloguj się"
+
+#: templates/base.html:214
+msgid "Manage Locations"
+msgstr "Zarządzaj lokalizacjami"
+
+#: templates/base.html:221
+msgid "Manage Categories"
+msgstr "Zarządzaj kategoriami"
+
+#: templates/registration/logged_out.html:4
+msgid "Wylogowano - KSP"
+msgstr "Wylogowano - KSP"
+
+#: templates/registration/logged_out.html:11
+msgid "Wylogowano"
+msgstr "Wylogowano"
+
+#: templates/registration/logged_out.html:14
+msgid "Zostałeś pomyślnie wylogowany z systemu KSP."
+msgstr "Zostałeś pomyślnie wylogowany z systemu KSP."
+
+#: templates/registration/logged_out.html:15
+msgid "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
+msgstr "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
+
+#: templates/registration/logged_out.html:18
+msgid "Zaloguj się ponownie"
+msgstr "Zaloguj się ponownie"
+
+#: templates/registration/login.html:5
+msgid "Logowanie - KSP"
+msgstr "Logowanie - KSP"
+
+#: templates/registration/login.html:12
+msgid "Logowanie"
+msgstr "Logowanie"
+
+#: templates/registration/login.html:21
+msgid "Nazwa użytkownika lub email"
+msgstr "Nazwa użytkownika lub email"
+
+#: templates/registration/login.html:40
+#: templates/registration/password_reset_complete.html:16
+#: templates/registration/register.html:41
+msgid "Zaloguj się"
+msgstr "Zaloguj się"
+
+#: templates/registration/login.html:45
+msgid "Zapomniałeś hasła?"
+msgstr "Zapomniałeś hasła?"
+
+#: templates/registration/login.html:46
+msgid "Nie masz konta?"
+msgstr "Nie masz konta?"
+
+#: templates/registration/login.html:46 templates/registration/register.html:36
+msgid "Zarejestruj się"
+msgstr "Zarejestruj się"
+
+#: templates/registration/password_reset_complete.html:4
+msgid "Hasło zostało zresetowane - KSP"
+msgstr "Hasło zostało zresetowane - KSP"
+
+#: templates/registration/password_reset_complete.html:11
+msgid "Hasło zostało zmienione"
+msgstr "Hasło zostało zmienione"
+
+#: templates/registration/password_reset_complete.html:14
+msgid "Twoje hasło zostało zmienione. Możesz teraz się zalogować."
+msgstr "Twoje hasło zostało zmienione. Możesz teraz się zalogować."
+
+#: templates/registration/password_reset_confirm.html:5
+msgid "Ustaw nowe hasło - KSP"
+msgstr "Ustaw nowe hasło - KSP"
+
+#: templates/registration/password_reset_confirm.html:12
+msgid "Ustaw nowe hasło"
+msgstr "Ustaw nowe hasło"
+
+#: templates/registration/password_reset_confirm.html:36
+msgid "Zmień hasło"
+msgstr "Zmień hasło"
+
+#: templates/registration/password_reset_done.html:4
+msgid "E-mail wysłany - KSP"
+msgstr "E-mail wysłany - KSP"
+
+#: templates/registration/password_reset_done.html:11
+msgid "E-mail wysłany"
+msgstr "E-mail wysłany"
+
+#: templates/registration/password_reset_done.html:14
+msgid "Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę wiadomość wkrótce."
+msgstr "Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę wiadomość wkrótce."
+
+#: templates/registration/password_reset_done.html:15
+msgid "Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który podałeś podczas rejestracji i sprawdź folder spam."
+msgstr "Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który podałeś podczas rejestracji i sprawdź folder spam."
+
+#: templates/registration/password_reset_done.html:17
+msgid "Powrót do strony logowania"
+msgstr "Powrót do strony logowania"
+
+#: templates/registration/password_reset_form.html:5
+msgid "Resetowanie hasła - KSP"
+msgstr "Resetowanie hasła - KSP"
+
+#: templates/registration/password_reset_form.html:12
+msgid "Resetowanie hasła"
+msgstr "Resetowanie hasła"
+
+#: templates/registration/password_reset_form.html:15
+msgid "Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci instrukcje jak ustawić nowe."
+msgstr "Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci instrukcje jak ustawić nowe."
+
+#: templates/registration/password_reset_form.html:37
+msgid "Wyślij instrukcje resetowania"
+msgstr "Wyślij instrukcje resetowania"
+
+#: templates/registration/register.html:5
+msgid "Rejestracja - KSP"
+msgstr "Rejestracja - KSP"
+
+#: templates/registration/register.html:12
+msgid "Rejestracja"
+msgstr "Rejestracja"
+
+#: templates/registration/register.html:41
+msgid "Masz już konto?"
+msgstr "Masz już konto?"
+
+#: templates/warehouse/profile.html:3
+msgid "User Profile - KSP"
+msgstr "Profil użytkownika - KSP"
+
+#: templates/warehouse/profile.html:10
+msgid "User Profile"
+msgstr "Profil użytkownika"
+
+#: templates/warehouse/profile.html:21
+msgid "Username:"
+msgstr "Nazwa użytkownika:"
+
+#: templates/warehouse/profile.html:25
+msgid "Email address:"
+msgstr "Adres e-mail:"
+
+#: templates/warehouse/profile.html:29
+msgid "First name:"
+msgstr "Imię:"
+
+#: templates/warehouse/profile.html:30 templates/warehouse/profile.html:34
+msgid "Not provided"
+msgstr "Nie podano"
+
+#: templates/warehouse/profile.html:33
+msgid "Last name:"
+msgstr "Nazwisko:"
+
+#: templates/warehouse/profile.html:37
+msgid "Date joined:"
+msgstr "Data dołączenia:"
+
+#: templates/warehouse/profile.html:41
+msgid "Last login:"
+msgstr "Ostatnie logowanie:"
+
+#: templates/warehouse/profile.html:50
+msgid "Edytuj profil"
+msgstr "Edytuj profil"
+
+#: templates/warehouse/profile.html:53
+msgid "Change password"
+msgstr "Zmień hasło"
+
+#: warehouse/views/account.py:61
+msgid "Zostałeś pomyślnie wylogowany."
+msgstr "Zostałeś pomyślnie wylogowany."

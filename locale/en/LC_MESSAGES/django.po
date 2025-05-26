@@ -1,0 +1,253 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-26 15:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/base.html:49
+msgid "Home"
+msgstr "Home"
+
+#: templates/base.html:55
+msgid "ItemList"
+msgstr "Item List"
+
+#: templates/base.html:61
+msgid "Low Stock"
+msgstr "Low Stock"
+
+#: templates/base.html:69
+msgid "Historia zmian"
+msgstr "Change History"
+
+#: templates/base.html:75
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/base.html:80
+msgid "Rooms/Racks/Shelves"
+msgstr "Rooms/Racks/Shelves"
+
+#: templates/base.html:85
+msgid "Categories"
+msgstr "Categories"
+
+#: templates/base.html:90 templates/base.html:228
+msgid "Export to Excel"
+msgstr "Export to Excel"
+
+#: templates/base.html:95 templates/base.html:235
+msgid "Generate QR Codes"
+msgstr "Generate QR Codes"
+
+#: templates/base.html:103 templates/base.html:206
+msgid "Admin Panel"
+msgstr "Admin Panel"
+
+#: templates/base.html:121
+msgid "Profile"
+msgstr "Profile"
+
+#: templates/base.html:126
+msgid "Change Password"
+msgstr "Change Password"
+
+#: templates/base.html:134
+msgid "Log Out"
+msgstr "Log Out"
+
+#: templates/base.html:142
+msgid "Log In"
+msgstr "Log In"
+
+#: templates/base.html:214
+msgid "Manage Locations"
+msgstr "Manage Locations"
+
+#: templates/base.html:221
+msgid "Manage Categories"
+msgstr "Manage Categories"
+
+#: templates/registration/logged_out.html:4
+msgid "Wylogowano - KSP"
+msgstr ""
+
+#: templates/registration/logged_out.html:11
+msgid "Wylogowano"
+msgstr ""
+
+#: templates/registration/logged_out.html:14
+msgid "Zostałeś pomyślnie wylogowany z systemu KSP."
+msgstr ""
+
+#: templates/registration/logged_out.html:15
+msgid "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
+msgstr ""
+
+#: templates/registration/logged_out.html:18
+msgid "Zaloguj się ponownie"
+msgstr "Log in again"
+
+#: templates/registration/login.html:5
+msgid "Logowanie - KSP"
+msgstr "Login - KSP"
+
+#: templates/registration/login.html:12
+msgid "Logowanie"
+msgstr "Login"
+
+#: templates/registration/login.html:21
+msgid "Nazwa użytkownika lub email"
+msgstr "Username or email"
+
+#: templates/registration/login.html:40
+#: templates/registration/password_reset_complete.html:16
+#: templates/registration/register.html:41
+msgid "Zaloguj się"
+msgstr "Log in"
+
+#: templates/registration/login.html:45
+msgid "Zapomniałeś hasła?"
+msgstr "Forgot your password?"
+
+#: templates/registration/login.html:46
+msgid "Nie masz konta?"
+msgstr "Don't have an account?"
+
+#: templates/registration/login.html:46 templates/registration/register.html:36
+msgid "Zarejestruj się"
+msgstr "Register"
+
+#: templates/registration/password_reset_complete.html:4
+msgid "Hasło zostało zresetowane - KSP"
+msgstr "Password has been reset - KSP"
+
+#: templates/registration/password_reset_complete.html:11
+msgid "Hasło zostało zmienione"
+msgstr "Password changed"
+
+#: templates/registration/password_reset_complete.html:14
+msgid "Twoje hasło zostało zmienione. Możesz teraz się zalogować."
+msgstr "Your password has been changed. You can now log in."
+
+#: templates/registration/password_reset_confirm.html:5
+msgid "Ustaw nowe hasło - KSP"
+msgstr "Set new password - KSP"
+
+#: templates/registration/password_reset_confirm.html:12
+msgid "Ustaw nowe hasło"
+msgstr "Set new password"
+
+#: templates/registration/password_reset_confirm.html:36
+msgid "Zmień hasło"
+msgstr "Change password"
+
+#: templates/registration/password_reset_done.html:4
+msgid "E-mail wysłany - KSP"
+msgstr "E-mail sent - KSP"
+
+#: templates/registration/password_reset_done.html:11
+msgid "E-mail wysłany"
+msgstr "E-mail sent"
+
+#: templates/registration/password_reset_done.html:14
+msgid "Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę wiadomość wkrótce."
+msgstr "We have sent you an e-mail with instructions to reset your password. If an account with the provided e-mail exists, you should receive it soon."
+
+#: templates/registration/password_reset_done.html:15
+msgid "Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który podałeś podczas rejestracji i sprawdź folder spam."
+msgstr "If you do not receive the e-mail, check that you entered the address you used during registration and check your spam folder."
+
+#: templates/registration/password_reset_done.html:17
+msgid "Powrót do strony logowania"
+msgstr "Back to login page"
+
+#: templates/registration/password_reset_form.html:5
+msgid "Resetowanie hasła - KSP"
+msgstr "Password reset - KSP"
+
+#: templates/registration/password_reset_form.html:12
+msgid "Resetowanie hasła"
+msgstr "Password reset"
+
+#: templates/registration/password_reset_form.html:15
+msgid "Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci instrukcje jak ustawić nowe."
+msgstr "Forgot your password? Enter your e-mail below and we will send you instructions to set a new one."
+
+#: templates/registration/password_reset_form.html:37
+msgid "Wyślij instrukcje resetowania"
+msgstr "Send reset instructions"
+
+#: templates/registration/register.html:5
+msgid "Rejestracja - KSP"
+msgstr "Registration - KSP"
+
+#: templates/registration/register.html:12
+msgid "Rejestracja"
+msgstr "Registration"
+
+#: templates/registration/register.html:41
+msgid "Masz już konto?"
+msgstr "Already have an account?"
+
+#: templates/warehouse/profile.html:3
+msgid "User Profile - KSP"
+msgstr "User Profile - KSP"
+
+#: templates/warehouse/profile.html:10
+msgid "User Profile"
+msgstr "User Profile"
+
+#: templates/warehouse/profile.html:21
+msgid "Username:"
+msgstr "Username:"
+
+#: templates/warehouse/profile.html:25
+msgid "Email address:"
+msgstr "Email address:"
+
+#: templates/warehouse/profile.html:29
+msgid "First name:"
+msgstr "First name:"
+
+#: templates/warehouse/profile.html:30 templates/warehouse/profile.html:34
+msgid "Not provided"
+msgstr "Not provided"
+
+#: templates/warehouse/profile.html:33
+msgid "Last name:"
+msgstr "Last name:"
+
+#: templates/warehouse/profile.html:37
+msgid "Date joined:"
+msgstr "Date joined:"
+
+#: templates/warehouse/profile.html:41
+msgid "Last login:"
+msgstr "Last login:"
+
+#: templates/warehouse/profile.html:50
+msgid "Edytuj profil"
+msgstr "Edit profile"
+
+#: templates/warehouse/profile.html:53
+msgid "Change password"
+msgstr "Change password"
+
+#: warehouse/views/account.py:61
+msgid "Zostałeś pomyślnie wylogowany."
+msgstr "You have been successfully logged out."

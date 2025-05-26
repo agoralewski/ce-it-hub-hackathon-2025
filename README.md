@@ -71,6 +71,7 @@ The application will be available at http://127.0.0.1:80/
 - `static/` - Static files (CSS, JS, images)
 - `templates/` - HTML templates
 - `media/` - User-uploaded files (created when needed)
+- `locale/` - Translation files for multi-language support
 
 ## User Types
 
