@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-26 14:54+0200\n"
+"POT-Creation-Date: 2025-05-26 15:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -239,6 +239,10 @@ msgstr "Date joined:"
 #: templates/warehouse/profile.html:41
 msgid "Last login:"
 msgstr "Last login:"
+
+#: templates/warehouse/profile.html:50
+msgid "Edytuj profil"
+msgstr "Edit profile"
 
 #: templates/warehouse/profile.html:53
 msgid "Change password"
