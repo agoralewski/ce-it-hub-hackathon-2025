@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Historia zmian magazynu - KSP{% endblock %}
+{% block title %}{% trans "Historia zmian magazynu - KSP" %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
@@ -14,7 +14,7 @@
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Historia zmian magazynu</h5>
+        <h5 class="mb-0">{% trans "Historia zmian magazynu" %}</h5>
     </div>
     <div class="card-body">
         <!-- Filters -->
@@ -46,34 +46,34 @@
                     <button type="button" class="filter-button" id="add-filter" 
                             data-filter="add" 
                             {% if action_type == 'add' %}aria-pressed="true"{% endif %}>
-                        <i class="fas fa-plus-circle"></i> Tylko dodawanie
+                        <i class="fas fa-plus-circle"></i> {% trans "Tylko dodawanie" %}
                     </button>
                     
                     <button type="button" class="filter-button" id="remove-filter" 
                             data-filter="remove"
                             {% if action_type == 'remove' %}aria-pressed="true"{% endif %}>
-                        <i class="fas fa-minus-circle"></i> Tylko usuwanie
+                        <i class="fas fa-minus-circle"></i> {% trans "Tylko usuwanie" %}
                     </button>
                     
                     <!-- Hidden input for action type -->
                     <input type="hidden" id="action-type-input" name="action_type" value="{{ action_type|default:'' }}">
                     
-                    <button type="button" class="clear-filters-btn" title="Wyczyść filtry" id="clear-filters">
-                        <i class="fas fa-times"></i> Wyczyść filtry
+                    <button type="button" class="clear-filters-btn" title="{% trans 'Wyczyść filtry' %}" id="clear-filters">
+                        <i class="fas fa-times"></i> {% trans "Wyczyść filtry" %}
                     </button>
                 </div>
                 
                 <!-- Dropdown filters -->
                 <div class="dropdown-filters-container">
-                    <select name="room" class="form-select" data-placeholder="Pokój" id="room-select">
-                        <option value="">Pokój</option>
+                    <select name="room" class="form-select" data-placeholder="{% trans 'Pokój' %}" id="room-select">
+                        <option value="">{% trans "Pokój" %}</option>
                         {% for room in rooms %}
                         <option value="{{ room.id }}" {% if selected_room == room.id|slugify %}selected{% endif %}>{{ room.name }}</option>
                         {% endfor %}
                     </select>
                     
-                    <select name="rack" class="form-select" data-placeholder="Regał" id="rack-select">
-                        <option value="">Regał</option>
+                    <select name="rack" class="form-select" data-placeholder="{% trans 'Regał' %}" id="rack-select">
+                        <option value="">{% trans "Regał" %}</option>
                         {% for rack in racks %}
                         <option value="{{ rack.id }}" 
                                 data-room="{{ rack.room.id }}"
@@ -83,8 +83,8 @@
                         {% endfor %}
                     </select>
                     
-                    <select name="shelf" class="form-select" data-placeholder="Półka" id="shelf-select">
-                        <option value="">Półka</option>
+                    <select name="shelf" class="form-select" data-placeholder="{% trans 'Półka' %}" id="shelf-select">
+                        <option value="">{% trans "Półka" %}</option>
                         {% for shelf in shelves %}
                         <option value="{{ shelf.id }}" 
                                 data-rack="{{ shelf.rack.id }}"
@@ -99,12 +99,12 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                             <input type="text" name="date_from" class="form-control" id="date-from" 
-                                   placeholder="Data od" value="{{ date_from|default:'' }}">
+                                   placeholder="{% trans 'Data od' %}" value="{{ date_from|default:'' }}">
                         </div>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                             <input type="text" name="date_to" class="form-control" id="date-to" 
-                                   placeholder="Data do" value="{{ date_to|default:'' }}">
+                                   placeholder="{% trans 'Data do' %}" value="{{ date_to|default:'' }}">
                         </div>
                     </div>
                 </div>
@@ -114,9 +114,9 @@
         <!-- Pagination Info -->
         <div class="pagination-info">
             {% if total_count > 0 %}
-                Showing {{ assignments|length }} of {{ total_count }} items
+                {% trans "Showing" %} {{ assignments|length }} {% trans "of" %} {{ total_count }} {% trans "items" %}
                 {% if page_obj.paginator.num_pages > 1 %}
-                    (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+                    ({% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }})
                 {% endif %}
             {% endif %}
         </div>
@@ -126,13 +126,13 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Przedmiot</th>
-                        <th>Operacja</th>
-                        <th>Data</th>
-                        <th>Użytkownik</th>
-                        <th>Email</th>
-                        <th>Kategoria</th>
-                        <th>Lokalizacja</th>
+                        <th>{% trans "Przedmiot" %}</th>
+                        <th>{% trans "Operacja" %}</th>
+                        <th>{% trans "Data" %}</th>
+                        <th>{% trans "Użytkownik" %}</th>
+                        <th>{% trans "Email" %}</th>
+                        <th>{% trans "Kategoria" %}</th>
+                        <th>{% trans "Lokalizacja" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -141,9 +141,9 @@
                         <td>{{ assignment.item.name }}</td>
                         <td>
                             {% if assignment.remove_date %}
-                                <span class="badge bg-danger">Usunięto</span>
+                                <span class="badge bg-danger">{% trans "Usunięto" %}</span>
                             {% else %}
-                                <span class="badge bg-success">Dodano</span>
+                                <span class="badge bg-success">{% trans "Dodano" %}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -176,7 +176,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">Brak historii spełniającej kryteria.</td>
+                        <td colspan="7" class="text-center">{% trans "Brak historii spełniającej kryteria." %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -189,17 +189,17 @@
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1">&laquo; First</a>
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1">&laquo; {% trans "First" %}</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">&laquo; First</a>
+                        <a class="page-link" href="#" tabindex="-1">&laquo; {% trans "First" %}</a>
                     </li>
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        <a class="page-link" href="#" tabindex="-1">{% trans "Previous" %}</a>
                     </li>
                 {% endif %}
                 
@@ -217,17 +217,17 @@
                 
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">{{% trans "Last" %} &raquo;</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Next</a>
+                        <a class="page-link" href="#" tabindex="-1">{% trans "Next" %}</a>
                     </li>
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Last &raquo;</a>
+                        <a class="page-link" href="#" tabindex="-1">{% trans "Last" %} &raquo;</a>
                     </li>
                 {% endif %}
             </ul>
@@ -295,7 +295,7 @@
         
         // Initialize product search with Select2 for autocomplete
         productSearch.select2({
-            placeholder: "Szukaj przedmiotu",
+            placeholder: "{% trans 'Szukaj przedmiotu' %}",
             allowClear: true,
             minimumInputLength: 2,
             ajax: {
@@ -350,7 +350,7 @@
         
         // Initialize username search with Select2 for autocomplete
         usernameSearch.select2({
-            placeholder: "Szukaj użytkownika",
+            placeholder: "{% trans 'Szukaj użytkownika' %}",
             allowClear: true,
             minimumInputLength: 2,
             ajax: {

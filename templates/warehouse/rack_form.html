@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{% if title %}{{ title }}{% else %}Zarządzanie regałami{% endif %} - KSP{% endblock %}
+{% block title %}{% if title %}{{ title }}{% else %}{% trans %}Zarządzanie regałami{% endtrans %}{% endif %} - KSP{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">{{ title }} w pokoju "{{ room.name }}"</h5>
+                <h5 class="mb-0">{{ title }} {% trans %}w pokoju{% endtrans %} "{{ room.name }}"</h5>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -42,10 +42,10 @@
                     
                     <div class="d-flex justify-content-between">
                         <a href="{% url 'warehouse:room_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans %}Powrót{% endtrans %}
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Zapisz
+                            <i class="fas fa-save"></i> {% trans %}Zapisz{% endtrans %}
                         </button>
                     </div>
                 </form>

@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Usuń pokój - KSP{% endblock %}
+{% block title %}{% trans %}Usuń pokój{% endtrans %} - KSP{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">Usuń pokój</h5>
+                <h5 class="mb-0">{% trans %}Usuń pokój{% endtrans %}</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Czy na pewno chcesz usunąć pokój "{{ room.name }}"?</h5>
+                <h5 class="card-title">{% trans %}Czy na pewno chcesz usunąć pokój{% endtrans %} "{{ room.name }}"?</h5>
                 
                 {% if has_items %}
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Uwaga!</strong> Ten pokój zawiera przedmioty. Usunięcie go spowoduje również usunięcie wszystkich regałów, półek i przedmiotów w tym pokoju.
+                    <strong>{% trans %}Uwaga!{% endtrans %}</strong> {% trans %}Ten pokój zawiera przedmioty. Usunięcie go spowoduje również usunięcie wszystkich regałów, półek i przedmiotów w tym pokoju.{% endtrans %}
                 </div>
                 {% endif %}
                 
@@ -23,10 +23,10 @@
                     {% csrf_token %}
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'warehouse:room_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Anuluj
+                            <i class="fas fa-arrow-left"></i> {% trans %}Anuluj{% endtrans %}
                         </a>
                         <button type="submit" name="confirm" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Usuń
+                            <i class="fas fa-trash"></i> {% trans %}Usuń{% endtrans %}
                         </button>
                     </div>
                 </form>

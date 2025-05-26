@@ -1,46 +1,46 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 
-{% block title %}Dodaj przedmiot na półkę - KSP{% endblock %}
+{% block title %}{% trans "Dodaj przedmiot na półkę - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Dodaj przedmiot na półkę {{ shelf.full_location }}</h5>
+                <h5 class="mb-0">{% trans "Dodaj przedmiot na półkę" %} {{ shelf.full_location }}</h5>
             </div>
             <div class="card-body">
                 {% if bulk_operation %}
                 <!-- Bulk operation interface -->
                 <div class="bulk-operation-container">
-                    <h4>Dodawanie dużej liczby przedmiotów</h4>
-                    <p>Rozpoczynam dodawanie <strong>{{ quantity }}</strong> egzemplarzy przedmiotu <strong>{{ item_name }}</strong> na półkę {{ shelf.full_location }}.</p>
+                    <h4>{% trans "Dodawanie dużej liczby przedmiotów" %}</h4>
+                    <p>{% trans "Rozpoczynam dodawanie" %} <strong>{{ quantity }}</strong> {% trans "egzemplarzy przedmiotu" %} <strong>{{ item_name }}</strong> {% trans "na półkę" %} {{ shelf.full_location }}.</p>
                     
                     <div class="progress">
                         <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                     </div>
                     
                     <div id="processing-message" class="text-muted">
-                        <i class="fas fa-spinner fa-spin"></i> Przygotowywanie operacji...
+                        <i class="fas fa-spinner fa-spin"></i> {% trans "Przygotowywanie operacji..." %}
                     </div>
                     
                     <div id="stats-container" class="stats-container d-none">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="stats-item">
-                                    <strong>Przetworzono:</strong> <span id="processed-count">0</span> / {{ quantity }}
+                                    <strong>{% trans "Przetworzono:" %}</strong> <span id="processed-count">0</span> / {{ quantity }}
                                 </div>
                                 <div class="stats-item">
-                                    <strong>Pozostało:</strong> <span id="remaining-count">{{ quantity }}</span>
+                                    <strong>{% trans "Pozostało:" %}</strong> <span id="remaining-count">{{ quantity }}</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="stats-item">
-                                    <strong>Czas trwania:</strong> <span id="duration">0.00</span> sek.
+                                    <strong>{% trans "Czas trwania:" %}</strong> <span id="duration">0.00</span> {% trans "sek." %}
                                 </div>
                                 <div class="stats-item">
-                                    <strong>Prędkość:</strong> <span id="speed">0</span> przedmiotów/s
+                                    <strong>{% trans "Prędkość:" %}</strong> <span id="speed">0</span> {% trans "przedmiotów/s" %}
                                 </div>
                             </div>
                         </div>
@@ -49,19 +49,19 @@
                     <div class="mt-4 d-flex justify-content-between">
                         {% if next %}
                         <a href="{{ next }}" class="btn btn-outline-secondary" id="back-btn">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
                         </a>
                         {% else %}
                         <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary" id="back-btn">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
                         </a>
                         {% endif %}
                         <div>
                             <button type="button" class="btn btn-success d-none" id="view-shelf-btn">
-                                <i class="fas fa-eye"></i> Zobacz półkę
+                                <i class="fas fa-eye"></i> {% trans "Zobacz półkę" %}
                             </button>
                             <button type="button" class="btn btn-danger" id="cancel-bulk-btn">
-                                <i class="fas fa-times"></i> Anuluj
+                                <i class="fas fa-times"></i> {% trans "Anuluj" %}
                             </button>
                         </div>
                     </div>
@@ -152,7 +152,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">{{ form.manufacturer.label }} <span class="text-muted">{% trans "(opcjonalnie)" %}</span></label>
                                 {{ form.manufacturer }}
                                 {% if form.manufacturer.help_text %}
                                 <div class="form-text">{{ form.manufacturer.help_text }}</div>
@@ -169,7 +169,7 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="{{ form.expiration_date.id_for_label }}" class="form-label">{{ form.expiration_date.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                        <label for="{{ form.expiration_date.id_for_label }}" class="form-label">{{ form.expiration_date.label }} <span class="text-muted">{% trans "(opcjonalnie)" %}</span></label>
                         {{ form.expiration_date }}
                         {% if form.expiration_date.help_text %}
                         <div class="form-text">{{ form.expiration_date.help_text }}</div>
@@ -184,7 +184,7 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }} <span class="text-muted">(opcjonalnie)</span></label>
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }} <span class="text-muted">{% trans "(opcjonalnie)" %}</span></label>
                         {{ form.notes }}
                         {% if form.notes.help_text %}
                         <div class="form-text">{{ form.notes.help_text }}</div>
@@ -201,15 +201,15 @@
                     <div class="d-flex justify-content-between">
                         {% if next %}
                         <a href="{{ next }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
                         </a>
                         {% else %}
                         <a href="{% url 'warehouse:shelf_detail' shelf.pk %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Powrót
+                            <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
                         </a>
                         {% endif %}
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Dodaj przedmiot
+                            <i class="fas fa-save"></i> {% trans "Dodaj przedmiot" %}
                         </button>
                     </div>
                 </form>

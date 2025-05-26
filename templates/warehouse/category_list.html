@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Zarządzanie kategoriami - KSP{% endblock %}
+{% block title %}{% trans "Zarządzanie kategoriami - KSP" %}{% endblock %}
 
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Zarządzanie kategoriami</h5>
+        <h5 class="mb-0">{% trans "Zarządzanie kategoriami" %}</h5>
         <a href="{% url 'warehouse:category_create' %}" class="btn btn-light">
-            <i class="fas fa-plus"></i> Dodaj nową kategorię
+            <i class="fas fa-plus"></i> {% trans "Dodaj nową kategorię" %}
         </a>
     </div>
     <div class="card-body">
@@ -15,8 +15,8 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Nazwa kategorii</th>
-                        <th>Czynności</th>
+                        <th>{% trans "Nazwa kategorii" %}</th>
+                        <th>{% trans "Czynności" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,11 +27,11 @@
                             <div class="btn-group">
                                 <a href="{% url 'warehouse:category_update' category.pk %}"
                                     class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-edit"></i> Edytuj
+                                    <i class="fas fa-edit"></i> {% trans "Edytuj" %}
                                 </a>
                                 <a href="{% url 'warehouse:category_delete' category.pk %}"
                                     class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-trash"></i> Usuń
+                                    <i class="fas fa-trash"></i> {% trans "Usuń" %}
                                 </a>
                             </div>
                         </td>
@@ -39,9 +39,7 @@
                     {% empty %}
                     <div class="alert alert-secondary alert-dismissible fade show" role="alert">
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        Brak kategorii.
-                        <a href="{% url 'warehouse:category_create' %}" class="alert-link">Dodaj pierwszą
-                            kategorię</a>.
+                        {% trans "Brak kategorii do wyświetlenia." %}
                     </div>
                     {% endfor %}
                 </tbody>

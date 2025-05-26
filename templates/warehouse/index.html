@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Strona główna - KSP{% endblock %}
+{% block title %}{% trans "Strona główna - KSP" %}{% endblock %}
 
 {% block content %}
 <!-- Scan QR Button (visible on mobile and tablets) -->
 <div class="row mb-3 scan-qr-btn-row" style="display: flex; justify-content: center;">
     <div class="col-12 d-flex justify-content-center">
-        <button id="scan-qr-btn" class="scan-qr-btn" aria-label="Skanuj kod QR">
+        <button id="scan-qr-btn" class="scan-qr-btn" aria-label="{% trans "Skanuj kod QR" %}">
             <span class="d-flex flex-column align-items-center justify-content-center">
                 <i class="fas fa-qrcode mb-2"></i>
-                <span class="scan-qr-label">Skanuj kod QR</span>
+                <span class="scan-qr-label">{% trans "Skanuj kod QR" %}</span>
             </span>
         </button>
     </div>
@@ -19,18 +19,18 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="qrScannerModalLabel"><i class="fas fa-qrcode me-2"></i>Skanuj kod QR</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="qrScannerModalLabel"><i class="fas fa-qrcode me-2"></i>{% trans "Skanuj kod QR" %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans "Zamknij" %}"></button>
       </div>
       <div class="modal-body">
         <div class="alert alert-info mb-3">
-            <small><i class="fas fa-info-circle me-1"></i>Jeśli pojawi się prośba o dostęp do kamery, wybierz opcję "Zezwól"</small>
+            <small><i class="fas fa-info-circle me-1"></i>{% trans "Jeśli pojawi się prośba o dostęp do kamery, wybierz opcję \"Zezwól\"" %}</small>
         </div>
         <div id="qr-reader" style="width:100%"></div>
         <div id="qr-reader-results" class="mt-3"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Zamknij" %}</button>
       </div>
     </div>
   </div>
@@ -40,7 +40,7 @@
     <div class="col-md-12">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Witaj w Krwinkowym Systemie Prezentowym</h5>
+                <h5 class="mb-0">{% trans "Witaj w Krwinkowym Systemie Prezentowym" %}</h5>
             </div>
             <div class="card-body">
                 <div class="row d-flex flex-wrap justify-content-between">
@@ -48,28 +48,28 @@
                         <a href="{% url 'warehouse:add_new_item' %}?next={{ request.get_full_path|urlencode }}"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-plus-circle me-2"></i>
-                            <span>Dodaj przedmiot</span>
+                            <span>{% trans "Dodaj przedmiot" %}</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-12 mb-2">
                         <a href="{% url 'warehouse:item_list' %}"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-box-open me-2"></i>
-                            <span>Wszystkie przedmioty</span>
+                            <span>{% trans "Wszystkie przedmioty" %}</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-12 mb-2">
                         <a href="{% url 'warehouse:item_list' %}?filter=expiring_soon"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-hourglass-half me-2"></i>
-                            <span>Wkrótce przeterminowane</span>
+                            <span>{% trans "Wkrótce przeterminowane" %}</span>
                         </a>
                     </div>
                     <div class="col-md-3 col-12 mb-2">
                         <a href="{% url 'warehouse:item_list' %}?filter=expired"
                             class="btn btn-primary d-flex align-items-center py-2">
                             <i class="fas fa-calendar-times me-2"></i>
-                            <span>Przeterminowane</span>
+                            <span>{% trans "Przeterminowane" %}</span>
                         </a>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
     <div class="col-md-12">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Pokoje i regały</h5>
+                <h5 class="mb-0">{% trans "Pokoje i regały" %}</h5>
             </div>
             <div class="card-body">
                 <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -93,21 +93,21 @@
                                 <h5 class="mb-0">{{ room.name }}</h5>
                                 <a href="{% url 'warehouse:item_list' %}?room={{ room.id }}"
                                     class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-search"></i> Zobacz przedmioty
+                                    <i class="fas fa-search"></i> {% trans "Zobacz przedmioty" %}
                                 </a>
                             </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div class="text-center">
-                                        <h6 class="text-muted">Regały</h6>
+                                        <h6 class="text-muted">{% trans "Regały" %}</h6>
                                         <p class="fs-4 mb-0">{{ room.rack_count }}</p>
                                     </div>
                                     <div class="text-center">
-                                        <h6 class="text-muted">Półki</h6>
+                                        <h6 class="text-muted">{% trans "Półki" %}</h6>
                                         <p class="fs-4 mb-0">{{ room.shelf_count }}</p>
                                     </div>
                                     <div class="text-center">
-                                        <h6 class="text-muted">Przedmioty</h6>
+                                        <h6 class="text-muted">{% trans "Przedmioty" %}</h6>
                                         <p class="fs-4 mb-0">{{ room.active_items }}</p>
                                     </div>
                                 </div>
@@ -118,8 +118,8 @@
                     <div class="col-12">
                         <div class="alert alert-secondary alert-dismissible fade show" role="alert">
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            Brak pokoi w systemie. {% if user.is_superuser %}<a
-                                href="{% url 'warehouse:room_create' %}">Dodaj pierwszy pokój</a>{% endif %}
+                            {% trans "Brak pokoi w systemie." %} {% if user.is_superuser %}<a
+                                href="{% url 'warehouse:room_create' %}">{% trans "Dodaj pierwszy pokój" %}</a>{% endif %}
                         </div>
                     </div>
                     {% endfor %}
@@ -158,7 +158,7 @@
         resultsContainer.innerHTML = '';
         
         // Show loading message
-        resultsContainer.innerHTML = '<div class="alert alert-info">Uruchamianie kamery...</div>';
+        resultsContainer.innerHTML = '<div class="alert alert-info">{% trans "Uruchamianie kamery..." %}</div>';
     
         
         // Create QR scanner with config
@@ -190,7 +190,7 @@
                     config,
                     (decodedText) => {
                         // On successful scan
-                        resultsContainer.innerHTML = '<div class="alert alert-success">Kod QR odczytany pomyślnie! Przekierowywanie...</div>';
+                        resultsContainer.innerHTML = '<div class="alert alert-success">{% trans "Kod QR odczytany pomyślnie! Przekierowywanie..." %}</div>';
                         
                         // Wait a moment to show success before redirecting
                         setTimeout(() => {
@@ -210,7 +210,7 @@
                         config,
                         (decodedText) => {
                             // On successful scan
-                            resultsContainer.innerHTML = '<div class="alert alert-success">Kod QR odczytany pomyślnie! Przekierowywanie...</div>';
+                            resultsContainer.innerHTML = '<div class="alert alert-success">{% trans "Kod QR odczytany pomyślnie! Przekierowywanie..." %}</div>';
                             
                             // Wait a moment to show success before redirecting
                             setTimeout(() => {
@@ -231,54 +231,54 @@
                         
                         if (userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1) {
                             // Safari
-                            browserSpecificHelp = '<p><strong>Instrukcje dla Safari:</strong></p>' +
+                            browserSpecificHelp = '<p><strong>{% trans "Instrukcje dla Safari:" %}</strong></p>' +
                                 '<ol>' +
-                                '<li>Otwórz Ustawienia > Safari</li>' +
-                                '<li>Przejdź do "Ustawienia stron"</li>' +
-                                '<li>Wybierz "Aparat" i zezwól na dostęp dla tej strony</li>' +
-                                '<li>Wrócić i odświeżyć stronę</li>' +
+                                '<li>{% trans "Otwórz Ustawienia > Safari" %}</li>' +
+                                '<li>{% trans "Przejdź do \"Ustawienia stron\"" %}</li>' +
+                                '<li>{% trans "Wybierz \"Aparat\" i zezwól na dostęp dla tej strony" %}</li>' +
+                                '<li>{% trans "Wrócić i odświeżyć stronę" %}</li>' +
                                 '</ol>';
                         } else if (userAgent.indexOf('chrome') !== -1) {
                             // Chrome
-                            browserSpecificHelp = '<p><strong>Instrukcje dla Chrome:</strong></p>' +
+                            browserSpecificHelp = '<p><strong>{% trans "Instrukcje dla Chrome:" %}</strong></p>' +
                                 '<ol>' +
-                                '<li>Dotknij ikony 🔒 (kłódka) obok adresu URL</li>' +
-                                '<li>Upewnij się, że "Kamera" ma status "Zezwól"</li>' +
-                                '<li>Jeśli nie, zmień ustawienie i odśwież stronę</li>' +
+                                '<li>{% trans "Dotknij ikony 🔒 (kłódka) obok adresu URL" %}</li>' +
+                                '<li>{% trans "Upewnij się, że \"Kamera\" ma status \"Zezwól\"" %}</li>' +
+                                '<li>{% trans "Jeśli nie, zmień ustawienie i odśwież stronę" %}</li>' +
                                 '</ol>';
                         } else if (userAgent.indexOf('firefox') !== -1) {
                             // Firefox
-                            browserSpecificHelp = '<p><strong>Instrukcje dla Firefox:</strong></p>' +
+                            browserSpecificHelp = '<p><strong>{% trans "Instrukcje dla Firefox:" %}</strong></p>' +
                                 '<ol>' +
-                                '<li>Dotknij ikony ⋮ (menu) w prawym górnym rogu</li>' +
-                                '<li>Wybierz "Ustawienia witryny"</li>' +
-                                '<li>Znajdź "Kamera" i zezwól na dostęp</li>' +
-                                '<li>Odśwież stronę</li>' +
+                                '<li>{% trans "Dotknij ikony ⋮ (menu) w prawym górnym rogu" %}</li>' +
+                                '<li>{% trans "Wybierz \"Ustawienia witryny\"" %}</li>' +
+                                '<li>{% trans "Znajdź \"Kamera\" i zezwól na dostęp" %}</li>' +
+                                '<li>{% trans "Odśwież stronę" %}</li>' +
                                 '</ol>';
                         }
                         
                         resultsContainer.innerHTML = 
                             '<div class="alert alert-danger">' +
-                            '<p><strong>Nie można uzyskać dostępu do kamery:</strong> ' + cameraErr + '</p>' +
-                            '<p>Możliwe rozwiązania:</p>' +
+                            '<p><strong>{% trans "Nie można uzyskać dostępu do kamery:" %}</strong> ' + cameraErr + '</p>' +
+                            '<p>{% trans "Możliwe rozwiązania:" %}</p>' +
                             '<ul>' +
-                            '<li>Przyznaj uprawnienia do kamery w ustawieniach przeglądarki</li>' +
-                            '<li>Sprawdź, czy kamera nie jest używana przez inną aplikację</li>' +
-                            '<li>Spróbuj użyć innej przeglądarki (Chrome, Safari lub Firefox)</li>' +
-                            '<li>Jeśli korzystasz z trybu prywatnego/incognito, przejdź do trybu normalnego</li>' +
+                            '<li>{% trans "Przyznaj uprawnienia do kamery w ustawieniach przeglądarki" %}</li>' +
+                            '<li>{% trans "Sprawdź, czy kamera nie jest używana przez inną aplikację" %}</li>' +
+                            '<li>{% trans "Spróbuj użyć innej przeglądarki (Chrome, Safari lub Firefox)" %}</li>' +
+                            '<li>{% trans "Jeśli korzystasz z trybu prywatnego/incognito, przejdź do trybu normalnego" %}</li>' +
                             '</ul>' +
                             browserSpecificHelp +
-                            '<p class="mt-3"><button class="btn btn-sm btn-primary" onclick="startQRScanner()">Spróbuj ponownie</button></p>' +
+                            '<p class="mt-3"><button class="btn btn-sm btn-primary" onclick="startQRScanner()">{% trans "Spróbuj ponownie" %}</button></p>' +
                             '</div>';
                     });
                 });
             } else {
                 // No cameras detected
-                resultsContainer.innerHTML = '<div class="alert alert-danger">Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i przyznaj aplikacji uprawnienia do jej używania.</div>';
+                resultsContainer.innerHTML = '<div class="alert alert-danger">{% trans "Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i przyznaj aplikacji uprawnienia do jej używania." %}</div>';
             }
         }).catch(err => {
             // Error getting camera list
-            resultsContainer.innerHTML = '<div class="alert alert-danger">Nie można uzyskać dostępu do listy kamer: ' + err + '. Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki.</div>';
+            resultsContainer.innerHTML = '<div class="alert alert-danger">{% trans "Nie można uzyskać dostępu do listy kamer:" %} ' + err + '. {% trans "Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki." %}</div>';
         });
         
         // Stop scanner on modal close

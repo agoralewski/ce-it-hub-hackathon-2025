@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Szczegóły półki - KSP{% endblock %}
+{% block title %}{% trans %}Szczegóły półki{% endtrans %} - KSP{% endblock %}
 
 {% block content %}
 <div class="row shelf-summary-row">
@@ -14,7 +14,7 @@
                             <i class="fas fa-archive fa-2x"></i>
                         </div>
                         <div>
-                            <h3 class="mb-0">Półka {{ shelf.full_location }}</h3>
+                            <h3 class="mb-0">{% trans %}Półka{% endtrans %} {{ shelf.full_location }}</h3>
                             <p class="text-muted mb-0">
                                 <i class="fas fa-map-marker-alt me-1"></i> {{ shelf.rack.room.name }} /
                                 <i class="fas fa-grip-vertical me-1"></i> {{ shelf.rack.name }} /
@@ -27,14 +27,14 @@
                     <div class="d-grid gap-2">
                         <div class="btn-group">
                             <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary add-item-btn">
-                                <i class="fas fa-plus"></i> Dodaj przedmiot
+                                <i class="fas fa-plus"></i> {% trans %}Dodaj przedmiot{% endtrans %}
                             </a>
                             <a href="{% url 'warehouse:shelf_clean' shelf.pk %}" class="btn btn-outline-warning">
-                                <i class="fas fa-broom"></i> Wyczyść półkę
+                                <i class="fas fa-broom"></i> {% trans %}Wyczyść półkę{% endtrans %}
                             </a>
                         </div>
                         <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-list"></i> Zobacz przedmioty
+                            <i class="fas fa-list"></i> {% trans %}Zobacz przedmioty{% endtrans %}
                         </a>
                     </div>
                 </div>
