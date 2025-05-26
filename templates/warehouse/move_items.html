@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Przenieś przedmioty - KSP{% endblock %}
+{% block title %}{% trans "Przenieś przedmioty - KSP" %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -31,23 +31,23 @@
     <div class="col-md-8">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">{% if items_count == 1 %}Przenieś przedmiot{% else %}Przenieś przedmioty{% endif %}</h5>
+                <h5 class="mb-0">{% if items_count == 1 %}{% trans "Przenieś przedmiot" %}{% else %}{% trans "Przenieś przedmioty" %}{% endif %}</h5>
             </div>
             <div class="card-body">
                 <!-- Source info section -->
                 <div class="source-info mb-4">
-                    <h6 class="text-muted mb-3">Źródło</h6>
+                    <h6 class="text-muted mb-3">{% trans "Źródło" %}</h6>
                     <div class="alert alert-info">
                         <div class="fw-bold mb-2">{{ item_name }}</div>
                         <div class="d-flex justify-content-between">
                             <div>
-                                <div><strong>Kategoria:</strong> {{ category.name }}</div>
-                                {% if manufacturer %}<div><strong>Producent:</strong> {{ manufacturer }}</div>{% endif %}
-                                {% if expiration_date %}<div><strong>Data ważności:</strong> {{ expiration_date }}</div>{% endif %}
+                                <div><strong>{% trans "Kategoria" %}:</strong> {{ category.name }}</div>
+                                {% if manufacturer %}<div><strong>{% trans "Producent" %}:</strong> {{ manufacturer }}</div>{% endif %}
+                                {% if expiration_date %}<div><strong>{% trans "Data ważności" %}:</strong> {{ expiration_date }}</div>{% endif %}
                             </div>
                             <div class="text-end">
-                                <div><strong>Lokalizacja:</strong> {{ source_shelf.full_location }}</div>
-                                <div><strong>Liczba przedmiotów:</strong> {{ items_count }}</div>
+                                <div><strong>{% trans "Lokalizacja" %}:</strong> {{ source_shelf.full_location }}</div>
+                                <div><strong>{% trans "Liczba przedmiotów" %}:</strong> {{ items_count }}</div>
                             </div>
                         </div>
                     </div>
@@ -57,12 +57,12 @@
                     {% csrf_token %}
                     
                     <div class="form-section">
-                        <h6 class="text-muted mb-3">Wybierz docelową lokalizację</h6>
+                        <h6 class="text-muted mb-3">{% trans "Wybierz docelową lokalizację" %}</h6>
                         
                         <div class="form-group">
-                            <label for="room" class="form-label">Pokój</label>
+                            <label for="room" class="form-label">{% trans "Pokój" %}</label>
                             <select name="room" id="room" class="form-control room-select" required>
-                                <option value="">Wybierz pokój</option>
+                                <option value="">{% trans "Wybierz pokój" %}</option>
                                 {% for room in rooms %}
                                 <option value="{{ room.id }}">{{ room.name }}</option>
                                 {% endfor %}
@@ -70,16 +70,16 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="rack" class="form-label">Regał</label>
+                            <label for="rack" class="form-label">{% trans "Regał" %}</label>
                             <select name="rack" id="rack" class="form-control rack-select" required disabled>
-                                <option value="">Wybierz najpierw pokój</option>
+                                <option value="">{% trans "Wybierz najpierw pokój" %}</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="shelf" class="form-label">Półka</label>
+                            <label for="shelf" class="form-label">{% trans "Półka" %}</label>
                             <select name="shelf" id="shelf" class="form-control shelf-select" required disabled>
-                                <option value="">Wybierz najpierw regał</option>
+                                <option value="">{% trans "Wybierz najpierw regał" %}</option>
                             </select>
                         </div>
                     </div>
@@ -87,15 +87,15 @@
                     <div class="mt-4 d-flex justify-content-between">
                         {% if assignment %}
                         <a href="{% url 'warehouse:shelf_detail' source_shelf.id %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Anuluj
+                            <i class="fas fa-arrow-left"></i> {% trans "Anuluj" %}
                         </a>
                         {% else %}
                         <a href="{% url 'warehouse:item_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Anuluj
+                            <i class="fas fa-arrow-left"></i> {% trans "Anuluj" %}
                         </a>
                         {% endif %}
                         <button type="submit" class="btn btn-success" id="submit-btn" disabled>
-                            <i class="fas fa-exchange-alt"></i> Przenieś przedmioty
+                            <i class="fas fa-exchange-alt"></i> {% trans "Przenieś przedmioty" %}
                         </button>
                     </div>
                 </form>

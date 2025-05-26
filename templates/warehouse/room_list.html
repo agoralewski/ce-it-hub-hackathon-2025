@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Zarządzanie pokojami - KSP{% endblock %}
+{% block title %}{% trans %}Zarządzanie pokojami{% endtrans %} - KSP{% endblock %}
 
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Zarządzanie pokojami, regałami i półkami</h5>
+        <h5 class="mb-0">{% trans %}Zarządzanie pokojami, regałami i półkami{% endtrans %}</h5>
         <a href="{% url 'warehouse:room_create' %}" class="btn btn-light">
-            <i class="fas fa-plus"></i> Dodaj nowy pokój
+            <i class="fas fa-plus"></i> {% trans %}Dodaj nowy pokój{% endtrans %}
         </a>
     </div>
     <div class="card-body">
@@ -28,19 +28,19 @@
                          id="roomButtons{{ room.id }}">
                         <a href="{% url 'warehouse:room_update' room.pk %}"
                             class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-edit"></i> Edytuj
+                            <i class="fas fa-edit"></i> {% trans %}Edytuj{% endtrans %}
                         </a>
                         <a href="{% url 'warehouse:room_delete' room.pk %}"
                             class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash"></i> Usuń
+                            <i class="fas fa-trash"></i> {% trans %}Usuń{% endtrans %}
                         </a>
                         <a href="{% url 'warehouse:room_clean' room.pk %}"
                             class="btn btn-sm btn-outline-warning">
-                            <i class="fas fa-broom"></i> Wyczyść
+                            <i class="fas fa-broom"></i> {% trans %}Wyczyść{% endtrans %}
                         </a>
                         <a href="{% url 'warehouse:rack_create' room.pk %}"
                             class="btn btn-sm btn-outline-success">
-                            <i class="fas fa-plus"></i> Dodaj regał
+                            <i class="fas fa-plus"></i> {% trans %}Dodaj regał{% endtrans %}
                         </a>
                     </div>
                 </h2>
