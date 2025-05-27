@@ -84,19 +84,19 @@ msgstr "Manage Categories"
 
 #: templates/registration/logged_out.html:3
 msgid "Wylogowano - KSP"
-msgstr ""
+msgstr "Logged Out - KSP"
 
 #: templates/registration/logged_out.html:10
 msgid "Wylogowano"
-msgstr ""
+msgstr "Logged Out"
 
 #: templates/registration/logged_out.html:13
 msgid "Zostałeś pomyślnie wylogowany z systemu KSP."
-msgstr ""
+msgstr "You have been successfully logged out of the KSP system."
 
 #: templates/registration/logged_out.html:14
 msgid "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
-msgstr ""
+msgstr "Thank you for using the Blood Gift System!"
 
 #: templates/registration/logged_out.html:17
 msgid "Zaloguj się ponownie"
@@ -493,7 +493,7 @@ msgstr "Save changes"
 
 #: templates/warehouse/export_form.html:4
 msgid "Eksport inwentarza - KSP"
-msgstr ""
+msgstr "Export Inventory - KSP"
 
 #: templates/warehouse/export_form.html:9
 msgid "Eksport inwentarza do Excela"
@@ -505,41 +505,39 @@ msgstr "Inventory has been successfully exported."
 
 #: templates/warehouse/export_form.html:24
 msgid "Wybierz, aby eksportować tylko zawartość wybranego pokoju."
-msgstr ""
+msgstr "Select to export only the contents of the selected room."
 
 #: templates/warehouse/export_form.html:29
 msgid "Wybierz, aby eksportować tylko zawartość wybranego regału."
-msgstr ""
+msgstr "Select to export only the contents of the selected rack."
 
 #: templates/warehouse/export_form.html:34
 msgid "Wybierz, aby eksportować tylko zawartość wybranej półki."
-msgstr ""
+msgstr "Select to export only the contents of the selected shelf."
 
 #: templates/warehouse/export_form.html:42
 msgid "Wybierz, aby eksportować tylko przedmioty z wybranej kategorii."
-msgstr ""
+msgstr "Select to export only items from the selected category."
 
 #: templates/warehouse/export_form.html:51
 msgid "Eksportuj"
-msgstr ""
+msgstr "Export"
 
 #: templates/warehouse/generate_qr_codes.html:4
 msgid "Generowanie kodów QR - KSP"
-msgstr ""
+msgstr "Generate QR Codes - KSP"
 
 #: templates/warehouse/generate_qr_codes.html:9
 msgid "Generowanie kodów QR dla półek"
-msgstr ""
+msgstr "Generate QR Codes for Shelves"
 
 #: templates/warehouse/generate_qr_codes.html:15
-msgid ""
-"Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać "
-"linki do stron z detalami półek."
-msgstr ""
+msgid "Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać linki do stron z detalami półek."
+msgstr "Select shelves for which you want to generate QR codes. The codes will contain links to shelf detail pages."
 
 #: templates/warehouse/generate_qr_codes.html:28
 msgid "Zaznacz wszystkie"
-msgstr ""
+msgstr "Select All"
 
 #: templates/warehouse/generate_qr_codes.html:31
 #: templates/warehouse/history_list.html:136
@@ -552,11 +550,11 @@ msgstr "Location"
 #: templates/warehouse/room_list.html:85
 #: templates/warehouse/shelf_detail.html:79
 msgid "Numer półki"
-msgstr ""
+msgstr "Shelf Number"
 
 #: templates/warehouse/generate_qr_codes.html:57
 msgid "Generuj kody QR"
-msgstr ""
+msgstr "Generate QR Codes"
 
 #: templates/warehouse/history_list.html:5
 #, fuzzy
@@ -572,25 +570,26 @@ msgstr "Change History"
 
 #: templates/warehouse/history_list.html:50
 msgid "Tylko dodawanie"
-msgstr ""
+msgstr "Only Additions"
 
 #: templates/warehouse/history_list.html:56
 msgid "Tylko usuwanie"
-msgstr ""
+msgstr "Only Removals"
 
 #: templates/warehouse/history_list.html:62
 #: templates/warehouse/history_list.html:63
-#: templates/warehouse/item_list.html:64 templates/warehouse/item_list.html:65
+#: templates/warehouse/item_list.html:64 
+#: templates/warehouse/item_list.html:65
 msgid "Wyczyść filtry"
-msgstr ""
+msgstr "Clear Filters"
 
 #: templates/warehouse/history_list.html:103
 msgid "Data od"
-msgstr ""
+msgstr "Date From"
 
 #: templates/warehouse/history_list.html:108
 msgid "Data do"
-msgstr ""
+msgstr "Date To"
 
 #: templates/warehouse/history_list.html:118
 msgid "Showing"
@@ -611,7 +610,7 @@ msgstr ""
 
 #: templates/warehouse/history_list.html:130
 msgid "Przedmiot"
-msgstr ""
+msgstr "Item"
 
 #: templates/warehouse/history_list.html:131
 #, fuzzy
@@ -621,15 +620,15 @@ msgstr "Registration"
 
 #: templates/warehouse/history_list.html:132
 msgid "Data"
-msgstr ""
+msgstr "Date"
 
 #: templates/warehouse/history_list.html:133
 msgid "Użytkownik"
-msgstr ""
+msgstr "User"
 
 #: templates/warehouse/history_list.html:134
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: templates/warehouse/history_list.html:135
 #: templates/warehouse/item_list.html:101
@@ -643,15 +642,15 @@ msgstr "Category"
 
 #: templates/warehouse/history_list.html:145
 msgid "Usunięto"
-msgstr ""
+msgstr "Removed"
 
 #: templates/warehouse/history_list.html:147
 msgid "Dodano"
-msgstr ""
+msgstr "Added"
 
 #: templates/warehouse/history_list.html:180
 msgid "Brak historii spełniającej kryteria."
-msgstr ""
+msgstr "No history matching the criteria."
 
 #: templates/warehouse/history_list.html:193
 #: templates/warehouse/history_list.html:200
@@ -667,17 +666,17 @@ msgstr "First name:"
 #: templates/warehouse/item_list.html:252
 #: templates/warehouse/item_list.html:259
 msgid "Previous"
-msgstr ""
+msgstr "Previous"
 
 #: templates/warehouse/history_list.html:221
 #: templates/warehouse/history_list.html:228
 msgid "Next"
-msgstr ""
+msgstr "Next"
 
 #: templates/warehouse/history_list.html:224
 #: templates/warehouse/history_list.html:231
 msgid "Last"
-msgstr ""
+msgstr "Last"
 
 #: templates/warehouse/history_list.html:299
 msgid "Szukaj przedmiotu"
@@ -857,15 +856,15 @@ msgstr ""
 
 #: templates/warehouse/item_list.html:5
 msgid "Przedmioty - KSP"
-msgstr ""
+msgstr "Items - KSP"
 
 #: templates/warehouse/item_list.html:17
 msgid "Przedmioty w magazynie"
-msgstr ""
+msgstr "Warehouse Items"
 
 #: templates/warehouse/item_list.html:56
 msgid "Z notatką"
-msgstr ""
+msgstr "With Note"
 
 #: templates/warehouse/item_list.html:133
 msgid "Nazwa"
@@ -888,7 +887,7 @@ msgstr "Expiration date"
 #: templates/warehouse/item_list.html:175
 #: templates/warehouse/item_list.html:228
 msgid "Dodaj kolejny"
-msgstr ""
+msgstr "Add Another"
 
 #: templates/warehouse/item_list.html:178
 #: templates/warehouse/item_list.html:231
@@ -905,19 +904,19 @@ msgstr ""
 #: templates/warehouse/item_list.html:190
 #: templates/warehouse/item_list.html:239
 msgid "Brak przedmiotów spełniających kryteria."
-msgstr ""
+msgstr "No items matching the criteria."
 
 #: templates/warehouse/low_stock.html:4
 msgid "Niski stan magazynowy - KSP"
-msgstr ""
+msgstr "Low Stock - KSP"
 
 #: templates/warehouse/low_stock.html:9
 msgid "Kategorie z niskim stanem magazynowym"
-msgstr ""
+msgstr "Categories with Low Stock"
 
 #: templates/warehouse/low_stock.html:31
 msgid "Brak kategorii z niskim stanem magazynowym."
-msgstr ""
+msgstr "No categories with low stock."
 
 #: templates/warehouse/move_items.html:5
 msgid "Przenieś przedmioty - KSP"
@@ -929,15 +928,15 @@ msgstr "Move item"
 
 #: templates/warehouse/move_items.html:40
 msgid "Źródło"
-msgstr ""
+msgstr "Source"
 
 #: templates/warehouse/move_items.html:51
 msgid "Liczba przedmiotów"
-msgstr ""
+msgstr "Number of Items"
 
 #: templates/warehouse/move_items.html:61
 msgid "Wybierz docelową lokalizację"
-msgstr ""
+msgstr "Select Target Location"
 
 #: templates/warehouse/profile.html:3
 msgid "User Profile - KSP"
@@ -1038,7 +1037,7 @@ msgstr "Manage categories"
 
 #: templates/warehouse/rack_form.html:11
 msgid "w pokoju"
-msgstr ""
+msgstr "in room"
 
 #: templates/warehouse/remove_item.html:4
 #: templates/warehouse/remove_item.html:43
@@ -1209,11 +1208,11 @@ msgstr ""
 
 #: templates/warehouse/shelf_detail.html:4
 msgid "Szczegóły półki"
-msgstr ""
+msgstr "Shelf Details"
 
 #: templates/warehouse/shelf_detail.html:51
 msgid "Informacje o półce"
-msgstr ""
+msgstr "Shelf Information"
 
 #: templates/warehouse/shelf_detail.html:86
 #, fuzzy
@@ -1223,19 +1222,19 @@ msgstr "items/s"
 
 #: templates/warehouse/shelf_detail.html:94
 msgid "Prawie przeterminowane"
-msgstr ""
+msgstr "Almost Expired"
 
 #: templates/warehouse/shelf_detail.html:108
 msgid "Kod QR"
-msgstr ""
+msgstr "QR Code"
 
 #: templates/warehouse/shelf_detail.html:118
 msgid "Zeskanuj kod QR, aby szybko przejść do tej półki."
-msgstr ""
+msgstr "Scan the QR code to quickly access this shelf."
 
 #: templates/warehouse/shelf_detail.html:121
 msgid "Drukuj kod QR"
-msgstr ""
+msgstr "Print QR Code"
 
 #: templates/warehouse/shelf_form.html:4
 #, fuzzy
@@ -1245,7 +1244,7 @@ msgstr "Manage categories"
 
 #: templates/warehouse/shelf_form.html:11
 msgid "na regale"
-msgstr ""
+msgstr "on rack"
 
 #: warehouse/views/account.py:61
 msgid "Zostałeś pomyślnie wylogowany."
