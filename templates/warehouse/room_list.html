@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans %}Zarządzanie pokojami{% endtrans %} - KSP{% endblock %}
+{% block title %}{% trans "Zarządzanie pokojami" %} - KSP{% endblock %}
 
 {% block content %}
 <div class="card shadow mb-4">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">{% trans %}Zarządzanie pokojami, regałami i półkami{% endtrans %}</h5>
+        <h5 class="mb-0">{% trans "Zarządzanie pokojami, regałami i półkami" %}</h5>
         <a href="{% url 'warehouse:room_create' %}" class="btn btn-light">
-            <i class="fas fa-plus"></i> {% trans %}Dodaj nowy pokój{% endtrans %}
+            <i class="fas fa-plus"></i> {% trans "Dodaj nowy pokój" %}
         </a>
     </div>
     <div class="card-body">
@@ -29,19 +29,19 @@
                          id="roomButtons{{ room.id }}">
                         <a href="{% url 'warehouse:room_update' room.pk %}"
                             class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-edit"></i> {% trans %}Edytuj{% endtrans %}
+                            <i class="fas fa-edit"></i> {% trans "Edytuj" %}
                         </a>
                         <a href="{% url 'warehouse:room_delete' room.pk %}"
                             class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash"></i> {% trans %}Usuń{% endtrans %}
+                            <i class="fas fa-trash"></i> {% trans "Usuń" %}
                         </a>
                         <a href="{% url 'warehouse:room_clean' room.pk %}"
                             class="btn btn-sm btn-outline-warning">
-                            <i class="fas fa-broom"></i> {% trans %}Wyczyść{% endtrans %}
+                            <i class="fas fa-broom"></i> {% trans "Wyczyść" %}
                         </a>
                         <a href="{% url 'warehouse:rack_create' room.pk %}"
                             class="btn btn-sm btn-outline-success">
-                            <i class="fas fa-plus"></i> {% trans %}Dodaj regał{% endtrans %}
+                            <i class="fas fa-plus"></i> {% trans "Dodaj regał" %}
                         </a>
                     </div>
                 </h2>
@@ -55,7 +55,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">
                                         <i class="fas fa-archive me-2"></i>
-                                        Regał {{ rack.name }}
+                                        {% trans "Regał" %} {{ rack.name }}
                                     </h6>
                                     <div class="btn-group">
                                         <a href="{% url 'warehouse:rack_update' rack.pk %}"
@@ -72,7 +72,7 @@
                                         </a>
                                         <a href="{% url 'warehouse:shelf_create' rack.pk %}"
                                             class="btn btn-sm btn-outline-success">
-                                            <i class="fas fa-plus"></i> Dodaj półkę
+                                            <i class="fas fa-plus"></i> {% trans "Dodaj półkę" %}
                                         </a>
                                     </div>
                                 </div>
@@ -82,9 +82,9 @@
                                     <table class="table table-sm table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Numer półki</th>
-                                                <th>Pełna lokalizacja</th>
-                                                <th>Czynności</th>
+                                                <th>{% trans "Numer półki" %}</th>
+                                                <th>{% trans "Pełna lokalizacja" %}</th>
+                                                <th>{% trans "Czynności" %}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -115,7 +115,7 @@
                                             </tr>
                                             {% empty %}
                                             <tr>
-                                                <td colspan="3" class="text-center">Brak półek w tym regale.</td>
+                                                <td colspan="3" class="text-center">{% trans "Brak półek w tym regale." %}</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -126,9 +126,8 @@
                         {% empty %}
                         <div class="alert alert-secondary alert-dismissible fade show" role="alert">
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            Brak regałów w tym pokoju.
-                            <a href="{% url 'warehouse:rack_create' room.pk %}" class="alert-link">Dodaj pierwszy
-                                regał</a>.
+                            {% trans "Brak regałów w tym pokoju." %}
+                            <a href="{% url 'warehouse:rack_create' room.pk %}" class="alert-link">{% trans "Dodaj pierwszy regał" %}</a>.
                         </div>
                         {% endfor %}
                     </div>
@@ -138,8 +137,8 @@
         </div>
         {% else %}
         <tr>
-            Brak pokoi w systemie.
-            <a href="{% url 'warehouse:room_create' %}" class="alert-link">Dodaj pierwszy pokój</a>.
+            {% trans "Brak pokoi w systemie." %}
+            <a href="{% url 'warehouse:room_create' %}" class="alert-link">{% trans "Dodaj pierwszy pokój" %}</a>.
         </tr>
         {% endif %}
     </div>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans %}Szczegóły półki{% endtrans %} - KSP{% endblock %}
+{% block title %}{% trans "Szczegóły półki" %} - KSP{% endblock %}
 
 {% block content %}
 <div class="row shelf-summary-row">
@@ -15,7 +15,7 @@
                             <i class="fas fa-archive fa-2x"></i>
                         </div>
                         <div>
-                            <h3 class="mb-0">{% trans %}Półka{% endtrans %} {{ shelf.full_location }}</h3>
+                            <h3 class="mb-0">{% trans "Półka" %} {{ shelf.full_location }}</h3>
                             <p class="text-muted mb-0">
                                 <i class="fas fa-map-marker-alt me-1"></i> {{ shelf.rack.room.name }} /
                                 <i class="fas fa-grip-vertical me-1"></i> {{ shelf.rack.name }} /
@@ -28,14 +28,14 @@
                     <div class="d-grid gap-2">
                         <div class="btn-group">
                             <a href="{% url 'warehouse:add_item_to_shelf' shelf.pk %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary add-item-btn">
-                                <i class="fas fa-plus"></i> {% trans %}Dodaj przedmiot{% endtrans %}
+                                <i class="fas fa-plus"></i> {% trans "Dodaj przedmiot" %}
                             </a>
                             <a href="{% url 'warehouse:shelf_clean' shelf.pk %}" class="btn btn-outline-warning">
-                                <i class="fas fa-broom"></i> {% trans %}Wyczyść półkę{% endtrans %}
+                                <i class="fas fa-broom"></i> {% trans "Wyczyść półkę" %}
                             </a>
                         </div>
                         <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-list"></i> {% trans %}Zobacz przedmioty{% endtrans %}
+                            <i class="fas fa-list"></i> {% trans "Zobacz przedmioty" %}
                         </a>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
         <div class="card shadow mb-4 h-100">
             <div class="card-header bg-white border-bottom border-primary">
                 <h5 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i> Informacje o półce
+                    <i class="fas fa-info-circle me-2"></i> {% trans "Informacje o półce" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -58,7 +58,7 @@
                             <i class="fas fa-warehouse text-primary"></i>
                         </div>
                         <div>
-                            <div class="text-muted small">Pokój</div>
+                            <div class="text-muted small">{% trans "Pokój" %}</div>
                             <div class="fw-bold">{{ shelf.rack.room.name }}</div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                             <i class="fas fa-grip-vertical text-primary"></i>
                         </div>
                         <div>
-                            <div class="text-muted small">Regał</div>
+                            <div class="text-muted small">{% trans "Regał" %}</div>
                             <div class="fw-bold">{{ shelf.rack.name }}</div>
                         </div>
                     </div>
@@ -76,22 +76,22 @@
                             <i class="fas fa-layer-group text-primary"></i>
                         </div>
                         <div>
-                            <div class="text-muted small">Numer półki</div>
+                            <div class="text-muted small">{% trans "Numer półki" %}</div>
                             <div class="fw-bold">{{ shelf.number }}</div>
                         </div>
                     </div>
                     <hr>
                     <div class="shelf-summary-badges d-flex justify-content-between text-center mb-2 align-items-end" style="min-height: 70px; gap: 2.2rem;">
                         <div class="flex-fill d-flex flex-column justify-content-end">
-                            <div class="small text-muted mb-2" style="min-height:2.5em;">Suma przedmiotów</div>
+                            <div class="small text-muted mb-2" style="min-height:2.5em;">{% trans "Suma przedmiotów" %}</div>
                             <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}" class="badge badge-shelf-total fs-5 align-middle text-decoration-none" style="cursor:pointer;">{{ total_count|default:'0' }}</a>
                         </div>
                         <div class="flex-fill d-flex flex-column justify-content-end">
-                            <div class="small text-muted mb-2" style="min-height:2.5em;">Przeterminowane</div>
+                            <div class="small text-muted mb-2" style="min-height:2.5em;">{% trans "Przeterminowane" %}</div>
                             <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}&filter=expired" class="badge bg-danger fs-5 align-middle text-decoration-none" style="cursor:pointer;">{{ expired_count|default:'0' }}</a>
                         </div>
                         <div class="flex-fill d-flex flex-column justify-content-end">
-                            <div class="small text-muted mb-2" style="min-height:2.5em;">Prawie przeterminowane</div>
+                            <div class="small text-muted mb-2" style="min-height:2.5em;">{% trans "Prawie przeterminowane" %}</div>
                             <a href="{% url 'warehouse:item_list' %}?shelf={{ shelf.pk }}&filter=expiring_soon" class="badge bg-warning text-dark fs-5 align-middle text-decoration-none" style="cursor:pointer;">{{ nearly_expired_count|default:'0' }}</a>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
         <div class="card shadow h-100">
             <div class="card-header bg-white border-bottom border-primary">
                 <h5 class="mb-0">
-                    <i class="fas fa-qrcode me-2"></i> Kod QR
+                    <i class="fas fa-qrcode me-2"></i> {% trans "Kod QR" %}
                 </h5>
             </div>
             <div class="card-body text-center">
@@ -115,10 +115,10 @@
                 </div>
                 <p class="text-muted">
                     <i class="fas fa-mobile-alt me-1"></i>
-                    Zeskanuj kod QR, aby szybko przejść do tej półki.
+                    {% trans "Zeskanuj kod QR, aby szybko przejść do tej półki." %}
                 </p>
                 <button class="btn btn-sm btn-outline-primary mt-2" onclick="window.print()">
-                    <i class="fas fa-print"></i> Drukuj kod QR
+                    <i class="fas fa-print"></i> {% trans "Drukuj kod QR" %}
                 </button>
             </div>
         </div>
