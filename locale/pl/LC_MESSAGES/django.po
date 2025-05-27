@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27 10:51+0200\n"
+"POT-Creation-Date: 2025-05-27 11:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -323,8 +323,10 @@ msgid "Wybierz lokalizację przedmiotu"
 msgstr "Wybierz lokalizację przedmiotu"
 
 #: templates/warehouse/add_new_item.html:22
-msgid "Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
-msgstr "Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
+msgid ""
+"Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
+msgstr ""
+"Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
 
 #: templates/warehouse/add_new_item.html:25
 #: templates/warehouse/generate_qr_codes.html:33
@@ -393,13 +395,15 @@ msgstr "Czy na pewno chcesz usunąć kategorię"
 #: templates/warehouse/shelf_clean.html:19
 #: templates/warehouse/shelf_delete.html:19
 msgid "Uwaga!"
-msgstr ""
+msgstr "Uwaga!"
 
 #: templates/warehouse/category_delete.html:19
 msgid ""
 "Ta kategoria zawiera przedmioty. Nie można usunąć kategorii, która jest "
 "używana przez przedmioty."
 msgstr ""
+"Ta kategoria zawiera przedmioty. Nie można usunąć kategorii, która jest "
+"używana przez przedmioty."
 
 #: templates/warehouse/category_delete.html:30
 #: templates/warehouse/category_list.html:35
@@ -408,96 +412,96 @@ msgstr ""
 #: templates/warehouse/room_list.html:36
 #: templates/warehouse/shelf_delete.html:30
 msgid "Usuń"
-msgstr ""
+msgstr "Usuń"
 
 #: templates/warehouse/category_form.html:4
 #: templates/warehouse/category_list.html:9
 msgid "Zarządzanie kategoriami"
-msgstr ""
+msgstr "Zarządzanie kategoriami"
 
 #: templates/warehouse/category_form.html:49
 #: templates/warehouse/rack_form.html:49 templates/warehouse/room_form.html:49
 #: templates/warehouse/shelf_form.html:51
 msgid "Zapisz"
-msgstr ""
+msgstr "Zapisz"
 
 #: templates/warehouse/category_list.html:4
 msgid "Zarządzanie kategoriami - KSP"
-msgstr ""
+msgstr "Zarządzanie kategoriami - KSP"
 
 #: templates/warehouse/category_list.html:11
 msgid "Dodaj nową kategorię"
-msgstr ""
+msgstr "Dodaj nową kategorię"
 
 #: templates/warehouse/category_list.html:19
 #, fuzzy
 #| msgid "Manage Categories"
 msgid "Nazwa kategorii"
-msgstr "Zarządzaj kategoriami"
+msgstr "Nazwa kategorii"
 
 #: templates/warehouse/category_list.html:20
 #: templates/warehouse/item_list.html:139 templates/warehouse/room_list.html:87
 msgid "Czynności"
-msgstr ""
+msgstr "Czynności"
 
 #: templates/warehouse/category_list.html:31
 #: templates/warehouse/room_list.html:32
 #, fuzzy
 #| msgid "Edytuj profil"
 msgid "Edytuj"
-msgstr "Edytuj profil"
+msgstr "Edytuj"
 
 #: templates/warehouse/category_list.html:43
 msgid "Brak kategorii do wyświetlenia."
-msgstr ""
+msgstr "Brak kategorii do wyświetlenia."
 
 #: templates/warehouse/change_password.html:5
 #, fuzzy
 #| msgid "Resetowanie hasła - KSP"
 msgid "Zmiana hasła - KSP"
-msgstr "Resetowanie hasła - KSP"
+msgstr "Zmiana hasła - KSP"
 
 #: templates/warehouse/change_password.html:12
 #, fuzzy
 #| msgid "Zmień hasło"
 msgid "Zmiana hasła"
-msgstr "Zmień hasło"
+msgstr "Zmiana hasła"
 
 #: templates/warehouse/edit_profile.html:4
 #, fuzzy
 #| msgid "Edytuj profil"
 msgid "Edycja profilu - KSP"
-msgstr "Edytuj profil"
+msgstr "Edycja profilu - KSP"
 
 #: templates/warehouse/edit_profile.html:11
 msgid "Edycja profilu użytkownika"
-msgstr ""
+msgstr "Edycja profilu użytkownika"
 
 #: templates/warehouse/edit_profile.html:26
 #, fuzzy
 #| msgid "Nazwa użytkownika lub email"
 msgid "Nazwa użytkownika:"
-msgstr "Nazwa użytkownika lub email"
+msgstr "Nazwa użytkownika:"
 
 #: templates/warehouse/edit_profile.html:38
 msgid "Adres e-mail:"
-msgstr ""
+msgstr "Adres e-mail:"
 
 #: templates/warehouse/edit_profile.html:50
 msgid "Imię:"
-msgstr ""
+msgstr "Imię:"
 
 #: templates/warehouse/edit_profile.html:62
 msgid "Nazwisko:"
-msgstr ""
+msgstr "Nazwisko:"
 
 #: templates/warehouse/edit_profile.html:75
 msgid "Zapisz zmiany"
-msgstr ""
+msgstr "Zapisz zmiany"
 
 #: templates/warehouse/export_form.html:4
 msgid "Eksport inwentarza - KSP"
-msgstr ""
+msgstr "Eksport inwentarza - KSP"
 
 #: templates/warehouse/export_form.html:9
 #, fuzzy
@@ -678,10 +682,12 @@ msgid "Previous"
 msgstr "Poprzednia"
 
 #: templates/warehouse/history_list.html:221
+#: templates/warehouse/history_list.html:228
 msgid "Next"
 msgstr "Następna"
 
 #: templates/warehouse/history_list.html:224
+#: templates/warehouse/history_list.html:231
 msgid "Last"
 msgstr ""
 
