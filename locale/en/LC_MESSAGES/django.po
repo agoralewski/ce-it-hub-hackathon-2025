@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-27 10:51+0200\n"
+"POT-Creation-Date: 2025-05-27 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -745,11 +745,11 @@ msgstr ""
 
 #: templates/warehouse/index.html:122 templates/warehouse/room_list.html:140
 msgid "Brak pokoi w systemie."
-msgstr ""
+msgstr "No rooms in the system."
 
 #: templates/warehouse/index.html:123 templates/warehouse/room_list.html:141
 msgid "Dodaj pierwszy pokój"
-msgstr ""
+msgstr "Add first room"
 
 #: templates/warehouse/index.html:162
 msgid "Uruchamianie kamery..."
@@ -1154,14 +1154,6 @@ msgstr "No racks in this room."
 #: templates/warehouse/room_list.html:130
 msgid "Dodaj pierwszy regał"
 msgstr "Add first rack"
-
-#: templates/warehouse/room_list.html:140
-msgid "Brak pokoi w systemie."
-msgstr "No rooms in the system."
-
-#: templates/warehouse/room_list.html:141
-msgid "Dodaj pierwszy pokój"
-msgstr "Add first room"
 
 #: templates/warehouse/shelf_clean.html:4
 #: templates/warehouse/shelf_clean.html:11
