@@ -433,35 +433,31 @@ msgstr "Username or email"
 
 #: templates/warehouse/edit_profile.html:37
 msgid "Adres e-mail:"
-msgstr "Address e-mail"
+msgstr "Email address:"
 
 #: templates/warehouse/edit_profile.html:49
 msgid "Imię:"
-msgstr "Name:"
+msgstr "First name:"
 
 #: templates/warehouse/edit_profile.html:61
 msgid "Nazwisko:"
-msgstr "Surname:"
+msgstr "Last name:"
 
 #: templates/warehouse/edit_profile.html:74
 msgid "Zapisz zmiany"
-msgstr ""
+msgstr "Save changes"
 
 #: templates/warehouse/export_form.html:3
 msgid "Eksport inwentarza - KSP"
 msgstr ""
 
 #: templates/warehouse/export_form.html:8
-#, fuzzy
-#| msgid "Export to Excel"
 msgid "Eksport inwentarza do Excela"
-msgstr "Export to Excel"
+msgstr "Export inventory to Excel"
 
 #: templates/warehouse/export_form.html:13
-#, fuzzy
-#| msgid "Zostałeś pomyślnie wylogowany."
 msgid "Inwentarz został pomyślnie wyeksportowany."
-msgstr "You have been successfully logged out."
+msgstr "Inventory has been successfully exported."
 
 #: templates/warehouse/export_form.html:23
 msgid "Wybierz, aby eksportować tylko zawartość wybranego pokoju."
@@ -506,7 +502,7 @@ msgstr ""
 #: templates/warehouse/item_list.html:137
 #: templates/warehouse/move_items.html:49
 msgid "Lokalizacja"
-msgstr ""
+msgstr "Location"
 
 #: templates/warehouse/generate_qr_codes.html:31
 msgid "Numer półki"
@@ -597,7 +593,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Categories"
 msgid "Kategoria"
-msgstr "Categories"
+msgstr "Category"
 
 #: templates/warehouse/history_list.html:144
 msgid "Usunięto"
@@ -831,7 +827,7 @@ msgstr ""
 #: templates/warehouse/item_list.html:134
 #: templates/warehouse/move_items.html:45
 msgid "Producent"
-msgstr ""
+msgstr "Manufacturer"
 
 #: templates/warehouse/item_list.html:135
 msgid "Notatka"
@@ -840,7 +836,7 @@ msgstr ""
 #: templates/warehouse/item_list.html:136
 #: templates/warehouse/move_items.html:46
 msgid "Data ważności"
-msgstr ""
+msgstr "Expiration date"
 
 #: templates/warehouse/item_list.html:174
 #: templates/warehouse/item_list.html:227
@@ -882,7 +878,7 @@ msgstr ""
 
 #: templates/warehouse/move_items.html:34
 msgid "Przenieś przedmiot"
-msgstr ""
+msgstr "Move item"
 
 #: templates/warehouse/move_items.html:39
 msgid "Źródło"
