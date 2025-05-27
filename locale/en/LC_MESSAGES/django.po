@@ -680,67 +680,67 @@ msgstr "Last"
 
 #: templates/warehouse/history_list.html:299
 msgid "Szukaj przedmiotu"
-msgstr ""
+msgstr "Search item"
 
 #: templates/warehouse/history_list.html:354
 #, fuzzy
 #| msgid "Nazwa użytkownika lub email"
 msgid "Szukaj użytkownika"
-msgstr "Username or email"
+msgstr "Search user"
 
 #: templates/warehouse/index.html:4
 msgid "Strona główna - KSP"
-msgstr ""
+msgstr "Home - KSP"
 
 #: templates/warehouse/index.html:10 templates/warehouse/index.html:13
 #: templates/warehouse/index.html:23
 msgid "Skanuj kod QR"
-msgstr ""
+msgstr "Scan QR code"
 
 #: templates/warehouse/index.html:24 templates/warehouse/index.html:34
 msgid "Zamknij"
-msgstr ""
+msgstr "Close"
 
 #: templates/warehouse/index.html:28
 msgid "Jeśli pojawi się prośba o dostęp do kamery, wybierz opcję \\"
-msgstr ""
+msgstr "If prompted for camera access, choose option \\"
 
 #: templates/warehouse/index.html:44
 msgid "Witaj w Krwinkowym Systemie Prezentowym"
-msgstr ""
+msgstr "Welcome to the Blood Gift System"
 
 #: templates/warehouse/index.html:59
 msgid "Wszystkie przedmioty"
-msgstr ""
+msgstr "All items"
 
 #: templates/warehouse/index.html:66 templates/warehouse/item_list.html:50
 msgid "Wkrótce przeterminowane"
-msgstr ""
+msgstr "Expiring soon"
 
 #: templates/warehouse/index.html:73 templates/warehouse/item_list.html:44
 #: templates/warehouse/shelf_detail.html:90
 msgid "Przeterminowane"
-msgstr ""
+msgstr "Expired"
 
 #: templates/warehouse/index.html:86
 msgid "Pokoje i regały"
-msgstr ""
+msgstr "Rooms and racks"
 
 #: templates/warehouse/index.html:97 templates/warehouse/shelf_detail.html:38
 msgid "Zobacz przedmioty"
-msgstr ""
+msgstr "View items"
 
 #: templates/warehouse/index.html:103
 msgid "Regały"
-msgstr ""
+msgstr "Racks"
 
 #: templates/warehouse/index.html:107
 msgid "Półki"
-msgstr ""
+msgstr "Shelves"
 
 #: templates/warehouse/index.html:111
 msgid "Przedmioty"
-msgstr ""
+msgstr "Items"
 
 #: templates/warehouse/index.html:122 templates/warehouse/room_list.html:140
 msgid "Brak pokoi w systemie."
@@ -752,107 +752,107 @@ msgstr "Add first room"
 
 #: templates/warehouse/index.html:162
 msgid "Uruchamianie kamery..."
-msgstr ""
+msgstr "Starting camera..."
 
 #: templates/warehouse/index.html:194 templates/warehouse/index.html:214
 msgid "Kod QR odczytany pomyślnie! Przekierowywanie..."
-msgstr ""
+msgstr "QR code read successfully! Redirecting..."
 
 #: templates/warehouse/index.html:235
 msgid "Instrukcje dla Safari:"
-msgstr ""
+msgstr "Instructions for Safari:"
 
 #: templates/warehouse/index.html:237
 msgid "Otwórz Ustawienia > Safari"
-msgstr ""
+msgstr "Open Settings > Safari"
 
 #: templates/warehouse/index.html:238
 msgid "Przejdź do \\"
-msgstr ""
+msgstr "Go to \\"
 
 #: templates/warehouse/index.html:239 templates/warehouse/index.html:255
 msgid "Wybierz \\"
-msgstr ""
+msgstr "Select \\"
 
 #: templates/warehouse/index.html:240
 msgid "Wrócić i odświeżyć stronę"
-msgstr ""
+msgstr "Go back and refresh the page"
 
 #: templates/warehouse/index.html:244
 msgid "Instrukcje dla Chrome:"
-msgstr ""
+msgstr "Instructions for Chrome:"
 
 #: templates/warehouse/index.html:246
 msgid "Dotknij ikony 🔒 (kłódka) obok adresu URL"
-msgstr ""
+msgstr "Tap the 🔒 (lock) icon next to the URL"
 
 #: templates/warehouse/index.html:247
 msgid "Upewnij się, że \\"
-msgstr ""
+msgstr "Make sure that \\"
 
 #: templates/warehouse/index.html:248
 msgid "Jeśli nie, zmień ustawienie i odśwież stronę"
-msgstr ""
+msgstr "If not, change the setting and refresh the page"
 
 #: templates/warehouse/index.html:252
 msgid "Instrukcje dla Firefox:"
-msgstr ""
+msgstr "Instructions for Firefox:"
 
 #: templates/warehouse/index.html:254
 msgid "Dotknij ikony ⋮ (menu) w prawym górnym rogu"
-msgstr ""
+msgstr "Tap the ⋮ (menu) icon in the top right corner"
 
 #: templates/warehouse/index.html:256
 msgid "Znajdź \\"
-msgstr ""
+msgstr "Find \\"
 
 #: templates/warehouse/index.html:257
 msgid "Odśwież stronę"
-msgstr ""
+msgstr "Refresh the page"
 
 #: templates/warehouse/index.html:263
 msgid "Nie można uzyskać dostępu do kamery:"
-msgstr ""
+msgstr "Cannot access the camera:"
 
 #: templates/warehouse/index.html:264
 msgid "Możliwe rozwiązania:"
-msgstr ""
+msgstr "Possible solutions:"
 
 #: templates/warehouse/index.html:266
 msgid "Przyznaj uprawnienia do kamery w ustawieniach przeglądarki"
-msgstr ""
+msgstr "Grant camera permissions in browser settings"
 
 #: templates/warehouse/index.html:267
 msgid "Sprawdź, czy kamera nie jest używana przez inną aplikację"
-msgstr ""
+msgstr "Check if the camera is not used by another application"
 
 #: templates/warehouse/index.html:268
 msgid "Spróbuj użyć innej przeglądarki (Chrome, Safari lub Firefox)"
-msgstr ""
+msgstr "Try using another browser (Chrome, Safari, or Firefox)"
 
 #: templates/warehouse/index.html:269
 msgid ""
 "Jeśli korzystasz z trybu prywatnego/incognito, przejdź do trybu normalnego"
-msgstr ""
+msgstr "If you are using private/incognito mode, switch to normal mode"
 
 #: templates/warehouse/index.html:272
 msgid "Spróbuj ponownie"
-msgstr ""
+msgstr "Try again"
 
 #: templates/warehouse/index.html:278
 msgid ""
 "Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i "
 "przyznaj aplikacji uprawnienia do jej używania."
-msgstr ""
+msgstr "No camera detected. Make sure your device has a camera and grant the app permission to use it."
 
 #: templates/warehouse/index.html:282
 msgid "Nie można uzyskać dostępu do listy kamer:"
-msgstr ""
+msgstr "Cannot access the list of cameras:"
 
 #: templates/warehouse/index.html:282
 msgid ""
 "Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki."
-msgstr ""
+msgstr "Try granting the app camera permissions in your browser settings."
 
 #: templates/warehouse/item_list.html:5
 msgid "Przedmioty - KSP"
@@ -868,7 +868,7 @@ msgstr "With Note"
 
 #: templates/warehouse/item_list.html:133
 msgid "Nazwa"
-msgstr ""
+msgstr "Name"
 
 #: templates/warehouse/item_list.html:135
 #: templates/warehouse/move_items.html:46
@@ -877,7 +877,7 @@ msgstr "Manufacturer"
 
 #: templates/warehouse/item_list.html:136
 msgid "Notatka"
-msgstr ""
+msgstr "Note"
 
 #: templates/warehouse/item_list.html:137
 #: templates/warehouse/move_items.html:47
@@ -892,14 +892,14 @@ msgstr "Add Another"
 #: templates/warehouse/item_list.html:178
 #: templates/warehouse/item_list.html:231
 msgid "Wez z polki"
-msgstr ""
+msgstr "Take from shelf"
 
 #: templates/warehouse/item_list.html:183
 #: templates/warehouse/item_list.html:234
 #: templates/warehouse/move_items.html:35
 #: templates/warehouse/move_items.html:99
 msgid "Przenieś przedmioty"
-msgstr ""
+msgstr "Move items"
 
 #: templates/warehouse/item_list.html:190
 #: templates/warehouse/item_list.html:239
