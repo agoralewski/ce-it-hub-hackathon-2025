@@ -1117,53 +1117,51 @@ msgstr ""
 #, fuzzy
 #| msgid "Zarządzanie kategoriami"
 msgid "Zarządzanie pokojami"
-msgstr "Manage categories"
+msgstr "Manage rooms"
 
 #: templates/warehouse/room_list.html:9
-#, fuzzy
-#| msgid "Zarządzanie kategoriami"
 msgid "Zarządzanie pokojami, regałami i półkami"
-msgstr "Manage categories"
+msgstr "Manage rooms, racks, and shelves"
 
 #: templates/warehouse/room_list.html:11
 msgid "Dodaj nowy pokój"
-msgstr ""
+msgstr "Add new room"
 
 #: templates/warehouse/room_list.html:40
-#, fuzzy
-#| msgid "Wyczyść regał"
 msgid "Wyczyść"
-msgstr "Clean rack"
+msgstr "Clean"
 
 #: templates/warehouse/room_list.html:44
 msgid "Dodaj regał"
-msgstr ""
+msgstr "Add rack"
 
 #: templates/warehouse/room_list.html:75
-#, fuzzy
-#| msgid "na półkę"
 msgid "Dodaj półkę"
-msgstr "to shelf"
+msgstr "Add shelf"
 
 #: templates/warehouse/room_list.html:86
-#, fuzzy
-#| msgid "Lokalizacja"
 msgid "Pełna lokalizacja"
-msgstr "Location"
+msgstr "Full location"
 
 #: templates/warehouse/room_list.html:118
 msgid "Brak półek w tym regale."
-msgstr ""
+msgstr "No shelves in this rack."
 
 #: templates/warehouse/room_list.html:129
 msgid "Brak regałów w tym pokoju."
-msgstr ""
+msgstr "No racks in this room."
 
 #: templates/warehouse/room_list.html:130
-#, fuzzy
-#| msgid "Wybierz najpierw regał"
 msgid "Dodaj pierwszy regał"
-msgstr "Select rack first"
+msgstr "Add first rack"
+
+#: templates/warehouse/room_list.html:140
+msgid "Brak pokoi w systemie."
+msgstr "No rooms in the system."
+
+#: templates/warehouse/room_list.html:141
+msgid "Dodaj pierwszy pokój"
+msgstr "Add first room"
 
 #: templates/warehouse/shelf_clean.html:4
 #: templates/warehouse/shelf_clean.html:11
