@@ -1,21 +1,22 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}{% trans %}Usuń półkę{% endtrans %} - KSP{% endblock %}
+{% block title %}{% trans "Usuń półkę" %} - KSP{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">{% trans %}Usuń półkę{% endtrans %}</h5>
+                <h5 class="mb-0">{% trans "Usuń półkę" %}</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">{% trans %}Czy na pewno chcesz usunąć półkę{% endtrans %} "{{ shelf }}"?</h5>
+                <h5 class="card-title">{% trans "Czy na pewno chcesz usunąć półkę" %} "{{ shelf }}"?</h5>
                 
                 {% if has_items %}
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <strong>{% trans %}Uwaga!{% endtrans %}</strong> {% trans %}Ta półka zawiera przedmioty. Usunięcie jej spowoduje również usunięcie wszystkich przedmiotów na tej półce.{% endtrans %}
+                    <strong>{% trans "Uwaga!" %}</strong> {% trans "Ta półka zawiera przedmioty. Usunięcie jej spowoduje również usunięcie wszystkich przedmiotów na tej półce." %}
                 </div>
                 {% endif %}
                 
@@ -23,10 +24,10 @@
                     {% csrf_token %}
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'warehouse:room_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> {% trans %}Anuluj{% endtrans %}
+                            <i class="fas fa-arrow-left"></i> {% trans "Anuluj" %}
                         </a>
                         <button type="submit" name="confirm" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> {% trans %}Usuń{% endtrans %}
+                            <i class="fas fa-trash"></i> {% trans "Usuń" %}
                         </button>
                     </div>
                 </form>

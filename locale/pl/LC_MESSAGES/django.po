@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-26 15:27+0200\n"
+"POT-Creation-Date: 2025-05-27 11:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,23 +84,23 @@ msgstr "Zarządzaj lokalizacjami"
 msgid "Manage Categories"
 msgstr "Zarządzaj kategoriami"
 
-#: templates/registration/logged_out.html:4
+#: templates/registration/logged_out.html:3
 msgid "Wylogowano - KSP"
 msgstr "Wylogowano - KSP"
 
-#: templates/registration/logged_out.html:11
+#: templates/registration/logged_out.html:10
 msgid "Wylogowano"
 msgstr "Wylogowano"
 
-#: templates/registration/logged_out.html:14
+#: templates/registration/logged_out.html:13
 msgid "Zostałeś pomyślnie wylogowany z systemu KSP."
 msgstr "Zostałeś pomyślnie wylogowany z systemu KSP."
 
-#: templates/registration/logged_out.html:15
+#: templates/registration/logged_out.html:14
 msgid "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
 msgstr "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
 
-#: templates/registration/logged_out.html:18
+#: templates/registration/logged_out.html:17
 msgid "Zaloguj się ponownie"
 msgstr "Zaloguj się ponownie"
 
@@ -155,6 +155,7 @@ msgid "Ustaw nowe hasło"
 msgstr "Ustaw nowe hasło"
 
 #: templates/registration/password_reset_confirm.html:36
+#: templates/warehouse/change_password.html:40
 msgid "Zmień hasło"
 msgstr "Zmień hasło"
 
@@ -167,12 +168,22 @@ msgid "E-mail wysłany"
 msgstr "E-mail wysłany"
 
 #: templates/registration/password_reset_done.html:14
-msgid "Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę wiadomość wkrótce."
-msgstr "Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę wiadomość wkrótce."
+msgid ""
+"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. "
+"Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
+"wiadomość wkrótce."
+msgstr ""
+"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. "
+"Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
+"wiadomość wkrótce."
 
 #: templates/registration/password_reset_done.html:15
-msgid "Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który podałeś podczas rejestracji i sprawdź folder spam."
-msgstr "Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który podałeś podczas rejestracji i sprawdź folder spam."
+msgid ""
+"Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który "
+"podałeś podczas rejestracji i sprawdź folder spam."
+msgstr ""
+"Jeśli nie otrzymasz wiadomości e-mail, sprawdź czy wpisałeś adres, który "
+"podałeś podczas rejestracji i sprawdź folder spam."
 
 #: templates/registration/password_reset_done.html:17
 msgid "Powrót do strony logowania"
@@ -187,8 +198,12 @@ msgid "Resetowanie hasła"
 msgstr "Resetowanie hasła"
 
 #: templates/registration/password_reset_form.html:15
-msgid "Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci instrukcje jak ustawić nowe."
-msgstr "Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci instrukcje jak ustawić nowe."
+msgid ""
+"Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci "
+"instrukcje jak ustawić nowe."
+msgstr ""
+"Zapomniałeś hasła? Wprowadź poniżej swój adres e-mail, a wyślemy Ci "
+"instrukcje jak ustawić nowe."
 
 #: templates/registration/password_reset_form.html:37
 msgid "Wyślij instrukcje resetowania"
@@ -205,6 +220,736 @@ msgstr "Rejestracja"
 #: templates/registration/register.html:41
 msgid "Masz już konto?"
 msgstr "Masz już konto?"
+
+#: templates/warehouse/add_item.html:5
+msgid "Dodaj przedmiot na półkę - KSP"
+msgstr "Dodaj przedmiot na półkę - KSP"
+
+#: templates/warehouse/add_item.html:12
+msgid "Dodaj przedmiot na półkę"
+msgstr "Dodaj przedmiot na półkę"
+
+#: templates/warehouse/add_item.html:18
+msgid "Dodawanie dużej liczby przedmiotów"
+msgstr "Dodawanie dużej liczby przedmiotów"
+
+#: templates/warehouse/add_item.html:19
+msgid "Rozpoczynam dodawanie"
+msgstr "Rozpoczynam dodawanie"
+
+#: templates/warehouse/add_item.html:19 templates/warehouse/remove_item.html:50
+msgid "egzemplarzy przedmiotu"
+msgstr "egzemplarzy przedmiotu"
+
+#: templates/warehouse/add_item.html:19
+msgid "na półkę"
+msgstr "na półkę"
+
+#: templates/warehouse/add_item.html:26
+msgid "Przygotowywanie operacji..."
+msgstr "Przygotowywanie operacji..."
+
+#: templates/warehouse/add_item.html:33
+msgid "Przetworzono:"
+msgstr "Przetworzono:"
+
+#: templates/warehouse/add_item.html:36
+msgid "Pozostało:"
+msgstr "Pozostało:"
+
+#: templates/warehouse/add_item.html:41
+msgid "Czas trwania:"
+msgstr "Czas trwania:"
+
+#: templates/warehouse/add_item.html:41
+msgid "sek."
+msgstr "sek."
+
+#: templates/warehouse/add_item.html:44
+msgid "Prędkość:"
+msgstr "Prędkość:"
+
+#: templates/warehouse/add_item.html:44
+msgid "przedmiotów/s"
+msgstr "przedmiotów/s"
+
+#: templates/warehouse/add_item.html:53 templates/warehouse/add_item.html:57
+#: templates/warehouse/add_item.html:205 templates/warehouse/add_item.html:209
+#: templates/warehouse/add_new_item.html:52
+#: templates/warehouse/add_new_item.html:56
+#: templates/warehouse/category_form.html:46
+#: templates/warehouse/change_password.html:37
+#: templates/warehouse/export_form.html:48
+#: templates/warehouse/rack_form.html:46 templates/warehouse/room_form.html:46
+#: templates/warehouse/shelf_form.html:48
+msgid "Powrót"
+msgstr "Powrót"
+
+#: templates/warehouse/add_item.html:62
+msgid "Zobacz półkę"
+msgstr "Zobacz półkę"
+
+#: templates/warehouse/add_item.html:65
+#: templates/warehouse/category_delete.html:27
+#: templates/warehouse/edit_profile.html:78
+#: templates/warehouse/move_items.html:91
+#: templates/warehouse/move_items.html:95
+#: templates/warehouse/rack_clean.html:32
+#: templates/warehouse/rack_delete.html:27
+#: templates/warehouse/room_clean.html:32
+#: templates/warehouse/room_delete.html:27
+#: templates/warehouse/shelf_clean.html:32
+#: templates/warehouse/shelf_delete.html:27
+msgid "Anuluj"
+msgstr "Anuluj"
+
+#: templates/warehouse/add_item.html:156 templates/warehouse/add_item.html:173
+#: templates/warehouse/add_item.html:188
+msgid "(opcjonalnie)"
+msgstr "(opcjonalnie)"
+
+#: templates/warehouse/add_item.html:213 templates/warehouse/index.html:52
+#: templates/warehouse/item_list.html:19
+#: templates/warehouse/shelf_detail.html:31
+msgid "Dodaj przedmiot"
+msgstr "Dodaj przedmiot"
+
+#: templates/warehouse/add_new_item.html:5
+msgid "Wybierz lokalizację przedmiotu - KSP"
+msgstr "Wybierz lokalizację przedmiotu - KSP"
+
+#: templates/warehouse/add_new_item.html:12
+msgid "Wybierz lokalizację przedmiotu"
+msgstr "Wybierz lokalizację przedmiotu"
+
+#: templates/warehouse/add_new_item.html:22
+msgid ""
+"Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
+msgstr ""
+"Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
+
+#: templates/warehouse/add_new_item.html:25
+#: templates/warehouse/generate_qr_codes.html:33
+#: templates/warehouse/history_list.html:69
+#: templates/warehouse/history_list.html:70
+#: templates/warehouse/item_list.html:71 templates/warehouse/item_list.html:72
+#: templates/warehouse/move_items.html:64
+#: templates/warehouse/shelf_detail.html:61
+msgid "Pokój"
+msgstr "Pokój"
+
+#: templates/warehouse/add_new_item.html:27
+#: templates/warehouse/move_items.html:66
+msgid "Wybierz pokój"
+msgstr "Wybierz pokój"
+
+#: templates/warehouse/add_new_item.html:35
+#: templates/warehouse/history_list.html:76
+#: templates/warehouse/history_list.html:77
+#: templates/warehouse/item_list.html:78 templates/warehouse/item_list.html:79
+#: templates/warehouse/move_items.html:74 templates/warehouse/room_list.html:58
+#: templates/warehouse/shelf_detail.html:70
+msgid "Regał"
+msgstr "Regał"
+
+#: templates/warehouse/add_new_item.html:37
+#: templates/warehouse/move_items.html:76
+msgid "Wybierz najpierw pokój"
+msgstr "Wybierz najpierw pokój"
+
+#: templates/warehouse/add_new_item.html:42
+#: templates/warehouse/history_list.html:87
+#: templates/warehouse/history_list.html:88
+#: templates/warehouse/item_list.html:89 templates/warehouse/item_list.html:90
+#: templates/warehouse/move_items.html:81
+#: templates/warehouse/shelf_detail.html:18
+msgid "Półka"
+msgstr "Półka"
+
+#: templates/warehouse/add_new_item.html:44
+#: templates/warehouse/move_items.html:83
+msgid "Wybierz najpierw regał"
+msgstr "Wybierz najpierw regał"
+
+#: templates/warehouse/add_new_item.html:60
+msgid "Dalej"
+msgstr "Dalej"
+
+#: templates/warehouse/category_delete.html:4
+msgid "Usuń kategorię - KSP"
+msgstr "Usuń kategorię - KSP"
+
+#: templates/warehouse/category_delete.html:11
+msgid "Usuń kategorię"
+msgstr "Usuń kategorię"
+
+#: templates/warehouse/category_delete.html:14
+msgid "Czy na pewno chcesz usunąć kategorię"
+msgstr "Czy na pewno chcesz usunąć kategorię"
+
+#: templates/warehouse/category_delete.html:19
+#: templates/warehouse/rack_clean.html:19
+#: templates/warehouse/rack_delete.html:19
+#: templates/warehouse/room_clean.html:19
+#: templates/warehouse/room_delete.html:19
+#: templates/warehouse/shelf_clean.html:19
+#: templates/warehouse/shelf_delete.html:19
+msgid "Uwaga!"
+msgstr "Uwaga!"
+
+#: templates/warehouse/category_delete.html:19
+msgid ""
+"Ta kategoria zawiera przedmioty. Nie można usunąć kategorii, która jest "
+"używana przez przedmioty."
+msgstr ""
+"Ta kategoria zawiera przedmioty. Nie można usunąć kategorii, która jest "
+"używana przez przedmioty."
+
+#: templates/warehouse/category_delete.html:30
+#: templates/warehouse/category_list.html:35
+#: templates/warehouse/rack_delete.html:30
+#: templates/warehouse/room_delete.html:30
+#: templates/warehouse/room_list.html:36
+#: templates/warehouse/shelf_delete.html:30
+msgid "Usuń"
+msgstr "Usuń"
+
+#: templates/warehouse/category_form.html:4
+#: templates/warehouse/category_list.html:9
+msgid "Zarządzanie kategoriami"
+msgstr "Zarządzanie kategoriami"
+
+#: templates/warehouse/category_form.html:49
+#: templates/warehouse/rack_form.html:49 templates/warehouse/room_form.html:49
+#: templates/warehouse/shelf_form.html:51
+msgid "Zapisz"
+msgstr "Zapisz"
+
+#: templates/warehouse/category_list.html:4
+msgid "Zarządzanie kategoriami - KSP"
+msgstr "Zarządzanie kategoriami - KSP"
+
+#: templates/warehouse/category_list.html:11
+msgid "Dodaj nową kategorię"
+msgstr "Dodaj nową kategorię"
+
+#: templates/warehouse/category_list.html:19
+#, fuzzy
+#| msgid "Manage Categories"
+msgid "Nazwa kategorii"
+msgstr "Nazwa kategorii"
+
+#: templates/warehouse/category_list.html:20
+#: templates/warehouse/item_list.html:139 templates/warehouse/room_list.html:87
+msgid "Czynności"
+msgstr "Czynności"
+
+#: templates/warehouse/category_list.html:31
+#: templates/warehouse/room_list.html:32
+#, fuzzy
+#| msgid "Edytuj profil"
+msgid "Edytuj"
+msgstr "Edytuj"
+
+#: templates/warehouse/category_list.html:43
+msgid "Brak kategorii do wyświetlenia."
+msgstr "Brak kategorii do wyświetlenia."
+
+#: templates/warehouse/change_password.html:5
+#, fuzzy
+#| msgid "Resetowanie hasła - KSP"
+msgid "Zmiana hasła - KSP"
+msgstr "Zmiana hasła - KSP"
+
+#: templates/warehouse/change_password.html:12
+#, fuzzy
+#| msgid "Zmień hasło"
+msgid "Zmiana hasła"
+msgstr "Zmiana hasła"
+
+#: templates/warehouse/edit_profile.html:4
+#, fuzzy
+#| msgid "Edytuj profil"
+msgid "Edycja profilu - KSP"
+msgstr "Edycja profilu - KSP"
+
+#: templates/warehouse/edit_profile.html:11
+msgid "Edycja profilu użytkownika"
+msgstr "Edycja profilu użytkownika"
+
+#: templates/warehouse/edit_profile.html:26
+#, fuzzy
+#| msgid "Nazwa użytkownika lub email"
+msgid "Nazwa użytkownika:"
+msgstr "Nazwa użytkownika:"
+
+#: templates/warehouse/edit_profile.html:38
+msgid "Adres e-mail:"
+msgstr "Adres e-mail:"
+
+#: templates/warehouse/edit_profile.html:50
+msgid "Imię:"
+msgstr "Imię:"
+
+#: templates/warehouse/edit_profile.html:62
+msgid "Nazwisko:"
+msgstr "Nazwisko:"
+
+#: templates/warehouse/edit_profile.html:75
+msgid "Zapisz zmiany"
+msgstr "Zapisz zmiany"
+
+#: templates/warehouse/export_form.html:4
+msgid "Eksport inwentarza - KSP"
+msgstr "Eksport inwentarza - KSP"
+
+#: templates/warehouse/export_form.html:9
+#, fuzzy
+#| msgid "Export to Excel"
+msgid "Eksport inwentarza do Excela"
+msgstr "Eksportuj do Excela"
+
+#: templates/warehouse/export_form.html:14
+#, fuzzy
+#| msgid "Zostałeś pomyślnie wylogowany."
+msgid "Inwentarz został pomyślnie wyeksportowany."
+msgstr "Zostałeś pomyślnie wylogowany."
+
+#: templates/warehouse/export_form.html:24
+msgid "Wybierz, aby eksportować tylko zawartość wybranego pokoju."
+msgstr ""
+
+#: templates/warehouse/export_form.html:29
+msgid "Wybierz, aby eksportować tylko zawartość wybranego regału."
+msgstr ""
+
+#: templates/warehouse/export_form.html:34
+msgid "Wybierz, aby eksportować tylko zawartość wybranej półki."
+msgstr ""
+
+#: templates/warehouse/export_form.html:42
+msgid "Wybierz, aby eksportować tylko przedmioty z wybranej kategorii."
+msgstr ""
+
+#: templates/warehouse/export_form.html:51
+msgid "Eksportuj"
+msgstr ""
+
+#: templates/warehouse/generate_qr_codes.html:4
+msgid "Generowanie kodów QR - KSP"
+msgstr ""
+
+#: templates/warehouse/generate_qr_codes.html:9
+msgid "Generowanie kodów QR dla półek"
+msgstr ""
+
+#: templates/warehouse/generate_qr_codes.html:15
+msgid ""
+"Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać "
+"linki do stron z detalami półek."
+msgstr ""
+
+#: templates/warehouse/generate_qr_codes.html:28
+msgid "Zaznacz wszystkie"
+msgstr "Zaznacz wszystkie"
+
+#: templates/warehouse/generate_qr_codes.html:31
+#: templates/warehouse/history_list.html:136
+#: templates/warehouse/item_list.html:138
+#: templates/warehouse/move_items.html:50
+msgid "Lokalizacja"
+msgstr "Lokalizacja"
+
+#: templates/warehouse/generate_qr_codes.html:32
+#: templates/warehouse/room_list.html:85
+#: templates/warehouse/shelf_detail.html:79
+msgid "Numer półki"
+msgstr "Numer półki"
+
+#: templates/warehouse/generate_qr_codes.html:57
+msgid "Generuj kody QR"
+msgstr "Generuj kody QR"
+
+#: templates/warehouse/history_list.html:5
+#, fuzzy
+#| msgid "Historia zmian"
+msgid "Historia zmian magazynu - KSP"
+msgstr "Historia zmian"
+
+#: templates/warehouse/history_list.html:18
+#, fuzzy
+#| msgid "Historia zmian"
+msgid "Historia zmian magazynu"
+msgstr "Historia zmian"
+
+#: templates/warehouse/history_list.html:50
+msgid "Tylko dodawanie"
+msgstr "Tylko dodawanie"
+
+#: templates/warehouse/history_list.html:56
+msgid "Tylko usuwanie"
+msgstr "Tylko usuwanie"
+
+#: templates/warehouse/history_list.html:62
+#: templates/warehouse/history_list.html:63
+#: templates/warehouse/item_list.html:64 templates/warehouse/item_list.html:65
+msgid "Wyczyść filtry"
+msgstr "Wyczyść filtry"
+
+#: templates/warehouse/history_list.html:103
+msgid "Data od"
+msgstr "Data od"
+
+#: templates/warehouse/history_list.html:108
+msgid "Data do"
+msgstr "Data do"
+
+#: templates/warehouse/history_list.html:118
+msgid "Showing"
+msgstr "Wyświetlono"
+
+#: templates/warehouse/history_list.html:118
+#: templates/warehouse/history_list.html:120
+msgid "of"
+msgstr "z"
+
+#: templates/warehouse/history_list.html:118
+msgid "items"
+msgstr "elementów"
+
+#: templates/warehouse/history_list.html:120
+msgid "Page"
+msgstr "Strona"
+
+#: templates/warehouse/history_list.html:130
+msgid "Przedmiot"
+msgstr "Przedmiot"
+
+#: templates/warehouse/history_list.html:131
+#, fuzzy
+#| msgid "Rejestracja"
+msgid "Operacja"
+msgstr "Rejestracja"
+
+#: templates/warehouse/history_list.html:132
+msgid "Data"
+msgstr "Data"
+
+#: templates/warehouse/history_list.html:133
+msgid "Użytkownik"
+msgstr "Użytkownik"
+
+#: templates/warehouse/history_list.html:134
+msgid "Email"
+msgstr ""
+
+#: templates/warehouse/history_list.html:135
+#: templates/warehouse/item_list.html:101
+#: templates/warehouse/item_list.html:102
+#: templates/warehouse/item_list.html:134
+#: templates/warehouse/move_items.html:45
+#, fuzzy
+#| msgid "Categories"
+msgid "Kategoria"
+msgstr "Kategorie"
+
+#: templates/warehouse/history_list.html:145
+msgid "Usunięto"
+msgstr "Usunięto"
+
+#: templates/warehouse/history_list.html:147
+msgid "Dodano"
+msgstr "Dodano"
+
+#: templates/warehouse/history_list.html:180
+msgid "Brak historii spełniającej kryteria."
+msgstr "Brak historii spełniającej kryteria."
+
+#: templates/warehouse/history_list.html:193
+#: templates/warehouse/history_list.html:200
+#: templates/warehouse/item_list.html:249
+#: templates/warehouse/item_list.html:256
+#, fuzzy
+#| msgid "First name:"
+msgid "First"
+msgstr "Pierwsza"
+
+#: templates/warehouse/history_list.html:196
+#: templates/warehouse/history_list.html:203
+#: templates/warehouse/item_list.html:252
+#: templates/warehouse/item_list.html:259
+msgid "Previous"
+msgstr "Poprzednia"
+
+#: templates/warehouse/history_list.html:221
+#: templates/warehouse/history_list.html:228
+msgid "Next"
+msgstr "Następna"
+
+#: templates/warehouse/history_list.html:224
+#: templates/warehouse/history_list.html:231
+msgid "Last"
+msgstr ""
+
+#: templates/warehouse/history_list.html:299
+msgid "Szukaj przedmiotu"
+msgstr ""
+
+#: templates/warehouse/history_list.html:354
+#, fuzzy
+#| msgid "Nazwa użytkownika lub email"
+msgid "Szukaj użytkownika"
+msgstr "Nazwa użytkownika lub email"
+
+#: templates/warehouse/index.html:4
+msgid "Strona główna - KSP"
+msgstr ""
+
+#: templates/warehouse/index.html:10 templates/warehouse/index.html:13
+#: templates/warehouse/index.html:23
+msgid "Skanuj kod QR"
+msgstr ""
+
+#: templates/warehouse/index.html:24 templates/warehouse/index.html:34
+msgid "Zamknij"
+msgstr ""
+
+#: templates/warehouse/index.html:28
+msgid "Jeśli pojawi się prośba o dostęp do kamery, wybierz opcję \\"
+msgstr ""
+
+#: templates/warehouse/index.html:44
+msgid "Witaj w Krwinkowym Systemie Prezentowym"
+msgstr ""
+
+#: templates/warehouse/index.html:59
+msgid "Wszystkie przedmioty"
+msgstr ""
+
+#: templates/warehouse/index.html:66 templates/warehouse/item_list.html:50
+msgid "Wkrótce przeterminowane"
+msgstr ""
+
+#: templates/warehouse/index.html:73 templates/warehouse/item_list.html:44
+#: templates/warehouse/shelf_detail.html:90
+msgid "Przeterminowane"
+msgstr ""
+
+#: templates/warehouse/index.html:86
+msgid "Pokoje i regały"
+msgstr ""
+
+#: templates/warehouse/index.html:97 templates/warehouse/shelf_detail.html:38
+msgid "Zobacz przedmioty"
+msgstr ""
+
+#: templates/warehouse/index.html:103
+msgid "Regały"
+msgstr ""
+
+#: templates/warehouse/index.html:107
+msgid "Półki"
+msgstr ""
+
+#: templates/warehouse/index.html:111
+msgid "Przedmioty"
+msgstr ""
+
+#: templates/warehouse/index.html:122 templates/warehouse/room_list.html:140
+msgid "Brak pokoi w systemie."
+msgstr ""
+
+#: templates/warehouse/index.html:123 templates/warehouse/room_list.html:141
+msgid "Dodaj pierwszy pokój"
+msgstr ""
+
+#: templates/warehouse/index.html:162
+msgid "Uruchamianie kamery..."
+msgstr ""
+
+#: templates/warehouse/index.html:194 templates/warehouse/index.html:214
+msgid "Kod QR odczytany pomyślnie! Przekierowywanie..."
+msgstr ""
+
+#: templates/warehouse/index.html:235
+msgid "Instrukcje dla Safari:"
+msgstr ""
+
+#: templates/warehouse/index.html:237
+msgid "Otwórz Ustawienia > Safari"
+msgstr ""
+
+#: templates/warehouse/index.html:238
+msgid "Przejdź do \\"
+msgstr ""
+
+#: templates/warehouse/index.html:239 templates/warehouse/index.html:255
+msgid "Wybierz \\"
+msgstr ""
+
+#: templates/warehouse/index.html:240
+msgid "Wrócić i odświeżyć stronę"
+msgstr ""
+
+#: templates/warehouse/index.html:244
+msgid "Instrukcje dla Chrome:"
+msgstr ""
+
+#: templates/warehouse/index.html:246
+msgid "Dotknij ikony 🔒 (kłódka) obok adresu URL"
+msgstr ""
+
+#: templates/warehouse/index.html:247
+msgid "Upewnij się, że \\"
+msgstr ""
+
+#: templates/warehouse/index.html:248
+msgid "Jeśli nie, zmień ustawienie i odśwież stronę"
+msgstr ""
+
+#: templates/warehouse/index.html:252
+msgid "Instrukcje dla Firefox:"
+msgstr ""
+
+#: templates/warehouse/index.html:254
+msgid "Dotknij ikony ⋮ (menu) w prawym górnym rogu"
+msgstr ""
+
+#: templates/warehouse/index.html:256
+msgid "Znajdź \\"
+msgstr ""
+
+#: templates/warehouse/index.html:257
+msgid "Odśwież stronę"
+msgstr ""
+
+#: templates/warehouse/index.html:263
+msgid "Nie można uzyskać dostępu do kamery:"
+msgstr ""
+
+#: templates/warehouse/index.html:264
+msgid "Możliwe rozwiązania:"
+msgstr ""
+
+#: templates/warehouse/index.html:266
+msgid "Przyznaj uprawnienia do kamery w ustawieniach przeglądarki"
+msgstr ""
+
+#: templates/warehouse/index.html:267
+msgid "Sprawdź, czy kamera nie jest używana przez inną aplikację"
+msgstr ""
+
+#: templates/warehouse/index.html:268
+msgid "Spróbuj użyć innej przeglądarki (Chrome, Safari lub Firefox)"
+msgstr ""
+
+#: templates/warehouse/index.html:269
+msgid ""
+"Jeśli korzystasz z trybu prywatnego/incognito, przejdź do trybu normalnego"
+msgstr ""
+
+#: templates/warehouse/index.html:272
+msgid "Spróbuj ponownie"
+msgstr ""
+
+#: templates/warehouse/index.html:278
+msgid ""
+"Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i "
+"przyznaj aplikacji uprawnienia do jej używania."
+msgstr ""
+
+#: templates/warehouse/index.html:282
+msgid "Nie można uzyskać dostępu do listy kamer:"
+msgstr ""
+
+#: templates/warehouse/index.html:282
+msgid ""
+"Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki."
+msgstr ""
+
+#: templates/warehouse/item_list.html:5
+msgid "Przedmioty - KSP"
+msgstr ""
+
+#: templates/warehouse/item_list.html:17
+msgid "Przedmioty w magazynie"
+msgstr ""
+
+#: templates/warehouse/item_list.html:56
+msgid "Z notatką"
+msgstr ""
+
+#: templates/warehouse/item_list.html:133
+msgid "Nazwa"
+msgstr ""
+
+#: templates/warehouse/item_list.html:135
+#: templates/warehouse/move_items.html:46
+msgid "Producent"
+msgstr ""
+
+#: templates/warehouse/item_list.html:136
+msgid "Notatka"
+msgstr ""
+
+#: templates/warehouse/item_list.html:137
+#: templates/warehouse/move_items.html:47
+msgid "Data ważności"
+msgstr ""
+
+#: templates/warehouse/item_list.html:175
+#: templates/warehouse/item_list.html:228
+msgid "Dodaj kolejny"
+msgstr ""
+
+#: templates/warehouse/item_list.html:178
+#: templates/warehouse/item_list.html:231
+msgid "Wez z polki"
+msgstr ""
+
+#: templates/warehouse/item_list.html:183
+#: templates/warehouse/item_list.html:234
+#: templates/warehouse/move_items.html:35
+#: templates/warehouse/move_items.html:99
+msgid "Przenieś przedmioty"
+msgstr ""
+
+#: templates/warehouse/item_list.html:190
+#: templates/warehouse/item_list.html:239
+msgid "Brak przedmiotów spełniających kryteria."
+msgstr ""
+
+#: templates/warehouse/low_stock.html:4
+msgid "Niski stan magazynowy - KSP"
+msgstr ""
+
+#: templates/warehouse/low_stock.html:9
+msgid "Kategorie z niskim stanem magazynowym"
+msgstr ""
+
+#: templates/warehouse/low_stock.html:31
+msgid "Brak kategorii z niskim stanem magazynowym."
+msgstr ""
+
+#: templates/warehouse/move_items.html:5
+msgid "Przenieś przedmioty - KSP"
+msgstr ""
+
+#: templates/warehouse/move_items.html:35
+msgid "Przenieś przedmiot"
+msgstr "Przenieś przedmiot"
+
+#: templates/warehouse/move_items.html:40
+msgid "Źródło"
+msgstr "Źródło"
+
+#: templates/warehouse/move_items.html:51
+msgid "Liczba przedmiotów"
+msgstr "Liczba przedmiotów"
+
+#: templates/warehouse/move_items.html:61
+msgid "Wybierz docelową lokalizację"
+msgstr ""
 
 #: templates/warehouse/profile.html:3
 msgid "User Profile - KSP"
@@ -249,6 +994,236 @@ msgstr "Edytuj profil"
 #: templates/warehouse/profile.html:53
 msgid "Change password"
 msgstr "Zmień hasło"
+
+#: templates/warehouse/rack_clean.html:4
+msgid "Wyczyść regał - KSP"
+msgstr ""
+
+#: templates/warehouse/rack_clean.html:11
+#: templates/warehouse/rack_clean.html:35
+msgid "Wyczyść regał"
+msgstr ""
+
+#: templates/warehouse/rack_clean.html:14
+msgid "Czy na pewno chcesz wyczyścić regał"
+msgstr ""
+
+#: templates/warehouse/rack_clean.html:19
+msgid "Ten regał zawiera"
+msgstr ""
+
+#: templates/warehouse/rack_clean.html:19
+#: templates/warehouse/room_clean.html:19
+#: templates/warehouse/shelf_clean.html:19
+msgid "przedmiotów. Wszystkie one zostaną przeniesione do lokalizacji"
+msgstr ""
+
+#: templates/warehouse/rack_clean.html:24
+msgid "W tym regale nie ma żadnych przedmiotów do przeniesienia."
+msgstr ""
+
+#: templates/warehouse/rack_delete.html:4
+#, fuzzy
+#| msgid "Ustaw nowe hasło - KSP"
+msgid "Usuń regał - KSP"
+msgstr "Ustaw nowe hasło - KSP"
+
+#: templates/warehouse/rack_delete.html:11
+msgid "Usuń regał"
+msgstr ""
+
+#: templates/warehouse/rack_delete.html:14
+msgid "Czy na pewno chcesz usunąć regał"
+msgstr ""
+
+#: templates/warehouse/rack_delete.html:19
+msgid ""
+"Ten regał zawiera przedmioty. Usunięcie go spowoduje również usunięcie "
+"wszystkich półek i przedmiotów na tym regale."
+msgstr ""
+
+#: templates/warehouse/rack_form.html:4
+msgid "Zarządzanie regałami"
+msgstr ""
+
+#: templates/warehouse/rack_form.html:11
+msgid "w pokoju"
+msgstr ""
+
+#: templates/warehouse/remove_item.html:4
+#: templates/warehouse/remove_item.html:43
+#, fuzzy
+#| msgid "Dodaj przedmiot na półkę"
+msgid "Usuń przedmiot z półki"
+msgstr "Dodaj przedmiot na półkę"
+
+#: templates/warehouse/remove_item.html:49
+#, fuzzy
+#| msgid "Dodawanie dużej liczby przedmiotów"
+msgid "Usuwanie dużej liczby przedmiotów"
+msgstr "Dodawanie dużej liczby przedmiotów"
+
+#: templates/warehouse/remove_item.html:50
+#, fuzzy
+#| msgid "Rozpoczynam dodawanie"
+msgid "Rozpoczynam usuwanie"
+msgstr "Rozpoczynam dodawanie"
+
+#: templates/warehouse/remove_item.html:50
+#, fuzzy
+#| msgid "na półkę"
+msgid "z półki"
+msgstr "na półkę"
+
+#: templates/warehouse/room_clean.html:4 templates/warehouse/room_clean.html:11
+#: templates/warehouse/room_clean.html:35
+msgid "Wyczyść pokój"
+msgstr ""
+
+#: templates/warehouse/room_clean.html:14
+msgid "Czy na pewno chcesz wyczyścić pokój"
+msgstr ""
+
+#: templates/warehouse/room_clean.html:19
+msgid "Ten pokój zawiera"
+msgstr ""
+
+#: templates/warehouse/room_clean.html:24
+msgid "W tym pokoju nie ma żadnych przedmiotów do przeniesienia."
+msgstr ""
+
+#: templates/warehouse/room_delete.html:4
+#: templates/warehouse/room_delete.html:11
+msgid "Usuń pokój"
+msgstr ""
+
+#: templates/warehouse/room_delete.html:14
+msgid "Czy na pewno chcesz usunąć pokój"
+msgstr ""
+
+#: templates/warehouse/room_delete.html:19
+msgid ""
+"Ten pokój zawiera przedmioty. Usunięcie go spowoduje również usunięcie "
+"wszystkich regałów, półek i przedmiotów w tym pokoju."
+msgstr ""
+
+#: templates/warehouse/room_form.html:4 templates/warehouse/room_list.html:4
+msgid "Zarządzanie pokojami"
+msgstr ""
+
+#: templates/warehouse/room_list.html:9
+msgid "Zarządzanie pokojami, regałami i półkami"
+msgstr ""
+
+#: templates/warehouse/room_list.html:11
+msgid "Dodaj nowy pokój"
+msgstr ""
+
+#: templates/warehouse/room_list.html:40
+msgid "Wyczyść"
+msgstr ""
+
+#: templates/warehouse/room_list.html:44
+msgid "Dodaj regał"
+msgstr ""
+
+#: templates/warehouse/room_list.html:75
+#, fuzzy
+#| msgid "na półkę"
+msgid "Dodaj półkę"
+msgstr "na półkę"
+
+#: templates/warehouse/room_list.html:86
+msgid "Pełna lokalizacja"
+msgstr ""
+
+#: templates/warehouse/room_list.html:118
+msgid "Brak półek w tym regale."
+msgstr "Brak półek w tym regale."
+
+#: templates/warehouse/room_list.html:129
+msgid "Brak regałów w tym pokoju."
+msgstr "Brak regałów w tym pokoju."
+
+#: templates/warehouse/room_list.html:130
+msgid "Dodaj pierwszy regał"
+msgstr ""
+
+#: templates/warehouse/shelf_clean.html:4
+#: templates/warehouse/shelf_clean.html:11
+#: templates/warehouse/shelf_clean.html:35
+#: templates/warehouse/shelf_detail.html:34
+#, fuzzy
+#| msgid "Zobacz półkę"
+msgid "Wyczyść półkę"
+msgstr "Zobacz półkę"
+
+#: templates/warehouse/shelf_clean.html:14
+msgid "Czy na pewno chcesz wyczyścić półkę"
+msgstr ""
+
+#: templates/warehouse/shelf_clean.html:19
+msgid "Ta półka zawiera"
+msgstr ""
+
+#: templates/warehouse/shelf_clean.html:24
+msgid "Na tej półce nie ma żadnych przedmiotów do przeniesienia."
+msgstr ""
+
+#: templates/warehouse/shelf_delete.html:4
+#: templates/warehouse/shelf_delete.html:11
+#, fuzzy
+#| msgid "na półkę"
+msgid "Usuń półkę"
+msgstr "na półkę"
+
+#: templates/warehouse/shelf_delete.html:14
+msgid "Czy na pewno chcesz usunąć półkę"
+msgstr ""
+
+#: templates/warehouse/shelf_delete.html:19
+msgid ""
+"Ta półka zawiera przedmioty. Usunięcie jej spowoduje również usunięcie "
+"wszystkich przedmiotów na tej półce."
+msgstr ""
+
+#: templates/warehouse/shelf_detail.html:4
+msgid "Szczegóły półki"
+msgstr ""
+
+#: templates/warehouse/shelf_detail.html:51
+msgid "Informacje o półce"
+msgstr "Informacje o półce"
+
+#: templates/warehouse/shelf_detail.html:86
+#, fuzzy
+#| msgid "przedmiotów/s"
+msgid "Suma przedmiotów"
+msgstr "przedmiotów/s"
+
+#: templates/warehouse/shelf_detail.html:94
+msgid "Prawie przeterminowane"
+msgstr "Prawie przeterminowane"
+
+#: templates/warehouse/shelf_detail.html:108
+msgid "Kod QR"
+msgstr "Kod QR"
+
+#: templates/warehouse/shelf_detail.html:118
+msgid "Zeskanuj kod QR, aby szybko przejść do tej półki."
+msgstr "Zeskanuj kod QR, aby szybko przejść do tej półki."
+
+#: templates/warehouse/shelf_detail.html:121
+msgid "Drukuj kod QR"
+msgstr "Drukuj kod QR"
+
+#: templates/warehouse/shelf_form.html:4
+msgid "Zarządzanie półkami"
+msgstr "Zarządzanie półkami"
+
+#: templates/warehouse/shelf_form.html:11
+msgid "na regale"
+msgstr "na regale"
 
 #: warehouse/views/account.py:61
 msgid "Zostałeś pomyślnie wylogowany."

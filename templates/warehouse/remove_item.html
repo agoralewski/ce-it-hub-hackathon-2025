@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}{% trans %}Usuń przedmiot z półki{% endtrans %} - KSP{% endblock %}
+{% block title %}{% trans "Usuń przedmiot z półki" %} - KSP{% endblock %}
 
 {% block extra_css %}
 {% if bulk_operation %}
@@ -39,14 +40,14 @@
     <div class="col-md-6">
         <div class="card shadow">
             <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">{% trans %}Usuń przedmiot z półki{% endtrans %}</h5>
+                <h5 class="mb-0">{% trans "Usuń przedmiot z półki" %}</h5>
             </div>
             <div class="card-body">
                 {% if bulk_operation %}
                 <!-- Bulk operation interface -->
                 <div class="bulk-operation-container">
-                    <h4>{% trans %}Usuwanie dużej liczby przedmiotów{% endtrans %}</h4>
-                    <p>{% trans %}Rozpoczynam usuwanie{% endtrans %} <strong>{{ quantity }}</strong> {% trans %}egzemplarzy przedmiotu{% endtrans %} <strong>{{ assignment.item.name }}</strong> {% trans %}z półki{% endtrans %} {{ assignment.shelf.full_location }}.</p>
+                    <h4>{% trans "Usuwanie dużej liczby przedmiotów" %}</h4>
+                    <p>{% trans "Rozpoczynam usuwanie" %} <strong>{{ quantity }}</strong> {% trans "egzemplarzy przedmiotu" %} <strong>{{ assignment.item.name }}</strong> {% trans "z półki" %} {{ assignment.shelf.full_location }}.</p>
                     
                     <div class="progress">
                         <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
