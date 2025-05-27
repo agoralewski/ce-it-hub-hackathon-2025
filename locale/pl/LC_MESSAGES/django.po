@@ -320,12 +320,11 @@ msgstr "Wybierz lokalizację przedmiotu - KSP"
 
 #: templates/warehouse/add_new_item.html:12
 msgid "Wybierz lokalizację przedmiotu"
-msgstr ""
+msgstr "Wybierz lokalizację przedmiotu"
 
 #: templates/warehouse/add_new_item.html:22
-msgid ""
-"Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
-msgstr ""
+msgid "Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
+msgstr "Aby dodać nowy przedmiot, najpierw wybierz jego lokalizację w magazynie:"
 
 #: templates/warehouse/add_new_item.html:25
 #: templates/warehouse/generate_qr_codes.html:33
@@ -335,12 +334,12 @@ msgstr ""
 #: templates/warehouse/move_items.html:64
 #: templates/warehouse/shelf_detail.html:61
 msgid "Pokój"
-msgstr ""
+msgstr "Pokój"
 
 #: templates/warehouse/add_new_item.html:27
 #: templates/warehouse/move_items.html:66
 msgid "Wybierz pokój"
-msgstr ""
+msgstr "Wybierz pokój"
 
 #: templates/warehouse/add_new_item.html:35
 #: templates/warehouse/history_list.html:76
@@ -349,12 +348,12 @@ msgstr ""
 #: templates/warehouse/move_items.html:74 templates/warehouse/room_list.html:58
 #: templates/warehouse/shelf_detail.html:70
 msgid "Regał"
-msgstr ""
+msgstr "Regał"
 
 #: templates/warehouse/add_new_item.html:37
 #: templates/warehouse/move_items.html:76
 msgid "Wybierz najpierw pokój"
-msgstr ""
+msgstr "Wybierz najpierw pokój"
 
 #: templates/warehouse/add_new_item.html:42
 #: templates/warehouse/history_list.html:87
@@ -363,28 +362,28 @@ msgstr ""
 #: templates/warehouse/move_items.html:81
 #: templates/warehouse/shelf_detail.html:18
 msgid "Półka"
-msgstr ""
+msgstr "Półka"
 
 #: templates/warehouse/add_new_item.html:44
 #: templates/warehouse/move_items.html:83
 msgid "Wybierz najpierw regał"
-msgstr ""
+msgstr "Wybierz najpierw regał"
 
 #: templates/warehouse/add_new_item.html:60
 msgid "Dalej"
-msgstr ""
+msgstr "Dalej"
 
 #: templates/warehouse/category_delete.html:4
 msgid "Usuń kategorię - KSP"
-msgstr ""
+msgstr "Usuń kategorię - KSP"
 
 #: templates/warehouse/category_delete.html:11
 msgid "Usuń kategorię"
-msgstr ""
+msgstr "Usuń kategorię"
 
 #: templates/warehouse/category_delete.html:14
 msgid "Czy na pewno chcesz usunąć kategorię"
-msgstr ""
+msgstr "Czy na pewno chcesz usunąć kategorię"
 
 #: templates/warehouse/category_delete.html:19
 #: templates/warehouse/rack_clean.html:19
@@ -548,24 +547,24 @@ msgstr ""
 
 #: templates/warehouse/generate_qr_codes.html:28
 msgid "Zaznacz wszystkie"
-msgstr ""
+msgstr "Zaznacz wszystkie"
 
 #: templates/warehouse/generate_qr_codes.html:31
 #: templates/warehouse/history_list.html:136
 #: templates/warehouse/item_list.html:138
 #: templates/warehouse/move_items.html:50
 msgid "Lokalizacja"
-msgstr ""
+msgstr "Lokalizacja"
 
 #: templates/warehouse/generate_qr_codes.html:32
 #: templates/warehouse/room_list.html:85
 #: templates/warehouse/shelf_detail.html:79
 msgid "Numer półki"
-msgstr ""
+msgstr "Numer półki"
 
 #: templates/warehouse/generate_qr_codes.html:57
 msgid "Generuj kody QR"
-msgstr ""
+msgstr "Generuj kody QR"
 
 #: templates/warehouse/history_list.html:5
 #, fuzzy
@@ -581,46 +580,46 @@ msgstr "Historia zmian"
 
 #: templates/warehouse/history_list.html:50
 msgid "Tylko dodawanie"
-msgstr ""
+msgstr "Tylko dodawanie"
 
 #: templates/warehouse/history_list.html:56
 msgid "Tylko usuwanie"
-msgstr ""
+msgstr "Tylko usuwanie"
 
 #: templates/warehouse/history_list.html:62
 #: templates/warehouse/history_list.html:63
 #: templates/warehouse/item_list.html:64 templates/warehouse/item_list.html:65
 msgid "Wyczyść filtry"
-msgstr ""
+msgstr "Wyczyść filtry"
 
 #: templates/warehouse/history_list.html:103
 msgid "Data od"
-msgstr ""
+msgstr "Data od"
 
 #: templates/warehouse/history_list.html:108
 msgid "Data do"
-msgstr ""
+msgstr "Data do"
 
 #: templates/warehouse/history_list.html:118
 msgid "Showing"
-msgstr ""
+msgstr "Wyświetlono"
 
 #: templates/warehouse/history_list.html:118
 #: templates/warehouse/history_list.html:120
 msgid "of"
-msgstr ""
+msgstr "z"
 
 #: templates/warehouse/history_list.html:118
 msgid "items"
-msgstr ""
+msgstr "elementów"
 
 #: templates/warehouse/history_list.html:120
 msgid "Page"
-msgstr ""
+msgstr "Strona"
 
 #: templates/warehouse/history_list.html:130
 msgid "Przedmiot"
-msgstr ""
+msgstr "Przedmiot"
 
 #: templates/warehouse/history_list.html:131
 #, fuzzy
@@ -630,11 +629,11 @@ msgstr "Rejestracja"
 
 #: templates/warehouse/history_list.html:132
 msgid "Data"
-msgstr ""
+msgstr "Data"
 
 #: templates/warehouse/history_list.html:133
 msgid "Użytkownik"
-msgstr ""
+msgstr "Użytkownik"
 
 #: templates/warehouse/history_list.html:134
 msgid "Email"
@@ -652,15 +651,15 @@ msgstr "Kategorie"
 
 #: templates/warehouse/history_list.html:145
 msgid "Usunięto"
-msgstr ""
+msgstr "Usunięto"
 
 #: templates/warehouse/history_list.html:147
 msgid "Dodano"
-msgstr ""
+msgstr "Dodano"
 
 #: templates/warehouse/history_list.html:180
 msgid "Brak historii spełniającej kryteria."
-msgstr ""
+msgstr "Brak historii spełniającej kryteria."
 
 #: templates/warehouse/history_list.html:193
 #: templates/warehouse/history_list.html:200
@@ -669,22 +668,20 @@ msgstr ""
 #, fuzzy
 #| msgid "First name:"
 msgid "First"
-msgstr "Imię:"
+msgstr "Pierwsza"
 
 #: templates/warehouse/history_list.html:196
 #: templates/warehouse/history_list.html:203
 #: templates/warehouse/item_list.html:252
 #: templates/warehouse/item_list.html:259
 msgid "Previous"
-msgstr ""
+msgstr "Poprzednia"
 
 #: templates/warehouse/history_list.html:221
-#: templates/warehouse/history_list.html:228
 msgid "Next"
-msgstr ""
+msgstr "Następna"
 
 #: templates/warehouse/history_list.html:224
-#: templates/warehouse/history_list.html:231
 msgid "Last"
 msgstr ""
 
@@ -934,15 +931,15 @@ msgstr ""
 
 #: templates/warehouse/move_items.html:35
 msgid "Przenieś przedmiot"
-msgstr ""
+msgstr "Przenieś przedmiot"
 
 #: templates/warehouse/move_items.html:40
 msgid "Źródło"
-msgstr ""
+msgstr "Źródło"
 
 #: templates/warehouse/move_items.html:51
 msgid "Liczba przedmiotów"
-msgstr ""
+msgstr "Liczba przedmiotów"
 
 #: templates/warehouse/move_items.html:61
 msgid "Wybierz docelową lokalizację"
@@ -1136,11 +1133,11 @@ msgstr ""
 
 #: templates/warehouse/room_list.html:118
 msgid "Brak półek w tym regale."
-msgstr ""
+msgstr "Brak półek w tym regale."
 
 #: templates/warehouse/room_list.html:129
 msgid "Brak regałów w tym pokoju."
-msgstr ""
+msgstr "Brak regałów w tym pokoju."
 
 #: templates/warehouse/room_list.html:130
 msgid "Dodaj pierwszy regał"
@@ -1190,7 +1187,7 @@ msgstr ""
 
 #: templates/warehouse/shelf_detail.html:51
 msgid "Informacje o półce"
-msgstr ""
+msgstr "Informacje o półce"
 
 #: templates/warehouse/shelf_detail.html:86
 #, fuzzy
@@ -1200,27 +1197,27 @@ msgstr "przedmiotów/s"
 
 #: templates/warehouse/shelf_detail.html:94
 msgid "Prawie przeterminowane"
-msgstr ""
+msgstr "Prawie przeterminowane"
 
 #: templates/warehouse/shelf_detail.html:108
 msgid "Kod QR"
-msgstr ""
+msgstr "Kod QR"
 
 #: templates/warehouse/shelf_detail.html:118
 msgid "Zeskanuj kod QR, aby szybko przejść do tej półki."
-msgstr ""
+msgstr "Zeskanuj kod QR, aby szybko przejść do tej półki."
 
 #: templates/warehouse/shelf_detail.html:121
 msgid "Drukuj kod QR"
-msgstr ""
+msgstr "Drukuj kod QR"
 
 #: templates/warehouse/shelf_form.html:4
 msgid "Zarządzanie półkami"
-msgstr ""
+msgstr "Zarządzanie półkami"
 
 #: templates/warehouse/shelf_form.html:11
 msgid "na regale"
-msgstr ""
+msgstr "na regale"
 
 #: warehouse/views/account.py:61
 msgid "Zostałeś pomyślnie wylogowany."

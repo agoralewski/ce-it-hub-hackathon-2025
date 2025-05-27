@@ -593,20 +593,20 @@ msgstr "Date To"
 
 #: templates/warehouse/history_list.html:118
 msgid "Showing"
-msgstr ""
+msgstr "Showing"
 
 #: templates/warehouse/history_list.html:118
 #: templates/warehouse/history_list.html:120
 msgid "of"
-msgstr ""
+msgstr "of"
 
 #: templates/warehouse/history_list.html:118
 msgid "items"
-msgstr ""
+msgstr "items"
 
 #: templates/warehouse/history_list.html:120
 msgid "Page"
-msgstr ""
+msgstr "Page"
 
 #: templates/warehouse/history_list.html:130
 msgid "Przedmiot"
@@ -920,7 +920,7 @@ msgstr "No categories with low stock."
 
 #: templates/warehouse/move_items.html:5
 msgid "Przenieś przedmioty - KSP"
-msgstr ""
+msgstr "Move item - KSP"
 
 #: templates/warehouse/move_items.html:35
 msgid "Przenieś przedmiot"
@@ -1092,7 +1092,7 @@ msgstr "There are no items to move in this rack."
 #: templates/warehouse/room_delete.html:4
 #: templates/warehouse/room_delete.html:11
 msgid "Usuń pokój"
-msgstr ""
+msgstr "Delete room"
 
 #: templates/warehouse/room_delete.html:14
 #, fuzzy
