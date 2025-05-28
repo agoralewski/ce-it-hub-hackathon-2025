@@ -21,6 +21,3 @@ RUN chmod -R 755 /app/staticfiles /app/media
 
 # Collect static files
 RUN uv run manage.py collectstatic --noinput
-
-# Start server with Gunicorn
-CMD ["uv", "run", "gunicorn", "ksp.wsgi:application", "--bind", "0.0.0.0:8000"]
