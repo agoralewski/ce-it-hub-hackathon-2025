@@ -29,7 +29,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_ENGINE=django.db.backends.postgresql
       - NETWORK_HOST=${NETWORK_HOST} # auto-detected by set_network_ip.sh
-    entrypoint: ["/bin/bash", "-c", "./scripts/set_network_ip.sh && exec uv run manage.py runserver 0.0.0.0:8000"]
+    entrypoint: ["/bin/bash", "-c", "if [ \"$DEBUG\" = \"True\" ]; then exec uv run manage.py runserver 0.0.0.0:8000; else exec uv run gunicorn ksp.wsgi:application --bind 0.0.0.0:8000; fi"]
 
   nginx:
     build:
