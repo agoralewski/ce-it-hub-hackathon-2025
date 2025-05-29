@@ -13,6 +13,8 @@ if [ "$dbsetup" = "y" ] || [ "$dbsetup" = "Y" ]; then
     echo "Running database migration and superuser creation..."
     docker compose exec web uv run manage.py migrate
     docker compose exec web uv run manage.py createsuperuser
+    docker compose exec web uv run manage.py send_expiry_notifications
+    docker compose exec web uv run manage.py migrate sites
     echo "Database migration and superuser creation complete."
 else
     echo "You can run migrations and create a superuser later with:"
