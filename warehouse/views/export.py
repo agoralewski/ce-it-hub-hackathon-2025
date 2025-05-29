@@ -223,9 +223,6 @@ def export_inventory(request):
             # Base formats
             cell_format = workbook.add_format({'border': 1})
             date_format = workbook.add_format({'border': 1, 'num_format': 'yyyy-mm-dd'})
-            datetime_format = workbook.add_format(
-                {'border': 1, 'num_format': 'yyyy-mm-dd hh:mm:ss'}
-            )
 
             # Special condition formats with corresponding date formats
             expired_format = workbook.add_format(
@@ -398,9 +395,7 @@ def export_inventory(request):
 
                 # Removal date (only for removed items)
                 if is_removed and removal_date:
-                    worksheet.write_datetime(
-                        row, 7, removal_date, removed_date_format
-                    )
+                    worksheet.write_datetime(row, 7, removal_date, removed_date_format)
                 else:
                     worksheet.write(row, 7, '', current_format)
 
