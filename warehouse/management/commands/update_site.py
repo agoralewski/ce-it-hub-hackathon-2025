@@ -30,26 +30,15 @@ class Command(BaseCommand):
         # Get the domain
         domain = options.get('domain')
         if not domain:
-            # Check if SITE_DOMAIN is set in the environment
+            # Always use SITE_DOMAIN from the environment, do not auto-detect
             domain = get_env_variable('SITE_DOMAIN')
-            
-            if domain:
-                self.stdout.write(f"Using domain from SITE_DOMAIN: {domain}")
-            else:
-                # Try to auto-detect the domain
-                ip = get_network_ip()
-                if ip:
-                    domain = f"{ip}"
-                    # Add port 80 if not running on standard HTTP port
-                    if 'DJANGO_SETTINGS_MODULE' in os.environ and os.environ.get('DJANGO_SETTINGS_MODULE') == 'ksp.settings.development':
-                        domain = f"{ip}:8000"
-                else:
-                    domain = 'localhost'
-                    self.stdout.write(self.style.WARNING('Could not detect network IP, using localhost as domain'))
+            if not domain or domain.startswith('localhost') or domain.startswith('127.0.0.1'):
+                self.stdout.write(self.style.ERROR('SITE_DOMAIN environment variable is not set or resolves to localhost/127.0.0.1. Please set it in your .env file to a valid public domain or IP.'))
+                return
+            self.stdout.write(f"Using domain from SITE_DOMAIN: {domain}")
         
         # Update the site
         site.domain = domain
         site.name = site_name
         site.save()
-        
         self.stdout.write(self.style.SUCCESS(f'Site updated: domain="{domain}", name="{site_name}"'))
