@@ -22,11 +22,11 @@ theme:
   - navigation.top
   - navigation.footer
 nav:
-- index.md
-- deploy.md
-- maintenance.md
-- features.md
-- user_guide.md
+- Witaj: index.md
+- Wdrażanie: deploy.md
+- Utrzymanie: maintenance.md
+- Funkcje: features.md
+- Przewodnik Uzytkownika: user_guide.md
 extra:
   social:
   - icon: fontawesome/brands/github
@@ -36,10 +36,12 @@ extra:
     link: /en/
     lang: en
   - name: Polski
-    link: /
+    link: /pl/
     lang: pl
 markdown_extensions:
 - toc:
     permalink: "#"
 plugins:
 - mermaid2
+- search:
+    lang: pl
