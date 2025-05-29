@@ -15,6 +15,7 @@ if [ "$dbsetup" = "y" ] || [ "$dbsetup" = "Y" ]; then
     docker compose exec web uv run manage.py createsuperuser
     docker compose exec web uv run manage.py send_expiry_notifications
     docker compose exec web uv run manage.py migrate sites
+    docker compose exec web uv run manage.py update_site --domain=$NETWORK_HOST
     echo "Database migration and superuser creation complete."
 else
     echo "You can run migrations and create a superuser later with:"

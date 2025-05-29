@@ -49,10 +49,20 @@ def check_reset_url():
     print(f"\nPassword reset URL would be:")
     print(reset_url)
     
+    # Provide a link to test password reset functionality
+    print(f"\nTo test password reset, visit:")
+    print(f"http://{site.domain}/accounts/password_reset/")
+    
     # Check if the domain looks valid
     if site.domain == 'example.com':
         print("\nWARNING: Your site domain is still set to the default 'example.com'.")
-        print("This should be changed to your actual domain.")
+        print("This should be changed to your actual domain in the .env file.")
+        print("Run ./scripts/update_site_domain.sh your-actual-domain.com to update it.")
+        return False
+    elif site.domain == 'your-actual-domain.com':
+        print("\nWARNING: Your site domain is set to the placeholder 'your-actual-domain.com'.")
+        print("This should be changed to your actual domain in the .env file.")
+        print("Run ./scripts/update_site_domain.sh your-actual-domain.com to update it.")
         return False
     elif site.domain == 'localhost' or site.domain.startswith('127.0.0.1'):
         print("\nNote: Your site domain is set to a localhost address.")
