@@ -5,6 +5,7 @@ KSP (Krwinkowy System Prezentowy) is an inventory management system (IMS) develo
 ## Features
 
 - User authentication system with admin and standard user roles
+- Password reset via email for account recovery
 - Warehouse organization with rooms, racks, and shelves
 - Item tracking with categories, expiration dates, and location
 - Mobile-responsive interface for easy inventory management
@@ -45,12 +46,25 @@ cp .env.example .env
 Edit the `.env` file with your specific configuration:
 - Set a secure `SECRET_KEY`
 - Configure email settings for password reset functionality
-- The IP host will be set automatically after running `docker compose up`
+- Set `SITE_DOMAIN` to your actual domain for password reset links
+- Configure notification settings for expiring items
 
 ### 4.A Use docker compose and run databse migrations and superuser creation
 ```bash
 docker compose up --build
 ./scripts/manage_django.sh
+```
+
+### 5. Set up additional features (optional)
+
+Configure password reset functionality:
+```bash
+./scripts/setup_password_reset.sh
+```
+
+Configure automatic expiry notifications:
+```bash
+./scripts/check_expiring_items.sh
 ```
 
 ### 4.B ONLY IF NOT USING DOCKER COMPOSE
@@ -98,6 +112,8 @@ For production deployment:
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup and troubleshooting
 - [STATIC_FILES_TROUBLESHOOTING.md](STATIC_FILES_TROUBLESHOOTING.md) - Help with static files issues
 - [QR_CODE_TESTING.md](QR_CODE_TESTING.md) - Guide for testing QR code functionality
+- [PASSWORD_RESET.md](PASSWORD_RESET.md) - Guide for setting up password reset functionality
+- [EXPIRY_NOTIFICATIONS.md](EXPIRY_NOTIFICATIONS.md) - Guide for setting up expiry notifications
 
 ## License
 

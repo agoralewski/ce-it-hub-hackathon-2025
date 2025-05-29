@@ -21,11 +21,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from warehouse.views.account import register
+from warehouse.views.custom_password_reset import CustomPasswordResetView
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),  # Language switching
     path('admin/', admin.site.urls),
     path('accounts/register/', register, name='register'),
+    path('accounts/password_reset/', CustomPasswordResetView.as_view(), name='password_reset'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('warehouse/', include('warehouse.urls')),
     path('', RedirectView.as_view(url='/warehouse/', permanent=True)),

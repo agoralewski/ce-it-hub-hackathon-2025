@@ -47,11 +47,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for password reset
     # Third party apps
     'widget_tweaks',
     # Local apps
     'warehouse.apps.WarehouseConfig',
 ]
+
+# Site ID for django.contrib.sites
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -181,8 +185,13 @@ else:
     EMAIL_HOST = get_env_variable('EMAIL_HOST', 'smtp.gmail.com')
     EMAIL_PORT = int(get_env_variable('EMAIL_PORT', '587'))
     EMAIL_USE_TLS = get_bool_env_variable('EMAIL_USE_TLS', True)
+    EMAIL_USE_SSL = get_bool_env_variable('EMAIL_USE_SSL', False)
     EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER', 'fundacja@kwrinka.pl')
     EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL = get_env_variable('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+
+# Expiry notification settings
+ENABLE_EXPIRY_NOTIFICATIONS = get_bool_env_variable('ENABLE_EXPIRY_NOTIFICATIONS', True)
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [

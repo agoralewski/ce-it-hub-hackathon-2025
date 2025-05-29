@@ -33,6 +33,11 @@
                             {% endfor %}
                         </div>
                         {% endif %}
+                        {% if field.name == 'password' %}
+                        <div class="form-text text-end mt-1">
+                            <a href="{% url 'password_reset' %}">{% trans "Zapomniałeś hasła?" %}</a>
+                        </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
 
