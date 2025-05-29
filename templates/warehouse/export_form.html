@@ -43,6 +43,25 @@
                 </div>
             </div>
             
+            <div class="row mb-3">
+                <div class="col-md-3 d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="id_include_expired" name="include_expired" {% if form.include_expired.value %}checked{% endif %}>
+                        <label class="form-check-label ms-2" for="id_include_expired">
+                            {% trans "Eksportuj przedmioty po terminie" %}
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="id_include_removed" name="include_removed" {% if form.include_removed.value %}checked{% endif %}>
+                        <label class="form-check-label ms-2" for="id_include_removed">
+                            {% trans "Eksportuj usunięte przedmioty" %}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
             <div class="d-flex justify-content-between">
                 <a href="{% url 'warehouse:index' %}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left"></i> {% trans "Powrót" %}
