@@ -21,6 +21,6 @@ jobs:
 
       - name: Install deps
         run: uv sync
-		
+
       - name: Deploy docs
         run: cd pl && uv run mkdocs gh-deploy
