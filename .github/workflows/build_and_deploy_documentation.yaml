@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - publish-docspu
+      - publish-docs
 
 # security: restrict permissions for CI jobs.
 permissions:
