@@ -96,7 +96,7 @@ msgstr "You have been successfully logged out of the KSP system."
 
 #: templates/registration/logged_out.html:14
 msgid "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
-msgstr "Thank you for using the Blood Gift System!"
+msgstr "Thank you for using the Krwinkowy System Prezentowy!"
 
 #: templates/registration/logged_out.html:17
 msgid "Zaloguj się ponownie"
@@ -128,7 +128,8 @@ msgstr "Forgot your password?"
 msgid "Nie masz konta?"
 msgstr "Don't have an account?"
 
-#: templates/registration/login.html:46 templates/registration/register.html:36
+#: templates/registration/login.html:46
+#: templates/registration/register.html:36
 msgid "Zarejestruj się"
 msgstr "Register"
 
@@ -167,8 +168,8 @@ msgstr "E-mail sent"
 
 #: templates/registration/password_reset_done.html:14
 msgid ""
-"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. "
-"Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
+"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła."
+" Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
 "wiadomość wkrótce."
 msgstr ""
 "We have sent you an e-mail with instructions to reset your password. If an "
@@ -234,7 +235,8 @@ msgstr "Adding a large number of items"
 msgid "Rozpoczynam dodawanie"
 msgstr "Starting to add"
 
-#: templates/warehouse/add_item.html:19 templates/warehouse/remove_item.html:50
+#: templates/warehouse/add_item.html:19
+#: templates/warehouse/remove_item.html:50
 msgid "egzemplarzy przedmiotu"
 msgstr "item copies"
 
@@ -343,7 +345,8 @@ msgstr "Select room"
 #: templates/warehouse/history_list.html:76
 #: templates/warehouse/history_list.html:77
 #: templates/warehouse/item_list.html:78 templates/warehouse/item_list.html:79
-#: templates/warehouse/move_items.html:74 templates/warehouse/room_list.html:58
+#: templates/warehouse/move_items.html:74
+#: templates/warehouse/room_list.html:58
 #: templates/warehouse/shelf_detail.html:70
 msgid "Regał"
 msgstr "Rack"
@@ -434,7 +437,8 @@ msgid "Nazwa kategorii"
 msgstr "Category name"
 
 #: templates/warehouse/category_list.html:20
-#: templates/warehouse/item_list.html:139 templates/warehouse/room_list.html:87
+#: templates/warehouse/item_list.html:139
+#: templates/warehouse/room_list.html:87
 msgid "Czynności"
 msgstr "Actions"
 
@@ -532,8 +536,12 @@ msgid "Generowanie kodów QR dla półek"
 msgstr "Generate QR Codes for Shelves"
 
 #: templates/warehouse/generate_qr_codes.html:15
-msgid "Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać linki do stron z detalami półek."
-msgstr "Select shelves for which you want to generate QR codes. The codes will contain links to shelf detail pages."
+msgid ""
+"Wybierz półki, dla których chcesz wygenerować kody QR. Kody będą zawierać "
+"linki do stron z detalami półek."
+msgstr ""
+"Select shelves for which you want to generate QR codes. The codes will "
+"contain links to shelf detail pages."
 
 #: templates/warehouse/generate_qr_codes.html:28
 msgid "Zaznacz wszystkie"
@@ -578,8 +586,7 @@ msgstr "Only Removals"
 
 #: templates/warehouse/history_list.html:62
 #: templates/warehouse/history_list.html:63
-#: templates/warehouse/item_list.html:64 
-#: templates/warehouse/item_list.html:65
+#: templates/warehouse/item_list.html:64 templates/warehouse/item_list.html:65
 msgid "Wyczyść filtry"
 msgstr "Clear Filters"
 
@@ -707,7 +714,7 @@ msgstr "If prompted for camera access, choose option \\"
 
 #: templates/warehouse/index.html:44
 msgid "Witaj w Krwinkowym Systemie Prezentowym"
-msgstr "Welcome to the Blood Gift System"
+msgstr "Welcome to the Krwinkowy System Prezentowy"
 
 #: templates/warehouse/index.html:59
 msgid "Wszystkie przedmioty"
@@ -841,9 +848,11 @@ msgstr "Try again"
 
 #: templates/warehouse/index.html:278
 msgid ""
-"Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i "
-"przyznaj aplikacji uprawnienia do jej używania."
-msgstr "No camera detected. Make sure your device has a camera and grant the app permission to use it."
+"Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i"
+" przyznaj aplikacji uprawnienia do jej używania."
+msgstr ""
+"No camera detected. Make sure your device has a camera and grant the app "
+"permission to use it."
 
 #: templates/warehouse/index.html:282
 msgid "Nie można uzyskać dostępu do listy kamer:"
@@ -851,7 +860,8 @@ msgstr "Cannot access the list of cameras:"
 
 #: templates/warehouse/index.html:282
 msgid ""
-"Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki."
+"Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach "
+"przeglądarki."
 msgstr "Try granting the app camera permissions in your browser settings."
 
 #: templates/warehouse/item_list.html:5
@@ -1026,8 +1036,8 @@ msgid ""
 "Ten regał zawiera przedmioty. Usunięcie go spowoduje również usunięcie "
 "wszystkich półek i przedmiotów na tym regale."
 msgstr ""
-"This rack contains items. Deleting it will also remove all shelves and items "
-"on this rack."
+"This rack contains items. Deleting it will also remove all shelves and items"
+" on this rack."
 
 #: templates/warehouse/rack_form.html:4
 #, fuzzy
@@ -1064,7 +1074,8 @@ msgstr "Starting to add"
 msgid "z półki"
 msgstr "to shelf"
 
-#: templates/warehouse/room_clean.html:4 templates/warehouse/room_clean.html:11
+#: templates/warehouse/room_clean.html:4
+#: templates/warehouse/room_clean.html:11
 #: templates/warehouse/room_clean.html:35
 #, fuzzy
 #| msgid "Wybierz pokój"
@@ -1109,8 +1120,8 @@ msgid ""
 "Ten pokój zawiera przedmioty. Usunięcie go spowoduje również usunięcie "
 "wszystkich regałów, półek i przedmiotów w tym pokoju."
 msgstr ""
-"This rack contains items. Deleting it will also remove all shelves and items "
-"on this rack."
+"This rack contains items. Deleting it will also remove all shelves and items"
+" on this rack."
 
 #: templates/warehouse/room_form.html:4 templates/warehouse/room_list.html:4
 #, fuzzy
@@ -1203,8 +1214,8 @@ msgid ""
 "Ta półka zawiera przedmioty. Usunięcie jej spowoduje również usunięcie "
 "wszystkich przedmiotów na tej półce."
 msgstr ""
-"This rack contains items. Deleting it will also remove all shelves and items "
-"on this rack."
+"This rack contains items. Deleting it will also remove all shelves and items"
+" on this rack."
 
 #: templates/warehouse/shelf_detail.html:4
 msgid "Szczegóły półki"
