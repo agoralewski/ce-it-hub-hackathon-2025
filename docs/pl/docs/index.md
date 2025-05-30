@@ -10,7 +10,7 @@ Witamy w dokumentacji Systemu Zarządzania Magazynem! Tutaj znajdziesz wszystko,
 
 ## 📸 Zrzut ekranu aplikacji
 
-![Zrzut ekranu aplikacji](img/logo.png)
+![](assets/getting_expired.png)
 
 ---
 

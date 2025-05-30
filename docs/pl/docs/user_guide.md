@@ -4,8 +4,6 @@ hide:
   - toc
 ---
 
-![Tytuł obrazka](https://dummyimage.com/600x400/eee/aaa)
-
 ### Utwórz swoje konto użytkownika
 ![](assets/login.png)
 

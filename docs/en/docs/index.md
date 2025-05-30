@@ -10,7 +10,7 @@ Welcome to the documentation for the Warehouse Management System! Here you'll fi
 
 ## 📸 App Screenshot
 
-![App Screenshot Placeholder](img/logo.png)
+![](assets/getting_expired.png)
 
 ---
 
