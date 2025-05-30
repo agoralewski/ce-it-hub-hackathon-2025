@@ -1,0 +1,47 @@
+site_name: Krwinkowy System Prezentowy
+repo_url: https://github.com/agoralewski/ce-it-hub-hackathon-2025
+theme:
+  language: pl
+  name: material
+  palette:
+  # Palette toggle for light mode
+  - scheme: default
+    toggle:
+      icon: material/weather-sunny
+      name: Switch to dark mode
+
+  # Palette toggle for dark mode
+  - scheme: slate
+    toggle:
+      icon: material/weather-night
+      name: Switch to light mode
+  features:
+  - navigation.tracking
+  - navigation.tabs
+  - navigation.tabs.sticky
+  - navigation.top
+  - navigation.footer
+nav:
+- Witaj: index.md
+- Wdrażanie: deploy.md
+- Utrzymanie: maintenance.md
+- Funkcje: features.md
+- Przewodnik Uzytkownika: user_guide.md
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/agoralewski/ce-it-hub-hackathon-2025
+  alternate:
+  - name: English
+    link: /en/
+    lang: en
+  - name: Polski
+    link: /pl/
+    lang: pl
+markdown_extensions:
+- toc:
+    permalink: "#"
+plugins:
+- mermaid2
+- search:
+    lang: pl
