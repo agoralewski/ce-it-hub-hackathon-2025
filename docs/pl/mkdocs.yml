@@ -34,10 +34,10 @@ extra:
     link: https://github.com/agoralewski/ce-it-hub-hackathon-2025
   alternate:
   - name: English
-    link: ce-it-hub-hackathon-2025/en/
+    link: en
     lang: en
   - name: Polski
-    link: ce-it-hub-hackathon-2025/pl/
+    link: pl
     lang: pl
 markdown_extensions:
 - toc:
