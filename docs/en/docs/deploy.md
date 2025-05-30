@@ -41,6 +41,9 @@ Edit the `.env` file with your specific configuration:
 - Set a secure `SECRET_KEY`
 - Set all listed usernames and passwords in the .env file
 - Set the correct network ip by running: `./scripts/set_network_ip.sh` from the `ksp` directory.
+- Set the details of your SMTP server.
+- Set email for sending expiry and password reset notifications.
+- Set expiry email notification triggers (hour and minute)
 
 > **IMPORTANT**: The `NETWORK_HOST` variable is critical for QR code functionality. If not set correctly, QR codes will not point to your server's IP address or domain name, making them inaccessible on mobile devices.
 

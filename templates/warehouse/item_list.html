@@ -149,7 +149,7 @@
                         <td>
                             {% if group.expiration_date %}
                                 {% with today_date|date:"Y-m-d" as today %}
-                                {% with thirty_days_from_now|date:"Y-m-d" as soon %}
+                                {% with near_expiry_date|date:"Y-m-d" as soon %}
                                     {% if group.expiration_date|date:"Y-m-d" < today %}
                                         <span class="badge bg-danger">{{ group.expiration_date }}</span>
                                     {% elif group.expiration_date|date:"Y-m-d" <= soon %}
@@ -209,7 +209,7 @@
                     {% endif %}
                     {% if group.expiration_date %}
                         {% with today_date|date:"Y-m-d" as today %}
-                        {% with thirty_days_from_now|date:"Y-m-d" as soon %}
+                        {% with near_expiry_date|date:"Y-m-d" as soon %}
                             {% if group.expiration_date|date:"Y-m-d" < today %}
                                 <span class="item-chip expired"><i class="fas fa-clock"></i> {{ group.expiration_date }}</span>
                             {% elif group.expiration_date|date:"Y-m-d" <= soon %}
