@@ -57,8 +57,9 @@ class ExpiryNotificationCommandTest(TestCase):
             added_by=self.user
         )
 
+    @patch('warehouse.management.commands.send_expiry_notifications.get_env_variable', return_value='7')
     @patch('warehouse.management.commands.send_expiry_notifications.Command.send_email')
-    def test_command_sends_email_for_expiring_items(self, mock_send_email):
+    def test_command_sends_email_for_expiring_items(self, mock_send_email, mock_get_env):
         # Run the command
         call_command('send_expiry_notifications')
         

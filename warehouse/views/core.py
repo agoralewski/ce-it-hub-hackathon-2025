@@ -75,11 +75,18 @@ def item_list(request):
     # Create a Q object to collect multiple filter conditions
     filters_q = Q()
 
+    # Get the number of days for 'expiring soon' from environment variable (default 7)
+    from ksp.env import get_env_variable
+    try:
+        days_near_expiry = int(get_env_variable('EXPIRY_NOTIFICATION_DAYS', 7))
+    except ValueError:
+        days_near_expiry = 7
+
     # Apply 'expiring_soon' filter if provided
     if 'expiring_soon' in filter_values:
         expiring_soon_q = Q(
             item__expiration_date__isnull=False,
-            item__expiration_date__lte=timezone.now().date() + timedelta(days=30),
+            item__expiration_date__lte=timezone.now().date() + timedelta(days=days_near_expiry),
             item__expiration_date__gte=timezone.now().date(),  # Exclude expired items
         )
         filters_q |= expiring_soon_q
@@ -185,7 +192,7 @@ def item_list(request):
     categories = Category.objects.all()
 
     today_date = timezone.now().date()
-    thirty_days_from_now = today_date + timedelta(days=30)
+    near_expiry_date = today_date + timedelta(days=days_near_expiry)
 
     return render(
         request,
@@ -205,7 +212,7 @@ def item_list(request):
             'filter_values': filter_values,
             'has_note': has_note,
             'today_date': today_date,
-            'thirty_days_from_now': thirty_days_from_now,
+            'near_expiry_date': near_expiry_date,
             'page_obj': items_page,  # Add page object for pagination controls
             'total_count': len(grouped_items),  # Add total count for info display
         },
