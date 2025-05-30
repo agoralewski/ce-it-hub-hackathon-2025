@@ -182,7 +182,7 @@
                                 <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-exchange-alt"></i> {% trans "Przenieś przedmioty" %}
                                 </a>
-                                <a href="{% url 'warehouse:edit_item_group' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&note={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary mt-2">
+                                <a href="{% url 'warehouse:edit_item_group' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&note={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-edit"></i> {% trans "Edytuj grupę" %}
                                 </a>
                             </div>
@@ -236,7 +236,7 @@
                     <a href="{% url 'warehouse:move_group_items' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-exchange-alt"></i> {% trans "Przenieś przedmioty" %}
                     </a>
-                    <a href="{% url 'warehouse:edit_item_group' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&note={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary mt-2">
+                    <a href="{% url 'warehouse:edit_item_group' %}?shelf_id={{ group.shelf.pk }}&item_name={{ group.item_name|urlencode }}&category={{ group.category.pk }}&manufacturer={{ group.manufacturer|default:''|urlencode }}&note={{ group.note|urlencode }}&expiration_date={{ group.expiration_date|date:'Y-m-d' }}&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-edit"></i> {% trans "Edytuj grupę" %}
                     </a>
                 </div>
