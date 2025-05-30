@@ -1,5 +1,6 @@
 site_name: Krwinka Inventory Management
 repo_url: https://github.com/agoralewski/ce-it-hub-hackathon-2025
+site_dir: '../generated/en'
 theme:
   language: en
   name: material

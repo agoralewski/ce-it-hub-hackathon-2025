@@ -1,5 +1,6 @@
 site_name: Krwinkowy System Prezentowy
 repo_url: https://github.com/agoralewski/ce-it-hub-hackathon-2025
+site_dir: '../generated/pl'
 theme:
   language: pl
   name: material
