@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - publish-docs
+      - publish-docspu
 
 # security: restrict permissions for CI jobs.
 permissions:
@@ -17,13 +17,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
 
-      # ADJUST THIS: install all dependencies (including pdoc)
-      - run: pip install -r requirements-devel.txt
-      - run: pip install -e.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+ 
+      - name: Set up Python
+        run: uv python install
+ 
+      - name: Install deps
+        run: uv sync
+ 
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: mkdocs build
