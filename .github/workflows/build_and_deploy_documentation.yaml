@@ -32,6 +32,7 @@ jobs:
       - run: |
           uv run mkdocs build -f ./docs/en/mkdocs.yml
           uv run mkdocs build -f ./docs/pl/mkdocs.yml
+          echo '<meta http-equiv="refresh" content="0; url=https://agoralewski.github.io/ce-it-hub-hackathon-2025/en/">' > ./docs/generated/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
