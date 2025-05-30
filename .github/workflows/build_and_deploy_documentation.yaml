@@ -34,7 +34,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           name: html-docs
-          path: ./docs/en/site
+          path: ./docs/generated
         continue-on-error: true
 
   # Deploy job
