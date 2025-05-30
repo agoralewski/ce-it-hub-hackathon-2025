@@ -13,18 +13,23 @@ class Command(BaseCommand):
     help = 'Sends email notifications for items that will expire within a week'
 
     def handle(self, *args, **options):
-        # Calculate the date range for items expiring in one week or less
+        # Calculate the date range for items expiring in a configurable number of days
         today = timezone.now().date()
-        one_week_from_now = today + datetime.timedelta(days=7)
+        # Get the number of days from environment variable, default to 7 if not set
+        try:
+            days_near_expiry = int(get_env_variable('EXPIRY_NOTIFICATION_DAYS', 7))
+        except ValueError:
+            days_near_expiry = 7
+        near_expiry_date = today + datetime.timedelta(days=days_near_expiry)
         
-        # Find items that will expire in one week or less
+        # Find items that will expire in the configured number of days or less
         expiring_items = Item.objects.filter(
             expiration_date__gte=today, 
-            expiration_date__lte=one_week_from_now
+            expiration_date__lte=near_expiry_date
         )
         
         if not expiring_items.exists():
-            self.stdout.write(self.style.SUCCESS('No items expiring in the next week.'))
+            self.stdout.write(self.style.SUCCESS(f'No items expiring in the next {days_near_expiry} days.'))
             return
         
         # Prepare email content
