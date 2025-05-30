@@ -10,6 +10,8 @@ on:
 # security: restrict permissions for CI jobs.
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   # Build the documentation and upload the static HTML files as an artifact.
@@ -27,37 +29,58 @@ jobs:
       - name: Install deps
         run: uv sync
  
-      # ADJUST THIS: build your documentation into docs/.
-      # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
-      - run: uv run mkdocs build -f ./docs/en/mkdocs.yml
+      # Build English documentation
+      - name: Build English docs
+        run: uv run mkdocs build -f ./docs/en/mkdocs.yml -d ./site/en
+      
+      # Build Polish documentation
+      - name: Build Polish docs
+        run: uv run mkdocs build -f ./docs/pl/mkdocs.yml -d ./site/pl
+      
+      # Create index.html in the root to redirect to English or based on browser language
+      - name: Create root index.html
+        run: |
+          mkdir -p ./site
+          cat > ./site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>Documentation Redirect</title>
+            <script>
+              // Get the browser language
+              var lang = navigator.language || navigator.userLanguage;
+              lang = lang.split('-')[0]; // Take just the primary language tag
+              
+              // Redirect based on language or default to English
+              if (lang === 'pl') {
+                window.location.href = '/pl/';
+              } else {
+                window.location.href = '/en/';
+              }
+            </script>
+            <meta http-equiv="refresh" content="0; url=/en/">
+          </head>
+          <body>
+            <p>Redirecting to documentation...</p>
+            <p><a href="/en/">Click here if you are not redirected automatically</a></p>
+          </body>
+          </html>
+          EOF
+
       # Upload docs as an artifact
       - uses: actions/upload-pages-artifact@v3
         with:
-          name: html-docs
-          path: ./docs/en/site
-        continue-on-error: true
+          path: ./site
 
-  # Deploy job
+  # Deploy the artifact to GitHub pages.
   deploy:
-    # Add a dependency to the build job
     needs: build
-
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-
-    # Deploy to the github-pages environment
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    # Specify runner + deployment step
-    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: html-docs
-        continue-on-error: true
