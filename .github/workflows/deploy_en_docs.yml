@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   uv-example:
     name: python
