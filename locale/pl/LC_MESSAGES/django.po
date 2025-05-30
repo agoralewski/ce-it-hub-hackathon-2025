@@ -16,9 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
-"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
-"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #: templates/base.html:49
 msgid "Home"
@@ -98,7 +96,7 @@ msgstr "Zostałeś pomyślnie wylogowany z systemu KSP."
 
 #: templates/registration/logged_out.html:14
 msgid "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
-msgstr "Dziękujemy za korzystanie z Krwinkowego Systemu Prezentowego!"
+msgstr "Dziękujemy za korzystanie z krwinkowego systemu prezentowego!"
 
 #: templates/registration/logged_out.html:17
 msgid "Zaloguj się ponownie"
@@ -130,7 +128,8 @@ msgstr "Zapomniałeś hasła?"
 msgid "Nie masz konta?"
 msgstr "Nie masz konta?"
 
-#: templates/registration/login.html:46 templates/registration/register.html:36
+#: templates/registration/login.html:46
+#: templates/registration/register.html:36
 msgid "Zarejestruj się"
 msgstr "Zarejestruj się"
 
@@ -169,12 +168,12 @@ msgstr "E-mail wysłany"
 
 #: templates/registration/password_reset_done.html:14
 msgid ""
-"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. "
-"Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
+"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła."
+" Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
 "wiadomość wkrótce."
 msgstr ""
-"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła. "
-"Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
+"Wysłaliśmy Ci wiadomość e-mail z instrukcjami dotyczącymi resetowania hasła."
+" Jeśli konto z podanym adresem e-mail istnieje, powinieneś otrzymać tę "
 "wiadomość wkrótce."
 
 #: templates/registration/password_reset_done.html:15
@@ -237,7 +236,8 @@ msgstr "Dodawanie dużej liczby przedmiotów"
 msgid "Rozpoczynam dodawanie"
 msgstr "Rozpoczynam dodawanie"
 
-#: templates/warehouse/add_item.html:19 templates/warehouse/remove_item.html:50
+#: templates/warehouse/add_item.html:19
+#: templates/warehouse/remove_item.html:50
 msgid "egzemplarzy przedmiotu"
 msgstr "egzemplarzy przedmiotu"
 
@@ -347,7 +347,8 @@ msgstr "Wybierz pokój"
 #: templates/warehouse/history_list.html:76
 #: templates/warehouse/history_list.html:77
 #: templates/warehouse/item_list.html:78 templates/warehouse/item_list.html:79
-#: templates/warehouse/move_items.html:74 templates/warehouse/room_list.html:58
+#: templates/warehouse/move_items.html:74
+#: templates/warehouse/room_list.html:58
 #: templates/warehouse/shelf_detail.html:70
 msgid "Regał"
 msgstr "Regał"
@@ -440,7 +441,8 @@ msgid "Nazwa kategorii"
 msgstr "Nazwa kategorii"
 
 #: templates/warehouse/category_list.html:20
-#: templates/warehouse/item_list.html:139 templates/warehouse/room_list.html:87
+#: templates/warehouse/item_list.html:139
+#: templates/warehouse/room_list.html:87
 msgid "Czynności"
 msgstr "Czynności"
 
@@ -501,13 +503,13 @@ msgstr "Zapisz zmiany"
 
 #: templates/warehouse/export_form.html:4
 msgid "Eksport inwentarza - KSP"
-msgstr "Eksport inwentarza - KSP"
+msgstr "EKSPort inwentarza - KSP"
 
 #: templates/warehouse/export_form.html:9
 #, fuzzy
 #| msgid "Export to Excel"
 msgid "Eksport inwentarza do Excela"
-msgstr "Eksportuj do Excela"
+msgstr "EKSPortuj do Excela"
 
 #: templates/warehouse/export_form.html:14
 #, fuzzy
@@ -517,27 +519,27 @@ msgstr "Zostałeś pomyślnie wylogowany."
 
 #: templates/warehouse/export_form.html:24
 msgid "Wybierz, aby eksportować tylko zawartość wybranego pokoju."
-msgstr ""
+msgstr "Wybierz, aby eKSPortować tylko zawartość wybranego pokoju."
 
 #: templates/warehouse/export_form.html:29
 msgid "Wybierz, aby eksportować tylko zawartość wybranego regału."
-msgstr ""
+msgstr "Wybierz, aby eKSPortować tylko zawartość wybranego regału."
 
 #: templates/warehouse/export_form.html:34
 msgid "Wybierz, aby eksportować tylko zawartość wybranej półki."
-msgstr ""
+msgstr "Wybierz, aby eKSPortować tylko zawartość wybranej półki."
 
 #: templates/warehouse/export_form.html:42
 msgid "Wybierz, aby eksportować tylko przedmioty z wybranej kategorii."
-msgstr ""
+msgstr "Wybierz, aby eKSPortować tylko przedmioty z wybranej kategorii."
 
 #: templates/warehouse/export_form.html:51
 msgid "Eksportuj"
-msgstr ""
+msgstr "EKSPortuj"
 
 #: templates/warehouse/generate_qr_codes.html:4
 msgid "Generowanie kodów QR - KSP"
-msgstr ""
+msgstr "Generowanie kodów QR - KSP"
 
 #: templates/warehouse/generate_qr_codes.html:9
 msgid "Generowanie kodów QR dla półek"
@@ -703,7 +705,7 @@ msgstr "Nazwa użytkownika lub email"
 
 #: templates/warehouse/index.html:4
 msgid "Strona główna - KSP"
-msgstr ""
+msgstr "Strona główna - KSP"
 
 #: templates/warehouse/index.html:10 templates/warehouse/index.html:13
 #: templates/warehouse/index.html:23
@@ -720,7 +722,7 @@ msgstr ""
 
 #: templates/warehouse/index.html:44
 msgid "Witaj w Krwinkowym Systemie Prezentowym"
-msgstr ""
+msgstr "Witaj w Krwinkowym Systemie Prezentowym"
 
 #: templates/warehouse/index.html:59
 msgid "Wszystkie przedmioty"
@@ -854,8 +856,8 @@ msgstr ""
 
 #: templates/warehouse/index.html:278
 msgid ""
-"Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i "
-"przyznaj aplikacji uprawnienia do jej używania."
+"Nie wykryto żadnej kamery. Upewnij się, że Twoje urządzenie posiada kamerę i"
+" przyznaj aplikacji uprawnienia do jej używania."
 msgstr ""
 
 #: templates/warehouse/index.html:282
@@ -864,12 +866,13 @@ msgstr ""
 
 #: templates/warehouse/index.html:282
 msgid ""
-"Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach przeglądarki."
+"Spróbuj przyznać aplikacji uprawnienia do kamery w ustawieniach "
+"przeglądarki."
 msgstr ""
 
 #: templates/warehouse/item_list.html:5
 msgid "Przedmioty - KSP"
-msgstr ""
+msgstr "Przedmioty - KSP"
 
 #: templates/warehouse/item_list.html:17
 msgid "Przedmioty w magazynie"
@@ -921,7 +924,7 @@ msgstr ""
 
 #: templates/warehouse/low_stock.html:4
 msgid "Niski stan magazynowy - KSP"
-msgstr ""
+msgstr "Niski stan magazynowy - KSP"
 
 #: templates/warehouse/low_stock.html:9
 msgid "Kategorie z niskim stanem magazynowym"
@@ -933,7 +936,7 @@ msgstr ""
 
 #: templates/warehouse/move_items.html:5
 msgid "Przenieś przedmioty - KSP"
-msgstr ""
+msgstr "Przenieś przedmioty - KSP"
 
 #: templates/warehouse/move_items.html:35
 msgid "Przenieś przedmiot"
@@ -997,7 +1000,7 @@ msgstr "Zmień hasło"
 
 #: templates/warehouse/rack_clean.html:4
 msgid "Wyczyść regał - KSP"
-msgstr ""
+msgstr "Wyczyść regał - KSP"
 
 #: templates/warehouse/rack_clean.html:11
 #: templates/warehouse/rack_clean.html:35
@@ -1075,7 +1078,8 @@ msgstr "Rozpoczynam dodawanie"
 msgid "z półki"
 msgstr "na półkę"
 
-#: templates/warehouse/room_clean.html:4 templates/warehouse/room_clean.html:11
+#: templates/warehouse/room_clean.html:4
+#: templates/warehouse/room_clean.html:11
 #: templates/warehouse/room_clean.html:35
 msgid "Wyczyść pokój"
 msgstr ""

@@ -4,7 +4,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Install system dependencies for PostgreSQL client
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libpq-dev gcc \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y gettext \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* 
 
 # Set work directory
 WORKDIR /app

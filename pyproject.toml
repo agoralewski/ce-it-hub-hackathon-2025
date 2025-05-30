@@ -12,6 +12,7 @@ dependencies = [
     "mkdocs-mermaid2-plugin>=1.2.1",
     "mkdocs[i18n]>=1.6.1",
     "pillow>=10.0.0",
+    "polib>=1.2.0",
     "psycopg2-binary>=2.9.10",
     "python-dotenv>=1.0.0",
     "qrcode>=7.0",
