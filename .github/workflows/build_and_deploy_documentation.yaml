@@ -29,8 +29,10 @@ jobs:
  
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
-      - run: uv run mkdocs build -f ./docs/en/mkdocs.yml
-      # Upload docs as an artifact
+      - run: |
+          uv run mkdocs build -f ./docs/en/mkdocs.yml
+          uv run mkdocs build -f ./docs/pl/mkdocs.yml
+
       - uses: actions/upload-pages-artifact@v3
         with:
           name: html-docs
