@@ -7,6 +7,7 @@ hide:
 ![Image title](https://dummyimage.com/600x400/eee/aaa)
 
 ### Create your user
+![Login Screen](assets/login.png)
 
 ### Reset your password
 
