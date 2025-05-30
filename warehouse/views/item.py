@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.urls import reverse
 
 from warehouse.models import Shelf, Category, Item, ItemShelfAssignment, Room
-from warehouse.forms import ItemShelfAssignmentForm
+from warehouse.forms import ItemShelfAssignmentForm, EditItemGroupForm
 from warehouse.views.location import (
     batch_move_items_between_shelves,
     move_item_between_shelves,
@@ -747,3 +747,135 @@ def move_single_item(request, assignment_id):
             'assignment': assignment,
         },
     )
+
+
+@login_required
+def edit_item_group(request):
+    """Edit a group of items with the same properties"""
+    # Get parameters from request
+    shelf_id = request.GET.get('shelf_id')
+    item_name = request.GET.get('item_name')
+    category_id = request.GET.get('category')
+    manufacturer = request.GET.get('manufacturer', '')
+    expiration_date = request.GET.get('expiration_date')
+    note = request.GET.get('note', '')
+    next_url = request.GET.get('next', '')
+
+    # Validate that we have the required information
+    if not all([shelf_id, item_name, category_id]):
+        messages.error(request, 'Brakuje wymaganych parametrów.')
+        return redirect('warehouse:item_list')
+
+    shelf = get_object_or_404(
+        Shelf.objects.select_related('rack', 'rack__room'), pk=shelf_id
+    )
+    category = get_object_or_404(Category, pk=category_id)
+
+    # Find all items matching the criteria
+    items_query = Item.objects.filter(
+        name=item_name,
+        category=category,
+        manufacturer=manufacturer if manufacturer else None,
+    )
+    
+    # Add expiration_date filter only if provided
+    if expiration_date:
+        items_query = items_query.filter(expiration_date=expiration_date)
+    
+    # Find all active assignments for these items on the shelf
+    assignments = ItemShelfAssignment.objects.filter(
+        item__in=items_query,
+        shelf=shelf,
+        remove_date__isnull=True
+    ).select_related('item')
+    
+    item_count = assignments.count()
+    
+    if item_count == 0:
+        messages.warning(request, 'Nie znaleziono żadnych przedmiotów do edycji.')
+        return redirect('warehouse:item_list')
+
+    if request.method == 'POST':
+        form = EditItemGroupForm(request.POST)
+        if form.is_valid():
+            new_item_name = form.cleaned_data['item_name'].strip()
+            new_category = form.cleaned_data['category']
+            new_manufacturer = form.cleaned_data['manufacturer'].strip() if form.cleaned_data['manufacturer'] else None
+            new_expiration_date = form.cleaned_data['expiration_date']
+            new_notes = form.cleaned_data['notes']
+            
+            # Update all items in the group
+            with transaction.atomic():
+                for assignment in assignments:
+                    item = assignment.item
+                    item.name = new_item_name
+                    item.category = new_category
+                    item.manufacturer = new_manufacturer
+                    item.expiration_date = new_expiration_date
+                    item.note = new_notes
+                    item.save()
+            
+            messages.success(request, f'{item_count} przedmiot(ów) zostało zaktualizowanych pomyślnie.')
+            
+            # Redirect to the next URL if provided, otherwise to item list
+            if next_url:
+                return redirect(next_url)
+            else:
+                return redirect('warehouse:item_list')
+    else:
+        # Pre-populate the form with existing values
+        initial_data = {
+            'item_name': item_name,
+            'category': category.pk,
+            'manufacturer': manufacturer,
+            'expiration_date': expiration_date,
+            'notes': note,
+        }
+        form = EditItemGroupForm(initial=initial_data)
+    
+    return render(request, 'warehouse/edit_item_group.html', {
+        'form': form,
+        'shelf': shelf,
+        'item_count': item_count,
+        'next': next_url,
+    })
+
+
+@login_required
+def edit_item(request, pk):
+    """Edit a single item"""
+    # Get the assignment
+    assignment = get_object_or_404(
+        ItemShelfAssignment.objects.select_related(
+            'item', 'shelf', 'shelf__rack', 'shelf__rack__room'
+        ),
+        pk=pk,
+        remove_date__isnull=True,
+    )
+    
+    item = assignment.item
+    shelf = assignment.shelf
+    
+    # Get the next URL if provided, or default to item_list
+    next_url = request.GET.get('next', '')
+    if not next_url:
+        next_url = reverse('warehouse:item_list')
+    
+    if request.method == 'POST':
+        # Get the next URL from POST if available
+        next_url = request.POST.get('next', next_url)
+        
+        form = EditItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Przedmiot został pomyślnie zaktualizowany.')
+            return redirect(next_url)
+    else:
+        form = EditItemForm(instance=item)
+    
+    return render(request, 'warehouse/edit_item.html', {
+        'form': form,
+        'shelf': shelf,
+        'item': item,
+        'next': next_url,
+    })

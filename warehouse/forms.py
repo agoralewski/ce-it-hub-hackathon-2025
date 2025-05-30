@@ -367,3 +367,43 @@ class UserProfileForm(forms.ModelForm):
         ):
             raise forms.ValidationError('Użytkownik o tym adresie email już istnieje.')
         return email
+
+
+class EditItemGroupForm(forms.Form):
+    """Form for editing a group of items with the same properties"""
+    item_name = forms.CharField(
+        label='Nazwa przedmiotu',
+        max_length=255,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Wpisz nazwę przedmiotu',
+            }
+        ),
+    )
+    category = forms.ModelChoiceField(
+        label='Kategoria',
+        queryset=Category.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control category-select'}),
+    )
+    manufacturer = forms.CharField(
+        label='Producent',
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Wpisz producenta',
+            }
+        ),
+    )
+    expiration_date = forms.DateField(
+        label='Data ważności',
+        required=False,
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+    )
+    notes = forms.CharField(
+        label='Notatki',
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+    )

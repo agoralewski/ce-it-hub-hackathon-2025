@@ -32,6 +32,8 @@ from warehouse.views.item import (
     add_new_item,
     move_group_items,
     move_single_item,
+    edit_item_group,
+
 )
 from warehouse.views.export import generate_qr_codes, export_inventory
 from warehouse.views.ajax import (
@@ -95,6 +97,11 @@ urlpatterns = [
         'items/move-group/',
         move_group_items,
         name='move_group_items',
+    ),
+    path(
+        'items/edit-group/',
+        edit_item_group,
+        name='edit_item_group',
     ),
     path(
         'assignments/<int:assignment_id>/move/',
