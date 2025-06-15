@@ -40,7 +40,7 @@ docker compose up -d
 - `docs/` - MKdocs markdown files
 
 ## live documentation: 
-#TODO: ADD GH PAGES LINK
+[Mkdocs on Github Pages](https://agoralewski.github.io/ce-it-hub-hackathon-2025/)
 
 ## License
 
