@@ -38,9 +38,14 @@ docker compose up -d --build
 ```
 
 ### Backing Up the Database
-Consider regular database backups for production deployments.
+Consider regular database backups for production deployments.  
+Refer to the values you set in .env file in the following command.
 ```sh
-docker compose exec db pg_dump -U kspuser ksp > backup_$(date +%Y%m%d).sql
+docker compose exec db pg_dump -U <DB_USER> <DB_NAME> > backup_$(date +%Y%m%d).sql
+```
+Restore from a file:
+```sh
+docker compose exec -T db psql -U <DB_USER> <DB_NAME> < <FILENAME>.sql
 ```
 
 ### Viewing Logs
