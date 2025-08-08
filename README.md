@@ -20,7 +20,7 @@ KSP (Krwinkowy System Prezentowy) is an inventory management system (IMS) develo
 
 ## Quick Start
 ```bash
-git clone https://github.com/yourusername/ce-it-hub-hackathon-2025.git hackathon25
+git clone https://github.com/agoralewski/ce-it-hub-hackathon-2025.git hackathon25
 cd hackathon25
 uv sync
 cp .env.example .env
