@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/media/ksp/ksp_app/ce-it-hub-hackathon-2025
+      - postgres_data:/var/lib/postgresql/data/
     ports:
       - "5432:5432"
 
@@ -35,9 +35,9 @@ services:
     build:
       context: ./nginx
     volumes:
-      - ./staticfiles:/media/ksp/ksp_app/ce-it-hub-hackathon-2025/app/staticfiles
-      - ./static:/media/ksp/ksp_app/ce-it-hub-hackathon-2025/app/static
-      - ./media:/media/ksp/ksp_app/ce-it-hub-hackathon-2025/app/media
+      - ./staticfiles:/app/staticfiles
+      - ./static:/app/static
+      - ./media:/app/media
     ports:
       - "80:80"
     depends_on:
