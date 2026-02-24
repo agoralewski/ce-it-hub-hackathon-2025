@@ -29,6 +29,7 @@ nav:
 - Utrzymanie: maintenance.md
 - Funkcje: features.md
 - Przewodnik Uzytkownika: user_guide.md
+- Stos Technologiczny: tech_stack.md
 extra:
   social:
   - icon: fontawesome/brands/github

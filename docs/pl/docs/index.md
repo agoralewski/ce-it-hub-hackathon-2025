@@ -20,5 +20,6 @@ Witamy w dokumentacji Systemu Zarządzania Magazynem! Tutaj znajdziesz wszystko,
 - [Utrzymanie](maintenance.md)
 - [Funkcje](features.md)
 - [Przewodnik użytkownika](user_guide.md)
+- [Stos Technologiczny](tech_stack.md)
 
 ---

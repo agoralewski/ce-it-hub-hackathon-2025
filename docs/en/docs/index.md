@@ -20,5 +20,6 @@ Welcome to the documentation for the Warehouse Management System! Here you'll fi
 - [Maintenance](maintenance.md)
 - [Features](features.md)
 - [User Guide](user_guide.md)
+- [Tech Stack](tech_stack.md)
 
 ---
